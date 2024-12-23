@@ -1,0 +1,21 @@
+# STANDART
+**/.terraform/*
+*.tfstate
+*.tfstate.*
+crash.log
+crash.*.log
+*.tfvars.json
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+.terraformrc
+terraform.rc
+*.hcl
+
+
+# MY
+#*.tfvars
+secrets.tfvars
+*.pem
+terraform.exe
