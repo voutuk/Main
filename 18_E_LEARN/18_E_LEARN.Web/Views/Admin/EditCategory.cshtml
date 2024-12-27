@@ -1,0 +1,31 @@
+﻿@using _18_E_LEARN.DataAccess.Data.Models.Categories;
+@model Category
+<section class="min-vh-100 mb-8">
+    <div class="container">
+        <div class="row">
+            <div class="col-xl-4 col-lg-5 col-md-7 mx-auto">
+                <div class="card z-index-0">
+                    <div class="text-center pt-4">
+                        <h5>Update category information</h5>
+                    </div>
+                    <div class="card-body">
+                        <form role="form text-left" method="post" asp-controller="Admin" asp-action="EditCategory">
+                            @if (@ViewBag.AuthError != null)
+                            {
+                                <span class="text-danger">@ViewBag.AuthError</span>
+                            }
+                            <div class="mb-3">
+                                <input asp-for="Id" type="hidden" class="form-control" aria-label="Id" aria-describedby="email-addon" />
+                                <input asp-for="Name" type="text" class="form-control" placeholder="Name" aria-label="Name" aria-describedby="email-addon">
+                                <span class="text-danger" asp-validation-for="Name"></span>
+                            </div>
+                            <div class="text-center">
+                                <button type="submit" class="btn bg-gradient-dark w-100 my-4 mb-2">Update</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

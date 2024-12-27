@@ -1,0 +1,15 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <partial name="./AdminPanel/_Header.cshtml" />
+</head>
+<body class="g-sidenav bg-gray-100">
+
+    <main class="main-content mt-0">
+        @RenderBody()
+    </main>
+
+    <partial name="./AdminPanel/Auth/_Footer.cshtml" />
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

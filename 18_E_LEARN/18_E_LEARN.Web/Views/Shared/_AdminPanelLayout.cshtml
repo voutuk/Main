@@ -1,0 +1,18 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <partial name="./AdminPanel/_Header.cshtml" />
+</head>
+<body class="g-sidenav-show  bg-gray-100">
+
+    <partial name="./AdminPanel/_Sidebar.cshtml" />
+    <main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg ">
+        <partial name="./AdminPanel/_Navbar.cshtml" />
+        @RenderBody()
+        <partial name="./AdminPanel/_Footer.cshtml" />
+    </main>
+
+    <partial name="./AdminPanel/_FooterIncludes.cshtml" />
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,42 @@
+services:
+  web:
+    profiles: ['web', 'full'] 
+    image: 18_e_learn-master-web:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:80
+    restart: unless-stopped
+    volumes:
+      - dataprotection-keys:/root/.aspnet/DataProtection-Keys
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  mssql:
+    profiles: ['sql-only', 'full'] 
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sqlserver-db
+    restart: always
+    environment:
+      SA_PASSWORD: "Qwerty-1"
+      ACCEPT_EULA: "Y"
+    ports:
+      - "1433:1433"
+    volumes:
+      - mssql-data:/var/opt/mssql
+    healthcheck:
+      test: ["CMD-SHELL", "sqlcmd -S localhost -U sa -P Qwerty-1 -Q 'SELECT 1'"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  dataprotection-keys:
+  mssql-data:
