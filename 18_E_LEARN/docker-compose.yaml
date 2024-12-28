@@ -1,29 +1,28 @@
 services:
   web:
-    profiles: ['web', 'full']
+    profiles: ['web-only', 'full']
     image: 18_e_learn-master-web:latest
     container_name: web
-    #restart: always
-    ports:
-      - "80:80"
+    restart: unless-stopped
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
-    restart: unless-stopped
+    ports:
+      - "80:80"
     volumes:
       - dataprotection-keys:/root/.aspnet/DataProtection-Keys
     depends_on:
       - mssql
     networks:
-      app-network:
-        aliases:
-          - web.local
+      private-network:
+        ipv4_address: 172.20.0.11
+      bridge-network:
 
   mssql:
     profiles: ['sql-only', 'full']
     image: mcr.microsoft.com/mssql/server:2022-latest
     container_name: mssql
-    #restart: always
+    restart: unless-stopped
     environment:
       SA_PASSWORD: "Qwerty-1"
       ACCEPT_EULA: "Y"
@@ -32,12 +31,17 @@ services:
     volumes:
       - mssql-data:/var/opt/mssql
     networks:
-      app-network:
-        aliases:
-          - mssql.local
-
+      private-network:
+        ipv4_address: 172.20.0.10
+          
 networks:
-  app-network:
+  private-network:
+    driver: bridge
+    internal: true
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+  bridge-network:
     driver: bridge
 
 volumes:
