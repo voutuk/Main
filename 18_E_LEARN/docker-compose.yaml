@@ -1,49 +1,48 @@
 services:
-  web:
+  web: #TASK: Add healthcheck
     profiles: ['web-only', 'full']
-    image: 18_e_learn-master-web:latest
+    image: voutuk/18_e_learn-master-web:latest
     container_name: web
-    restart: unless-stopped
+    #restart: unless-stopped #CHANEME: Uncomment this line
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_ENVIRONMENT=Development #CHANEME: Change to Production
       - ASPNETCORE_URLS=http://+:80
     ports:
-      - "80:80"
-    volumes:
+      - "8080:80"
+    volumes: #SECURITY: Data protection keys
       - dataprotection-keys:/root/.aspnet/DataProtection-Keys
     depends_on:
       - mssql
-    networks:
-      private-network:
+    networks: #TASK: use alias dns
+      web-network:
         ipv4_address: 172.20.0.11
-      bridge-network:
 
-  mssql:
+  mssql: #TASK: Add healthcheck
     profiles: ['sql-only', 'full']
     image: mcr.microsoft.com/mssql/server:2022-latest
     container_name: mssql
-    restart: unless-stopped
+    #restart: unless-stopped #CHANEME: Uncomment this line
     environment:
       SA_PASSWORD: "Qwerty-1"
       ACCEPT_EULA: "Y"
     ports:
       - "1433:1433"
-    volumes:
+    volumes: #FIXME: Secure the volume
       - mssql-data:/var/opt/mssql
-    networks:
-      private-network:
+      - ./mssql.conf:/var/opt/mssql/mssql.conf
+      - ./certificates/mssql.key:/var/opt/mssql/mssql.key
+      - ./certificates/mssql.pem:/var/opt/mssql/mssql.pem
+    networks: #TASK: use alias dns
+      web-network:
         ipv4_address: 172.20.0.10
-          
-networks:
-  private-network:
+
+networks: #TASK: Private network
+  web-network:
     driver: bridge
-    internal: true
     ipam:
       config:
         - subnet: 172.20.0.0/16
-  bridge-network:
-    driver: bridge
 
-volumes:
+volumes: #TASK: Backup the volume
   dataprotection-keys:
   mssql-data:
