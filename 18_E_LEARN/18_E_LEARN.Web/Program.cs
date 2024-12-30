@@ -10,6 +10,8 @@ using _18_E_LEARN.Web.Infrastructure.Repositoryes;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddHealthChecks(); // Add this line
+
 // Include services
 ServicesConfiguration.Config(builder.Services);
 
@@ -18,7 +20,6 @@ AutoMapperConfiguration.Config(builder.Services);
 
 // Include repositories
 RepositoryConfiguration.Config(builder.Services);
-
 
 var app = builder.Build();
 
@@ -43,6 +44,8 @@ app.MapRazorPages();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+app.MapHealthChecks("/api/health"); // Add this line
 
 await AppDbInitializer.Seed(app);
 app.Run();

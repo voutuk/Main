@@ -1,5 +1,5 @@
 services:
-  web: #TASK: Add healthcheck
+  web: 
     profiles: ['web-only', 'full']
     image: voutuk/18_e_learn-master-web:latest
     container_name: web
@@ -10,14 +10,21 @@ services:
     ports:
       - "8080:80"
     volumes: #SECURITY: Data protection keys
-      - dataprotection-keys:/root/.aspnet/DataProtection-Keys
+      - dataprotection-keys:/root/.aspnet/DataProtection-Keys:rw
     depends_on:
-      - mssql
-    networks: #TASK: use alias dns
+      mssql:
+        condition: service_healthy
+    healthcheck: #TASK: Use WAF
+      test: ["CMD", "curl", "-f", "http://localhost:80/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+    networks:
       web-network:
         ipv4_address: 172.20.0.11
 
-  mssql: #TASK: Add healthcheck
+  mssql: 
     profiles: ['sql-only', 'full']
     image: mcr.microsoft.com/mssql/server:2022-latest
     container_name: mssql
@@ -28,11 +35,17 @@ services:
     ports:
       - "1433:1433"
     volumes: #FIXME: Secure the volume
-      - mssql-data:/var/opt/mssql
-      - ./mssql.conf:/var/opt/mssql/mssql.conf
-      - ./certificates/mssql.key:/var/opt/mssql/mssql.key
-      - ./certificates/mssql.pem:/var/opt/mssql/mssql.pem
-    networks: #TASK: use alias dns
+      - mssql-data:/var/opt/mssql:rw
+      - ./mssql.conf:/var/opt/mssql/mssql.conf:rw
+      - ./certificates/mssql.key:/var/opt/mssql/mssql.key:ro
+      - ./certificates/mssql.pem:/var/opt/mssql/mssql.pem:ro
+    healthcheck:
+      test: /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "Qwerty-1" -Q "SELECT 1" -C || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    networks: 
       web-network:
         ipv4_address: 172.20.0.10
 

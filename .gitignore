@@ -23,7 +23,7 @@ terraform.exe
 *.pfx
 *.key
 *.crt
-
+*.base64
 
 #OTHER
 

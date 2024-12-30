@@ -8,10 +8,14 @@ RUN dotnet restore "18_E_LEARN.Web/18_E_LEARN.Web.csproj"
 
 # Copy SSL certificates to the container
 COPY certificates/mssql.crt /usr/local/share/ca-certificates/
+COPY certificates/root-ca.crt /usr/local/share/ca-certificates/
 
 # Update SSL certificates in the container
 RUN update-ca-certificates
-#RUN openssl x509 -in /etc/ssl/certs/mssql.pem -text -noout # Verify the certificate
+
+# Verify the certificate is installed correctly
+#RUN openssl x509 -in /etc/ssl/certs/mssql.pem -text -noout 
+#RUN openssl x509 -in /etc/ssl/certs/root-ca.pem -text -noout 
 
 # Install the dotnet-ef tool globally
 RUN dotnet tool install --global dotnet-ef --version 7.0.2
@@ -32,9 +36,14 @@ WORKDIR /app
 
 # Copy SSL certificates to the container
 COPY certificates/mssql.crt /usr/local/share/ca-certificates/
+COPY certificates/root-ca.crt /usr/local/share/ca-certificates/
 
 # Update SSL certificates in the container
 RUN update-ca-certificates
+
+# Install curl
+
+RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
 
 # Copy the published application from the build stage
 COPY --from=build /app/build .
