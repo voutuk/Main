@@ -1,0 +1,59 @@
+﻿@using _18_E_LEARN.DataAccess.Data.Models.Courses;
+@model Course
+<section class="min-vh-100 mb-8">
+    <div class="container">
+        <div class="row mt-lg-3 mt-md-3 mt-3">
+            <div class="col-xl-6 col-lg-7 col-md-9 mx-auto">
+                <div class="card z-index-0">
+                    <div class="card-header text-center pt-4">
+                        <h5>Add new course</h5>
+                    </div>
+                    <div class="card-body">
+                        <form role="form text-left" method="post" enctype="multipart/form-data" asp-controller="Admin" asp-action="AddCourse">
+                            @if (@ViewBag.Error != null)
+                            {
+                                <span class="text-danger">@ViewBag.Error</span>
+                            }
+                            <div class="mb-3">
+                                <input asp-for="Name" type="text" class="form-control" placeholder="Title" aria-label="Title" aria-describedby="email-addon">
+                                <span class="text-danger" asp-validation-for="Name"></span>
+                            </div>
+                            <div class="mb-3">
+                                <textarea asp-for="Description" id="summernote" class="form-control"></textarea>
+                                <span class="text-danger" asp-validation-for="Description"></span>
+                            </div>
+                            <div class="mb-3">
+                                <input asp-for="Price" type="number" class="form-control" placeholder="Price" aria-label="Price" aria-describedby="email-addon">
+                                <span class="text-danger" asp-validation-for="Price"></span>
+                            </div>
+                            <div class="mb-3">
+                                <input as type="file" name="files" class="form-control" placeholder="Image" aria-label="Image" aria-describedby="password-addon">
+                                <span class="text-danger" asp-validation-for="Image"></span>
+                            </div>
+                            <div class="mb-3">
+                                @Html.DropDownList("CategoryId", (SelectList)ViewBag.CategoryList, "-- Select Category --", htmlAttributes: new { @class = "form-control" })
+                            </div>
+                            <div class="text-center">
+                                <button type="submit" class="btn bg-gradient-dark w-100 my-4 mb-2">Save</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts{
+    @*  @{
+        <partial name="_ValidationScriptsPartial" />
+    }*@
+    <script>
+        $(document).ready(function () {
+            $('#summernote').summernote({
+                tabsize: 2,
+                height: 300,
+            });
+        });
+    </script>
+}
