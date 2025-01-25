@@ -28,8 +28,23 @@ pipeline {
                 }
             }
         }
-    }
 
+        stage('Finish') {
+            steps {
+                script {
+                    echo "Pipeline completed successfully."
+                    input message: "Pipeline completed successfully. Press Stop.", ok: "KILL"
+                }
+            }
+        }
+
+        stage('Docker Compose Stop') {
+            steps {
+                sh 'docker compose -f ./OLX_Dyplom_ADM/docker-compose.yml kill'
+            }
+        }
+    }
+    
     post {
         success {
             echo "Pipeline completed successfully."
