@@ -1,0 +1,11 @@
+@use '../../styles/global-colors.scss' as colors;
+@use '../../styles/global_bg.scss' as backgrounds;
+
+.page-header {
+    background-color: colors.$sideBarColor;
+    background-image: backgrounds.$sideBarBg;
+    background-attachment: fixed;
+}
+.ant-tooltip-inner {
+    color: black;
+}

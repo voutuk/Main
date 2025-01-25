@@ -1,0 +1,50 @@
+services:
+  postgresServerDb:
+    container_name: container-postgres
+    image: postgres:latest
+    ports:
+      - "5022:5432"
+    environment:
+      - POSTGRES_USER=olxapi
+      - POSTGRES_PASSWORD=*dmUntdOidd3d_#WTi4B9ZoZp%rSDj4Imds07djc*
+      - POSTGRES_DB=olxDb
+    networks:
+      - myAppNetwork
+    volumes:
+        - dbvol:/var/lib/postgresql/data
+    deploy:
+      restart_policy:
+        condition: on-failure
+        max_attempts: 5
+
+  app:
+    container_name: olx_container
+    image: olx-asp-api:latest
+    ports:
+      - "5817:8080"
+    networks:
+     - myAppNetwork
+    depends_on:
+      - postgresServerDb
+    volumes:
+     - appvol:/app/uploading  
+    deploy:
+      restart_policy:
+        condition: on-failure
+        max_attempts: 5
+  
+  client:
+    container_name: olx_client_container
+    image: olx-client:latest
+    restart: on-failure
+    ports:
+      - "5092:80"
+      
+
+networks:
+  myAppNetwork:
+    driver: bridge
+
+volumes:
+  dbvol:
+  appvol:
