@@ -39,7 +39,7 @@ app.UseAuthorization();
 app.MapHub<MessageHub>("/hub");
 //app.UseHttpsRedirection();
 app.MapControllers();
-
+app.MapHealthChecks("/api/health");
 app.DataBaseMigrate();
 await app.SeedDataAsync();
 await app.RunAsync();
