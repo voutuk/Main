@@ -1,0 +1,1 @@
+`docker run --rm --volumes-from jenkins-dev -v $(pwd):/backup ubuntu tar cpvf /backup/jenkins_home_backup.tar /var/jenkins_home`

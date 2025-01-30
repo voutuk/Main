@@ -1,0 +1,54 @@
+#include <tunables/global>
+
+profile jenkins-profile flags=(attach_disconnected,mediate_deleted) {
+    # Previous permissions remain the same
+    /var/jenkins_home/** rwk,
+    /var/jenkins_home/ rw,
+    /opt/java/openjdk/** rix,
+    /usr/local/openjdk*/** rix,
+    /usr/bin/java rix,
+    
+    # Add DNS resolution permissions
+    /etc/resolv.conf r,
+    /etc/hosts r,
+    /etc/host.conf r,
+    /etc/hostname r,
+    /run/systemd/resolve/stub-resolv.conf r,
+    /run/systemd/resolve/resolv.conf r,
+    
+    # Network permissions
+    network inet stream,
+    network inet6 stream,
+    network unix stream,
+    network inet dgram,    # Add UDP support for DNS
+    network inet6 dgram,   # Add UDP support for DNS
+    
+    # Previous permissions continue...
+    /dev/null rw,
+    /dev/random r,
+    /dev/urandom r,
+    /lib{,32,64}/** mrix,
+    /usr/lib{,32,64}/** mrix,
+    /etc/ld.so.* r,
+    /usr/share/jenkins/** r,
+    /usr/local/** rix,
+    /usr/local/bin/** rix,
+    /usr/local/bin/jenkins.sh rix,
+    /tmp/** rwk,
+    /var/tmp/** rwk,
+    /bin/** rix,
+    /sbin/** rix,
+    /usr/bin/** rix,
+    /usr/sbin/** rix,
+    /etc/passwd r,
+    /etc/group r,
+    /etc/nsswitch.conf r,
+    /etc/ssl/** r,
+    /etc/fonts/** r,
+    capability,
+    signal (receive) peer=unconfined,
+    signal (send) peer=unconfined,
+    file,
+    mount fstype=tmpfs -> /run/user/*/,
+    umount /run/user/*/,
+}

@@ -1,0 +1,47 @@
+services:
+  jenkins:
+    image: jenkins/jenkins:lts-jdk17
+    container_name: jenkins-dev
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+      - "50000:50000"  # Порт для Jenkins agents
+    environment:
+      - JAVA_OPTS=-Xmx2g -Djava.awt.headless=true
+      - JENKINS_OPTS=--prefix=/jenkins -Djenkins.install.runSetupWizard=false
+      - TZ=UTC
+      # Додаткові параметри безпеки
+      - JENKINS_SLAVE_AGENT_PORT=50000
+    volumes:
+      - ./jenkins_home:/var/jenkins_home
+    networks:
+      - jenkins-net
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 4G
+        reservations:
+          cpus: '1'
+          memory: 2G
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/jenkins/login"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+#    security_opt:
+#      - no-new-privileges:true
+#      - apparmor=jenkins-profile
+
+networks:
+  jenkins-net:
+    driver: bridge
+
+volumes:
+  jenkins_home:
