@@ -1,5 +1,3 @@
-# modules/compute/build_agent_instance/main.tf
-
 variable "resource_group_name" { type = string }
 variable "location"            { type = string }
 variable "vm_name"             { type = string }
@@ -11,12 +9,12 @@ variable "nsg_id"              { type = string }
 variable "subnet_id"           { type = string }
 variable "instance_count"      { type = number }
 
-# ++instance_count
 resource "azurerm_network_interface" "build_agent_nic" {
   count               = var.instance_count
   name                = "${var.vm_name}-nic-${count.index}"
   location            = var.location
   resource_group_name = var.resource_group_name
+
   ip_configuration {
     name                          = "ipconfig"
     subnet_id                     = var.subnet_id
@@ -38,6 +36,7 @@ resource "azurerm_linux_virtual_machine" "build_agent_vm" {
   resource_group_name = var.resource_group_name
   size                = var.vm_size
   admin_username      = var.admin_username
+
   network_interface_ids = [
     azurerm_network_interface.build_agent_nic[count.index].id
   ]
@@ -46,7 +45,7 @@ resource "azurerm_linux_virtual_machine" "build_agent_vm" {
     username   = var.admin_username
     public_key = var.ssh_public_key
   }
-  
+
   os_disk {
     name                 = "${var.vm_name}-osdisk-${count.index}"
     caching              = "ReadWrite"

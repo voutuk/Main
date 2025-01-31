@@ -1,5 +1,3 @@
-# modules/compute/main_instance/main.tf
-
 terraform {
   required_providers {
     azurerm = {
@@ -22,11 +20,11 @@ variable "vm_sku"              { type = string }
 variable "nsg_id"              { type = string }
 
 resource "time_sleep" "wait_30_seconds" {
-  depends_on = [azurerm_virtual_network.vm_vnet]
+  depends_on      = [azurerm_virtual_network.vm_vnet]
   create_duration = "30s"
 }
 
-resource "azurerm_virtual_network" "vm_vnet" { //INFO: SNYK-CC-AZURE-516
+resource "azurerm_virtual_network" "vm_vnet" {
   name                = "${var.vm_name}-vnet"
   resource_group_name = var.resource_group_name
   location            = var.location
@@ -56,10 +54,6 @@ resource "azurerm_network_interface" "vm_nic" {
     private_ip_address_allocation = "Static"
     private_ip_address            = var.vm_private_ip
   }
-
-  depends_on = [
-    azurerm_subnet.vm_subnet
-  ]
 }
 
 resource "azurerm_network_interface_security_group_association" "vm_nic_nsg" {
@@ -113,5 +107,5 @@ output "vm_name" {
 
 output "subnet_id" {
   value       = azurerm_subnet.vm_subnet.id
-  description = "The ID of the Subnet"
+  description = "ID підмережі"
 }

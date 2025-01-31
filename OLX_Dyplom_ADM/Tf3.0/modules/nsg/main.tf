@@ -1,5 +1,3 @@
-# modules/security/nsg/main.tf
-
 variable "resource_group_name" { type = string }
 variable "location" { type = string }
 variable "nsg_name" { type = string }
@@ -13,7 +11,7 @@ resource "azurerm_network_security_group" "nsg" {
   location            = var.location
   resource_group_name = var.resource_group_name
 
-  # Block all inbound traffic SSH
+  # Базова SSH-правило (Allow)
   security_rule {
     name                       = "AllowSSHFromAll"
     priority                   = 200
@@ -29,5 +27,5 @@ resource "azurerm_network_security_group" "nsg" {
 
 output "nsg_id" {
   value       = azurerm_network_security_group.nsg.id
-  description = "The ID of the created NSG"
+  description = "ID створеного NSG"
 }

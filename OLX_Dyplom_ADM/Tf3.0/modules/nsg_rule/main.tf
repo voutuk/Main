@@ -1,15 +1,11 @@
-# modules/security/nsg_rule/main.tf
-
 variable "resource_group_name" { type = string }
-
 variable "nsg_name" { type = string }
-
 variable "priority" {
   type        = number
-  description = "Priority of the security rule"
+  description = "Пріоритет правила"
   validation {
     condition     = var.priority >= 100 && var.priority <= 4096
-    error_message = "Priority must be between 100 and 4096."
+    error_message = "Пріоритет повинен бути в діапазоні 100-4096."
   }
 }
 
@@ -29,5 +25,5 @@ resource "azurerm_network_security_rule" "rule" {
 
 output "rule_id" {
   value       = azurerm_network_security_rule.rule.id
-  description = "The ID of the created security rule"
+  description = "ID створеного правила"
 }
