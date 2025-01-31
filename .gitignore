@@ -23,8 +23,13 @@ terraform.exe
 *.pfx
 *.key
 *.crt
+*.arm
 *.base64
-
+.terraform
+azure_rsa
+oracle_rsa
+vars.yml
+**/tf-tmp/*
 #OTHER
 
 ## Ignore Visual Studio temporary files, build results, and
