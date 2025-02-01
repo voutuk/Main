@@ -63,3 +63,12 @@ module "aks_cluster" {
   # pass the SSH data if needed
   ssh_public_key_data        = data.doppler_secrets.az-creds.map.SSHPUB
 }
+
+# Модуль створення Storage Account для бекапів
+module "backup_storage" {
+  source                    = "./modules/backup_storage"
+  resource_group_name       = module.resource_group.resource_group_name
+  location                  = module.resource_group.resource_group_location
+  as_resource_group_prefix  = var.as_resource_group_prefix
+  container_name            = "backups"
+}

@@ -78,6 +78,12 @@ variable "resource_group_name_prefix" {
   default     = "gosell-aks-rg"
 }
 
+variable "as_resource_group_prefix" {
+  type        = string
+  description = "Prefix of the azure storage backup name."
+  default     = "gosellbackup"
+}
+
 variable "aks_vm_size" {
   type        = string
   description = "The size of the Virtual Machine."
