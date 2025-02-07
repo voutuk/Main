@@ -1,82 +1,117 @@
 pipeline {
     agent any
+    
+    environment {
+        FRONTEND_IMAGE = 'olx-client'
+        BACKEND_IMAGE = 'olx-asp-api'
+        DOCKER_BUILDKIT = '1'
+    }
+    
     options {
         ansiColor('xterm')
         timestamps()
+        timeout(time: 30, unit: 'MINUTES')
+        buildDiscarder(logRotator(numToKeepStr: '5'))
     }
+    
     stages {
-        stage('Clone Repository') {
+        stage('🔍 Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/voutuk/OLX_Dyplom_ADM'
+                git branch: 'main', 
+                    url: 'https://github.com/voutuk/OLX_Dyplom_ADM',
+                    credentialsId: 'github-credentials'
             }
         }
-        stage('Build Frontend') {
+        
+        stage('🔍 Warnings Check') {
+            steps {
+                script {
+                    warnings(
+                        runChecks: true,
+                        tools: [
+                            hadoLint(pattern: '**/Dockerfile')
+                        ],
+                        qualityGates: [
+                            [threshold: 5, type: 'TOTAL', unstable: true]
+                        ]
+                    )
+                }
+            }
+        }
+        
+        stage('🏗️ Build Frontend') {
             steps {
                 script {
                     sh '''
                         echo "=== Starting Docker Build Frontend ==="
-                        DOCKER_BUILDKIT=1 docker build \
+                        docker build \
                             --progress=plain \
                             --no-cache \
-                            -t olx-client ./OLX.Frontend 2>&1 | tee build-front.log
-                        echo "=== Build Completed ==="
+                            -t ${FRONTEND_IMAGE}:${BUILD_NUMBER} \
+                            ./OLX.Frontend 2>&1 | tee build-front.log
+                        echo "=== Build Frontend End ==="
                     '''
                 }
             }
         }
-
-        stage('Build Backend') {
+        
+        stage('🏗️ Build Backend') {
             steps {
                 script {
                     sh '''
                         echo "=== Starting Docker Build Backend ==="
-                        DOCKER_BUILDKIT=1 docker build \
+                        docker build \
                             --progress=plain \
                             --no-cache \
-                            -t olx-asp-api ./OLX.API 2>&1 | tee build-back.log
-                        echo "=== Build Completed ==="
+                            -t ${BACKEND_IMAGE}:${BUILD_NUMBER} \
+                            ./OLX.API 2>&1 | tee build-back.log
+                        echo "=== Build Backend End ==="
                     '''
                 }
             }
         }
-
-        stage('Docker Compose Up') {
-            steps {
-                // Adjust file name/path if needed
-                sh 'docker compose -f docker-compose.yml up -d'
-            }
-        }
-
-        stage('Show Public IP') {
+        
+        stage('🚀 Docker UP') {
             steps {
                 script {
-                    echo "Public IP of this host:"
-                    sh 'curl -s ifconfig.me'
+                    sh '''
+                        docker compose -f docker-compose.yml up -d
+                        docker ps
+                    '''
                 }
             }
         }
-
-        stage('Finish') {
+        
+        stage('🌐 Network Check') {
             steps {
                 script {
-                    echo "Pipeline completed successfully."
-                    input message: "Pipeline completed successfully. Press Stop.", ok: "KILL"
+                    sh '''
+                        echo "Public IP:"
+                        curl -s ifconfig.me
+                        
+                        echo "\nContainer Network Details:"
+                        docker network ls
+                        docker network inspect bridge
+                    '''
                 }
-            }
-        }
-
-        stage('Docker Compose Stop') {
-            steps {
-                // Adjust file name/path if needed
-                sh 'docker compose -f docker-compose.yml kill'
             }
         }
     }
     
     post {
+        success {
+            echo '🎉 Pipeline completed successfully!'
+        }
+        failure {
+            echo '💥 Pipeline failed'
+        }
         always {
-            archiveArtifacts artifacts: 'build-front.log', allowEmptyArchive: true
-            archiveArtifacts artifacts: 'build-back.log', allowEmptyArchive: true
+            archiveArtifacts artifacts: '*.log', 
+                            fingerprint: true
+            
+            sh 'docker compose -f docker-compose.yml down || true'
+            
+            cleanWs()
         }
     }
 }
