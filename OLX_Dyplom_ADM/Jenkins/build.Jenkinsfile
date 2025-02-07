@@ -1,10 +1,13 @@
 pipeline {
-    agent any
+    agent {
+        label 'docker-agent' 
+    }
     
     environment {
         FRONTEND_IMAGE = 'olx-client'
         BACKEND_IMAGE = 'olx-asp-api'
         DOCKER_BUILDKIT = '1'
+        DOCKER_HOST = 'unix:///var/run/docker.sock'
     }
     
     options {
@@ -15,6 +18,15 @@ pipeline {
     }
     
     stages {
+        stage('🔍 Check Environment') {
+            steps {
+                script {
+                    sh 'docker version'
+                    sh 'docker compose version'
+                }
+            }
+        }
+        
         stage('🔍 Checkout') {
             steps {
                 git branch: 'main', 
@@ -25,31 +37,27 @@ pipeline {
         
         stage('🔍 Warnings Check') {
             steps {
-                script {
-                    recordIssues(
-                        tools: [
-                            hadoLint(pattern: '**/Dockerfile')
-                        ],
-                        qualityGates: [[threshold: 5, type: 'TOTAL', unstable: true]],
-                        healthy: 5,
-                        unhealthy: 10
-                    )
-                }
+                recordIssues(
+                    tools: [
+                        hadoLint(pattern: '**/Dockerfile')
+                    ],
+                    qualityGates: [[threshold: 5, type: 'TOTAL', unstable: true]],
+                    healthy: 5,
+                    unhealthy: 10
+                )
             }
         }
         
         stage('🏗️ Build Frontend') {
             steps {
                 script {
-                    sh '''
-                        echo "=== Starting Docker Build Frontend ==="
-                        docker build \
-                            --progress=plain \
-                            --no-cache \
-                            -t ${FRONTEND_IMAGE}:${BUILD_NUMBER} \
-                            ./OLX.Frontend 2>&1 | tee build-front.log
-                        echo "=== Build Frontend End ==="
-                    '''
+                    docker.withRegistry('', '') {
+                        def frontendImage = docker.build(
+                            "${FRONTEND_IMAGE}:${BUILD_NUMBER}",
+                            "--no-cache --progress=plain ./OLX.Frontend"
+                        )
+                        env.FRONTEND_IMAGE_ID = frontendImage.id
+                    }
                 }
             }
         }
@@ -57,15 +65,13 @@ pipeline {
         stage('🏗️ Build Backend') {
             steps {
                 script {
-                    sh '''
-                        echo "=== Starting Docker Build Backend ==="
-                        docker build \
-                            --progress=plain \
-                            --no-cache \
-                            -t ${BACKEND_IMAGE}:${BUILD_NUMBER} \
-                            ./OLX.API 2>&1 | tee build-back.log
-                        echo "=== Build Backend End ==="
-                    '''
+                    docker.withRegistry('', '') {
+                        def backendImage = docker.build(
+                            "${BACKEND_IMAGE}:${BUILD_NUMBER}",
+                            "--no-cache --progress=plain ./OLX.API"
+                        )
+                        env.BACKEND_IMAGE_ID = backendImage.id
+                    }
                 }
             }
         }
@@ -73,10 +79,13 @@ pipeline {
         stage('🚀 Docker UP') {
             steps {
                 script {
-                    sh '''
-                        docker compose -f docker-compose.yml up -d
-                        docker ps
-                    '''
+                    sh """
+                        docker image inspect ${FRONTEND_IMAGE}:${BUILD_NUMBER}
+                        docker image inspect ${BACKEND_IMAGE}:${BUILD_NUMBER}
+                    """
+
+                    sh 'docker compose -f docker-compose.yml up -d'
+                    sh 'docker ps'
                 }
             }
         }
@@ -85,12 +94,15 @@ pipeline {
             steps {
                 script {
                     sh '''
-                        echo "Public IP:"
+                        echo "Agent Public IP:"
                         curl -s ifconfig.me
                         
                         echo "\nContainer Network Details:"
                         docker network ls
                         docker network inspect bridge
+                        
+                        echo "\nRunning Containers:"
+                        docker ps -a
                     '''
                 }
             }
@@ -103,14 +115,18 @@ pipeline {
         }
         failure {
             echo '💥 Pipeline failed'
+            sh 'docker compose -f docker-compose.yml down || true'
+            sh '''
+                docker system prune -f
+                docker volume prune -f
+            '''
         }
         always {
-            archiveArtifacts artifacts: '*.log', 
-                            fingerprint: true
-            
-            sh 'docker compose -f docker-compose.yml down || true'
-            
-            cleanWs()
+            script {
+                archiveArtifacts artifacts: '*.log', 
+                    fingerprint: true
+                cleanWs()
+            }
         }
     }
 }
