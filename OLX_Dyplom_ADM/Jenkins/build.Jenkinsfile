@@ -111,7 +111,7 @@ pipeline {
             script {
                 archiveArtifacts artifacts: '*.log', 
                     fingerprint: true
-                cleanWs()
+                //cleanWs()
             }
         }
     }
