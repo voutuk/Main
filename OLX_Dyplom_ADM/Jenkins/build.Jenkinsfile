@@ -7,7 +7,7 @@ pipeline {
     stages {
         stage('Clone Repository') {
             steps {
-                git branch: 'main', url: 'https://github.com/OlexKov/OLX_Dyplom.git'
+                git branch: 'main', url: 'https://github.com/voutuk/OLX_Dyplom_ADM'
             }
         }
         stage('Build Frontend') {
