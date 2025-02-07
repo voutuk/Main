@@ -26,14 +26,13 @@ pipeline {
         stage('🔍 Warnings Check') {
             steps {
                 script {
-                    warnings(
-                        runChecks: true,
+                    recordIssues(
                         tools: [
                             hadoLint(pattern: '**/Dockerfile')
                         ],
-                        qualityGates: [
-                            [threshold: 5, type: 'TOTAL', unstable: true]
-                        ]
+                        qualityGates: [[threshold: 5, type: 'TOTAL', unstable: true]],
+                        healthy: 5,
+                        unhealthy: 10
                     )
                 }
             }
