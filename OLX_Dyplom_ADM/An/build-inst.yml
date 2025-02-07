@@ -6,10 +6,10 @@
   become: yes
   vars:
     java_package: openjdk-17-jre-headless
-    jenkins_agent_workdir: /home/azureuser
+    jenkins_agent_workdir: /home/ubuntu
     jenkins_master_url: "http://jen.pluton.pp.ua/jenkins"
-    jenkins_agent_name: "Qwertyu"
-    jenkins_agent_user: azureuser
+    jenkins_agent_name: "{{ ansible_hostname }}"
+    jenkins_agent_user: ubuntu
     swap_file_path: /swapfile
     swap_size_mb: 2048
 
