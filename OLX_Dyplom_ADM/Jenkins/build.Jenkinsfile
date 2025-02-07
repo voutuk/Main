@@ -1,25 +1,42 @@
 pipeline {
     agent any
-
+    options {
+        ansiColor('xterm')
+        timestamps()
+    }
     stages {
         stage('Clone Repository') {
             steps {
-                // Make sure to specify the branch or commit you need
                 git branch: 'main', url: 'https://github.com/OlexKov/OLX_Dyplom.git'
             }
         }
-
         stage('Build Frontend') {
             steps {
-                // Adjust path if actual directory differs
-                sh 'docker build -t olx-client ./OLX.Frontend'
+                script {
+                    sh '''
+                        echo "=== Starting Docker Build Frontend ==="
+                        DOCKER_BUILDKIT=1 docker build \
+                            --progress=plain \
+                            --no-cache \
+                            -t olx-client ./OLX.Frontend 2>&1 | tee build-front.log
+                        echo "=== Build Completed ==="
+                    '''
+                }
             }
         }
 
         stage('Build Backend') {
             steps {
-                // Adjust path if actual directory differs
-                sh 'docker build -t olx-asp-api ./OLX.API'
+                script {
+                    sh '''
+                        echo "=== Starting Docker Build Backend ==="
+                        DOCKER_BUILDKIT=1 docker build \
+                            --progress=plain \
+                            --no-cache \
+                            -t olx-asp-api ./OLX.API 2>&1 | tee build-back.log
+                        echo "=== Build Completed ==="
+                    '''
+                }
             }
         }
 
@@ -57,11 +74,9 @@ pipeline {
     }
     
     post {
-        success {
-            echo "Pipeline completed successfully."
-        }
-        failure {
-            echo "Pipeline failed. Please check the logs."
+        always {
+            archiveArtifacts artifacts: 'build-front.log', allowEmptyArchive: true
+            archiveArtifacts artifacts: 'build-back.log', allowEmptyArchive: true
         }
     }
 }
