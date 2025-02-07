@@ -1,11 +1,15 @@
 ---
-- hosts: all
+- hosts: main_inst
   become: yes
+
+  vars_files:
+    - vars.yml
+
   tasks:
     # Automatic Updates Configuration
     - name: Install unattended-upgrades
       apt:
-        name: 
+        name:
           - unattended-upgrades
           - apt-listchanges
         state: present
@@ -58,12 +62,12 @@
 
     - name: Add Docker repository
       apt_repository:
-        repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable
+        repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
         state: present
 
     - name: Install Docker
       apt:
-        name: 
+        name:
           - docker-ce
           - docker-ce-cli
           - containerd.io
@@ -115,3 +119,35 @@
     - name: Display Docker version
       debug:
         var: docker_version.stdout
+
+  
+    # 2. Встановлення restic
+    - name: Install restic
+      apt:
+        name: restic
+        state: present
+    
+    - name: Run Jenkins Docker Compose
+      shell: |
+        restic self-update
+
+    # 3. Відновити снапшот з restic
+    - name: Restore from restic snapshot
+      shell: |
+        restic -r "{{ RESTIC_REPOSITORY }}" restore latest --target /
+      environment:
+        RESTIC_PASSWORD: "{{ RESTIC_PASSWORD }}"
+        AZURE_ACCOUNT_NAME: "{{ AZURE_ACCOUNT_NAME }}"
+        AZURE_ACCOUNT_KEY: "{{ AZURE_ACCOUNT_KEY }}"
+      args:
+        chdir: /var/lib
+
+    # 1. Завантажити та запустити Docker Compose файл
+    - name: Copy Jenkins docker-compose file
+      copy:
+        src: "./Jenkins/docker-compose.yaml"
+        dest: "/home/ubuntu/docker-compose.yaml"
+
+    - name: Run Jenkins Docker Compose
+      shell: |
+        docker compose -f /home/ubuntu/docker-compose.yaml up -d

@@ -9,6 +9,16 @@ variable "nsg_id"              { type = string }
 variable "subnet_id"           { type = string }
 variable "instance_count"      { type = number }
 
+# Add Public IP resource
+resource "azurerm_public_ip" "build_agent_public_ip" {
+  count               = var.instance_count
+  name                = "${var.vm_name}-public-ip-${count.index}"
+  location            = var.location
+  resource_group_name = var.resource_group_name
+  allocation_method   = "Static"
+  sku                 = "Standard"
+}
+
 resource "azurerm_network_interface" "build_agent_nic" {
   count               = var.instance_count
   name                = "${var.vm_name}-nic-${count.index}"
@@ -20,6 +30,7 @@ resource "azurerm_network_interface" "build_agent_nic" {
     subnet_id                     = var.subnet_id
     private_ip_address_allocation = "Static"
     private_ip_address            = "10.0.1.${20 + count.index}"
+    public_ip_address_id          = azurerm_public_ip.build_agent_public_ip[count.index].id  # Add public IP
   }
 }
 
@@ -59,3 +70,4 @@ resource "azurerm_linux_virtual_machine" "build_agent_vm" {
     version   = "latest"
   }
 }
+

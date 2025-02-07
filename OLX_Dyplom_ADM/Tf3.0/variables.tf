@@ -31,7 +31,7 @@ variable "main_instance_vm_size" {
 variable "build_agent_vm_size" {
   type        = string
   description = "Розмір (SKU) Build-Agent віртуальної машини."
-  default     = "Standard_DS1_v2"
+  default     = "Standard_B2s" # Standard_DS1_v2
 }
 
 variable "vm_admin_username" {
@@ -55,7 +55,7 @@ variable "vm_sku" {
 variable "instance_count" {
   type        = number
   description = "Кількість Build-Agent інстансів."
-  default     = 2
+  default     = 1
 }
 
 variable "main_vm_name" {

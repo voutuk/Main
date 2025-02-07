@@ -1,3 +1,13 @@
+# GitHub: https://github.com/voutuk/main
+# License: MIT License with Non-Commercial Use Restriction
+#
+# Purpose: This Terraform configuration deploys a development instance 
+# 2 vm's (build-agent), 1 vm (main_instance), 1 nsg and rule.
+# Prerequisites: ** .env doppler secret key **
+# Variables: ./variables.tf
+#
+# Azure Provider: https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs
+
 # Модуль створення Resource Group
 module "resource_group" {
   source              = "./modules/resource_group"
@@ -71,4 +81,13 @@ module "backup_storage" {
   location                  = module.resource_group.resource_group_location
   as_resource_group_prefix  = var.as_resource_group_prefix
   container_name            = "backups"
+}
+
+# Модуль створення Ansible Inventory
+module "ansible_inventory" {
+  source           = "./modules/ansible_inventory"
+  main_instance_ip = module.main_instance.public_ip
+  build_agent_ips  = module.build_agent_instance.public_ips
+  admin_username   = var.vm_admin_username
+  inventory_path   = "../An/hosts"
 }

@@ -2,7 +2,7 @@
 # Playbook created by: voutuk
 # Creation date (UTC): 2025-01-27 12:17:25
 - name: Setup Jenkins Agent with Docker and Swap
-  hosts: all
+  hosts: builders_inst
   become: yes
   vars:
     java_package: openjdk-17-jre-headless

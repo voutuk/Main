@@ -1,3 +1,5 @@
+# /modules/compute/main_instance/main.tf
+
 terraform {
   required_providers {
     azurerm = {
@@ -53,6 +55,7 @@ resource "azurerm_network_interface" "vm_nic" {
     subnet_id                     = azurerm_subnet.vm_subnet.id
     private_ip_address_allocation = "Static"
     private_ip_address            = var.vm_private_ip
+    public_ip_address_id          = azurerm_public_ip.vm_public_ip.id  # Add this line
   }
 }
 
@@ -65,7 +68,22 @@ resource "azurerm_public_ip" "vm_public_ip" {
   name                = "${var.vm_name}-public-ip"
   location            = var.location
   resource_group_name = var.resource_group_name
-  allocation_method   = "Dynamic"
+  allocation_method   = "Static"  # Changed from Dynamic to Static
+  sku                 = "Basic"
+}
+
+resource "time_sleep" "wait_for_ip" {
+  depends_on = [azurerm_linux_virtual_machine.vm]
+  create_duration = "60s"
+}
+
+data "azurerm_public_ip" "vm_public_ip_data" {
+  name                = azurerm_public_ip.vm_public_ip.name
+  resource_group_name = var.resource_group_name
+  depends_on = [
+    azurerm_linux_virtual_machine.vm,    # Added comma here
+    time_sleep.wait_for_ip
+  ]
 }
 
 resource "azurerm_linux_virtual_machine" "vm" {
@@ -97,15 +115,11 @@ resource "azurerm_linux_virtual_machine" "vm" {
     version   = "latest"
   }
 
+  depends_on = [
+    azurerm_public_ip.vm_public_ip,
+    azurerm_network_interface.vm_nic
+  ]
+
   computer_name                   = var.vm_name
   disable_password_authentication = true
-}
-
-output "vm_name" {
-  value = azurerm_linux_virtual_machine.vm.name
-}
-
-output "subnet_id" {
-  value       = azurerm_subnet.vm_subnet.id
-  description = "ID підмережі"
 }

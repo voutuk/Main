@@ -1,0 +1,17 @@
+sudo apt install -y restic
+restic self-update
+
+#!/bin/bash
+
+# Set Azure credentials
+export AZURE_ACCOUNT_NAME="gosellbackupliteratebedb"
+export AZURE_ACCOUNT_KEY="eMhzi++Dy1ORpYN64a4XPV1PJysyZsTViWbfupPw/Jx4Ty9CcM87Q6WVrnAXtP6gb8+/h20/bby3+AStJ4XnJA=="
+
+# Set restic password
+export RESTIC_PASSWORD="qwerty"
+
+# Perform backup
+restic -r azure:backups:/jenkins-backup backup /home/ubuntu/jenkins_home
+
+
+restic -r azure:backups:/jenkins-backup restore latest --target /
