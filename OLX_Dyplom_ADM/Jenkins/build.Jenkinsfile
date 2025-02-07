@@ -2,31 +2,35 @@ pipeline {
     agent any
 
     stages {
-        stage('Clone repository') {
+        stage('Clone Repository') {
             steps {
+                // Make sure to specify the branch or commit you need
                 git branch: 'main', url: 'https://github.com/OlexKov/OLX_Dyplom.git'
             }
         }
 
-        stage('Build frontend') {
+        stage('Build Frontend') {
             steps {
-                sh 'docker build -t olx-client ./OLX_Dyplom_ADM/OLX.Frontend'
+                // Adjust path if actual directory differs
+                sh 'docker build -t olx-client ./OLX.Frontend'
             }
         }
 
-        stage('Build backend') {
+        stage('Build Backend') {
             steps {
-                sh 'docker build -t olx-asp-api ./OLX_Dyplom_ADM/OLX.API'
+                // Adjust path if actual directory differs
+                sh 'docker build -t olx-asp-api ./OLX.API'
             }
         }
 
         stage('Docker Compose Up') {
             steps {
-                sh 'docker compose -f ./OLX_Dyplom_ADM/docker-compose.yml up -d'
+                // Adjust file name/path if needed
+                sh 'docker compose -f docker-compose.yml up -d'
             }
         }
 
-        stage('Show public IP') {
+        stage('Show Public IP') {
             steps {
                 script {
                     echo "Public IP of this host:"
@@ -46,7 +50,8 @@ pipeline {
 
         stage('Docker Compose Stop') {
             steps {
-                sh 'docker compose -f ./OLX_Dyplom_ADM/docker-compose.yml kill'
+                // Adjust file name/path if needed
+                sh 'docker compose -f docker-compose.yml kill'
             }
         }
     }
