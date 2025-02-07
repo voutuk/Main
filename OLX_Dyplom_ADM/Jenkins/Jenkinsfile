@@ -2,6 +2,12 @@ pipeline {
     agent any
 
     stages {
+        stage('Clone repository') {
+            steps {
+                git branch: 'main', url: 'https://github.com/OlexKov/OLX_Dyplom.git'
+            }
+        }
+
         stage('Build frontend') {
             steps {
                 sh 'docker build -t olx-client ./OLX_Dyplom_ADM/OLX.Frontend'
@@ -20,7 +26,7 @@ pipeline {
             }
         }
 
-        stage('Show public IP of the host') {
+        stage('Show public IP') {
             steps {
                 script {
                     echo "Public IP of this host:"
