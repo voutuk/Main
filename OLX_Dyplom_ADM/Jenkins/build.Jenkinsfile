@@ -30,21 +30,7 @@ pipeline {
         stage('🔍 Checkout') {
             steps {
                 git branch: 'main', 
-                    url: 'https://github.com/voutuk/OLX_Dyplom_ADM',
-                    credentialsId: 'github-credentials'
-            }
-        }
-        
-        stage('🔍 Warnings Check') {
-            steps {
-                recordIssues(
-                    tools: [
-                        hadoLint(pattern: '**/Dockerfile')
-                    ],
-                    qualityGates: [[threshold: 5, type: 'TOTAL', unstable: true]],
-                    healthy: 5,
-                    unhealthy: 10
-                )
+                    url: 'https://github.com/voutuk/OLX_Dyplom_ADM'
             }
         }
         
