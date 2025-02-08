@@ -1,0 +1,7 @@
+https://dashboard.doppler.com/workplace/4dd0eecca3d1554f4621/projects/az/configs/dev
+
+https://one.dash.cloudflare.com/205c1dd7b6be348e43a3c8dfd47573b0/access/apps
+https://jen.pluton.pp.ua/jenkins/job/Build/
+https://portal.azure.com/#@voitiukbublikhotmail.onmicrosoft.com/resource/subscriptions/3eba8433-8aaf-40ef-9be5-87b8edefec97/resourceGroups/gosell-dev-rg/overview
+
+voitiuk-bublik@hotmail.com
