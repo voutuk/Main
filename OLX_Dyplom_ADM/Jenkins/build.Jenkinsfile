@@ -125,10 +125,5 @@ pipeline {
             //    docker volume prune -f
             //'''
         }
-        always {
-            script {
-                //cleanWs()
-            }
-        }
     }
 }
