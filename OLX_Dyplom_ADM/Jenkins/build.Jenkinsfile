@@ -119,16 +119,14 @@ pipeline {
         }
         failure {
             echo '💥 Pipeline failed'
-            sh 'docker compose -f docker-compose.yml down || true'
-            sh '''
-                docker system prune -f
-                docker volume prune -f
-            '''
+            //sh 'docker compose -f docker-compose.yml down || true'
+            //sh '''
+            //    docker system prune -f
+            //    docker volume prune -f
+            //'''
         }
         always {
             script {
-                archiveArtifacts artifacts: '*.log', 
-                    fingerprint: true
                 //cleanWs()
             }
         }
