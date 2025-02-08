@@ -44,8 +44,13 @@ pipeline {
                             "--no-cache --progress=plain ./OLX.Frontend"
                         )
                         env.FRONTEND_IMAGE_ID = frontendImage.id
+<<<<<<< HEAD:OLX_Dyplom_ADM/Jenkins/Jenkinsfile.build
                         // Also tag with timestamp
                         sh "docker tag ${FRONTEND_IMAGE}:${BUILD_NUMBER} ${FRONTEND_IMAGE}:${BUILD_TIMESTAMP}"
+=======
+                        // Tag as latest as well
+                        sh "docker tag ${FRONTEND_IMAGE}:${BUILD_NUMBER} ${FRONTEND_IMAGE}:latest"
+>>>>>>> 6ae2ab1ec5f082b340ddc10232073692c73d41aa:OLX_Dyplom_ADM/Jenkins/build.Jenkinsfile
                     }
                 }
             }
@@ -60,23 +65,42 @@ pipeline {
                             "--no-cache --progress=plain ./OLX.API"
                         )
                         env.BACKEND_IMAGE_ID = backendImage.id
+<<<<<<< HEAD:OLX_Dyplom_ADM/Jenkins/Jenkinsfile.build
                         // Also tag with timestamp
                         sh "docker tag ${BACKEND_IMAGE}:${BUILD_NUMBER} ${BACKEND_IMAGE}:${BUILD_TIMESTAMP}"
+=======
+                        // Tag as latest as well
+                        sh "docker tag ${BACKEND_IMAGE}:${BUILD_NUMBER} ${BACKEND_IMAGE}:latest"
+>>>>>>> 6ae2ab1ec5f082b340ddc10232073692c73d41aa:OLX_Dyplom_ADM/Jenkins/build.Jenkinsfile
                     }
                 }
             }
         }
-        
+        stage('🔍 Verify Images') {
+            steps {
+                script {
+                    sh """
+                        echo "Checking for required images..."
+                        docker images | grep ${FRONTEND_IMAGE}
+                        docker images | grep ${BACKEND_IMAGE}
+                    """
+                }
+            }
+        }
         stage('🚀 Docker UP') {
             steps {
                 script {
                     sh """
                         docker image inspect ${FRONTEND_IMAGE}:${BUILD_NUMBER}
                         docker image inspect ${BACKEND_IMAGE}:${BUILD_NUMBER}
+                        
+                        FRONTEND_IMAGE=${FRONTEND_IMAGE} \
+                        BACKEND_IMAGE=${BACKEND_IMAGE} \
+                        BUILD_NUMBER=${BUILD_NUMBER} \
+                        docker compose -f docker-compose.yml up -d
+                        
+                        docker ps
                     """
-
-                    sh 'docker compose -f docker-compose.yml up -d'
-                    sh 'docker ps'
                 }
             }
         }
@@ -106,18 +130,11 @@ pipeline {
         }
         failure {
             echo '💥 Pipeline failed'
-            sh 'docker compose -f docker-compose.yml down || true'
-            sh '''
-                docker system prune -f
-                docker volume prune -f
-            '''
-        }
-        always {
-            script {
-                archiveArtifacts artifacts: '*.log', 
-                    fingerprint: true
-                //cleanWs()
-            }
+            //sh 'docker compose -f docker-compose.yml down || true'
+            //sh '''
+            //    docker system prune -f
+            //    docker volume prune -f
+            //'''
         }
     }
 }
