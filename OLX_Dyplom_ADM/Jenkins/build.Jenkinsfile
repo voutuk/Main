@@ -43,6 +43,8 @@ pipeline {
                             "--no-cache --progress=plain ./OLX.Frontend"
                         )
                         env.FRONTEND_IMAGE_ID = frontendImage.id
+                        // Tag as latest as well
+                        sh "docker tag ${FRONTEND_IMAGE}:${BUILD_NUMBER} ${FRONTEND_IMAGE}:latest"
                     }
                 }
             }
@@ -57,21 +59,37 @@ pipeline {
                             "--no-cache --progress=plain ./OLX.API"
                         )
                         env.BACKEND_IMAGE_ID = backendImage.id
+                        // Tag as latest as well
+                        sh "docker tag ${BACKEND_IMAGE}:${BUILD_NUMBER} ${BACKEND_IMAGE}:latest"
                     }
                 }
             }
         }
-        
+        stage('🔍 Verify Images') {
+            steps {
+                script {
+                    sh """
+                        echo "Checking for required images..."
+                        docker images | grep ${FRONTEND_IMAGE}
+                        docker images | grep ${BACKEND_IMAGE}
+                    """
+                }
+            }
+        }
         stage('🚀 Docker UP') {
             steps {
                 script {
                     sh """
                         docker image inspect ${FRONTEND_IMAGE}:${BUILD_NUMBER}
                         docker image inspect ${BACKEND_IMAGE}:${BUILD_NUMBER}
+                        
+                        FRONTEND_IMAGE=${FRONTEND_IMAGE} \
+                        BACKEND_IMAGE=${BACKEND_IMAGE} \
+                        BUILD_NUMBER=${BUILD_NUMBER} \
+                        docker compose -f docker-compose.yml up -d
+                        
+                        docker ps
                     """
-
-                    sh 'docker compose -f docker-compose.yml up -d'
-                    sh 'docker ps'
                 }
             }
         }
