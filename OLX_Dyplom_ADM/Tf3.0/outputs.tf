@@ -1,4 +1,4 @@
-# outputs.tf
+# MAIN outputs.tf
 
 output "ansible_inventory_path" {
   value       = module.ansible_inventory.inventory_path
@@ -7,7 +7,7 @@ output "ansible_inventory_path" {
 
 output "jenkins_master_ip" {
   value       = module.main_instance.public_ip
-  description = "Private IP address of Jenkins master"
+  description = "Private IP address of the Jenkins master"
 }
 
 output "jenkins_agent_ips" {

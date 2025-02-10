@@ -1,6 +1,18 @@
-variable "resource_group_name" { type = string }
-variable "location" { type = string }
-variable "nsg_name" { type = string }
+# modules/nsg/main.tf
+
+# INFO: NSG Variables
+variable "resource_group_name" {
+  type = string
+}
+
+variable "location" {
+  type = string
+}
+
+variable "nsg_name" {
+  type = string
+}
+
 variable "vnet_address_space" {
   type    = string
   default = "10.0.0.0/16"
@@ -11,7 +23,7 @@ resource "azurerm_network_security_group" "nsg" {
   location            = var.location
   resource_group_name = var.resource_group_name
 
-  # Базова SSH-правило (Allow)
+  # Basic SSH rule (Allow)
   security_rule {
     name                       = "AllowSSHFromAll"
     priority                   = 200
@@ -25,7 +37,8 @@ resource "azurerm_network_security_group" "nsg" {
   }
 }
 
+# INFO: NSG Outputs
 output "nsg_id" {
   value       = azurerm_network_security_group.nsg.id
-  description = "ID створеного NSG"
+  description = "ID of the created NSG"
 }

@@ -1,3 +1,6 @@
+export TF_VAR_doppler_token="" #View file .env.example
+#INFO: Doppler vars CLIENT_ID, CLIENT_SECRET, TENANT_ID, SSHPUB
+
 terraform plan
 terraform apply -target=module.resource_group -auto-approve
 terraform apply -target=module.create_nsg -auto-approve
@@ -9,5 +12,5 @@ terraform apply -target=module.backup_storage -auto-approve
 terraform apply -target=module.ansible_inventory -auto-approve
 
 
-terraform refresh
+# terraform refresh
 terraform state list

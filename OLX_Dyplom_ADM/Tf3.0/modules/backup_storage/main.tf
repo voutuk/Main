@@ -1,38 +1,34 @@
+# modules/backup_storage/main.tf
 
+# INFO: Backup Storage Variables
 variable "resource_group_name" {
-  type        = string
-  description = "Назва (існуючої або новоствореної) ресурсної групи, де буде створено Storage Account"
+  type = string
 }
-
 variable "location" {
-  type        = string
-  description = "Azure-регіон для Storage Account."
+  type = string
 }
-
-variable "as_resource_group_prefix" {
-  type        = string
-  description = "Унікальний префікс для імені ресурсної групи при генерації random_pet (за потреби)."
+variable "backup_storage_prefix" {
+  type = string
 }
-
 variable "container_name" {
   type        = string
   default     = "backups"
-  description = "Назва контейнера в Storage Account, де зберігатимуться бекапи."
+  description = "The name of the container in the Storage Account where backups will be stored."
 }
 
+# Generate a random name for the storage account using a prefix
 resource "random_pet" "as_storage_name" {
-  prefix    = var.as_resource_group_prefix
-  # Use empty separator to avoid hyphens automatically
+  prefix    = var.backup_storage_prefix
   separator = ""
 }
 
 locals {
-  # Спочатку видаляємо всі неприпустимі символи
-  cleaned_name = join("", regexall("[a-z0-9]", lower(random_pet.as_storage_name.id)))
-  # Обмежуємо довжину до 24 символів
+  # Remove invalid characters and limit length to 24
+  cleaned_name          = join("", regexall("[a-z0-9]", lower(random_pet.as_storage_name.id)))
   sanitized_storage_name = substr(local.cleaned_name, 0, 24)
 }
 
+# Create the Storage Account
 resource "azurerm_storage_account" "backup_sa" {
   name                          = local.sanitized_storage_name
   resource_group_name           = var.resource_group_name
@@ -49,9 +45,25 @@ resource "azurerm_storage_account" "backup_sa" {
   }
 }
 
+# Create the container for backups
 resource "azurerm_storage_container" "backup_container" {
   name                  = var.container_name
   storage_account_name  = azurerm_storage_account.backup_sa.name
   container_access_type = "private"
 }
 
+# INFO: Backup Storage Outputs
+output "storage_account_id" {
+  description = "ID of the created Storage Account."
+  value       = azurerm_storage_account.backup_sa.id
+}
+
+output "storage_account_name" {
+  description = "Name of the created Storage Account."
+  value       = azurerm_storage_account.backup_sa.name
+}
+
+output "backup_container_name" {
+  description = "Name of the container for backups."
+  value       = azurerm_storage_container.backup_container.name
+}
