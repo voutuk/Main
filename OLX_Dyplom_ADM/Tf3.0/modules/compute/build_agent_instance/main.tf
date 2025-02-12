@@ -62,6 +62,7 @@ resource "azurerm_subnet" "build_agent_subnet" {
 }
 
 # Network Interface resource
+# Network Interface resource
 resource "azurerm_network_interface" "build_agent_nic" {
   count               = var.instance_count
   name                = "agent-nic-${count.index}"
@@ -72,6 +73,7 @@ resource "azurerm_network_interface" "build_agent_nic" {
     name                          = "internal"
     subnet_id                     = azurerm_subnet.build_agent_subnet.id
     private_ip_address_allocation = "Dynamic"
+    public_ip_address_id          = azurerm_public_ip.build_agent_pip[count.index].id  # Add this line
   }
 }
 

@@ -8,6 +8,6 @@ terraform apply -target=module.aks_cluster -auto-approve
 terraform apply -target=module.backup_storage -auto-approve
 terraform apply -target=module.ansible_inventory -auto-approve
 terraform apply -target=module.rule_block_ssh -auto-approve       #INFO: Block SSH use after ansible playbook
-4
+
 # terraform refresh
 terraform state list
