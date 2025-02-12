@@ -14,16 +14,10 @@ variable "azure_subscription_id" {
   default     = "3eba8433-8aaf-40ef-9be5-87b8edefec97"
 }
 
-variable "azure_region" {
+variable "rg_prefix" {
   type        = string
-  description = "The Azure region for resource creation."
-  default     = "North Europe"
-}
-
-variable "resource_group_name" {
-  type        = string
-  description = "The name of the resource group."
-  default     = "gosell-dev-rg"
+  description = "Region group prefix."
+  default     = "gosell"
 }
 
 # Variables for VMs
@@ -60,7 +54,7 @@ variable "vm_sku" {
 variable "instance_count" {
   type        = number
   description = "The number of Build-Agent instances."
-  default     = 1
+  default     = 2
 }
 
 variable "main_vm_name" {
@@ -70,17 +64,6 @@ variable "main_vm_name" {
 }
 
 # Variables for AKS
-variable "resource_group_location" {
-  type        = string
-  description = "The location of the resource group."
-  default     = "West Europe"
-}
-
-variable "resource_group_name_prefix" {
-  type        = string
-  description = "The prefix of the resource group name that is combined with a random ID to ensure uniqueness in your Azure subscription."
-  default     = "gosell-aks-rg"
-}
 
 variable "backup_storage_prefix" {
   type        = string

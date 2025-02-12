@@ -9,13 +9,12 @@ variable "location" {
   type = string
 }
 
-variable "nsg_name" {
-  type = string
-}
-
 variable "vnet_address_space" {
   type    = string
-  default = "10.0.0.0/16"
+}
+
+variable "nsg_name" {
+  type    = string
 }
 
 resource "azurerm_network_security_group" "nsg" {
@@ -41,4 +40,9 @@ resource "azurerm_network_security_group" "nsg" {
 output "nsg_id" {
   value       = azurerm_network_security_group.nsg.id
   description = "ID of the created NSG"
+}
+
+output "nsg_name" {
+  value       = azurerm_network_security_group.nsg.name
+  description = "Name of the created NSG"
 }

@@ -1,5 +1,3 @@
-# modules/aks/main.tf
-
 # INFO: Variables for AKS
 variable "ssh_public_key_data" {
   type        = string
@@ -11,14 +9,14 @@ variable "aks_admin_username" {
   description = "Admin username for the AKS cluster"
 }
 
-variable "aks_resource_group_name_prefix" {
+variable "resource_group_name" {
   type        = string
-  description = "Prefix for the AKS resource group name to ensure uniqueness"
+  description = "Name of the resource group where AKS will be created"
 }
 
-variable "aks_resource_group_location" {
+variable "resource_group_location" {
   type        = string
-  description = "Location where the AKS resource group will be created"
+  description = "Location where the AKS cluster will be created"
 }
 
 variable "aks_node_count" {
@@ -29,16 +27,6 @@ variable "aks_node_count" {
 variable "aks_vm_size" {
   type        = string
   description = "Size of the VMs in the AKS node pool"
-}
-
-# Generates a name for the AKS resource group
-resource "random_pet" "rg_name" {
-  prefix = var.aks_resource_group_name_prefix
-}
-
-resource "azurerm_resource_group" "rg" {
-  location = var.aks_resource_group_location
-  name     = random_pet.rg_name.id
 }
 
 # Generates a name for the AKS cluster
@@ -53,9 +41,9 @@ resource "random_pet" "azurerm_kubernetes_cluster_dns_prefix" {
 
 # Creates the AKS cluster
 resource "azurerm_kubernetes_cluster" "k8s" {
-  location            = azurerm_resource_group.rg.location
+  location            = var.resource_group_location
   name                = random_pet.azurerm_kubernetes_cluster_name.id
-  resource_group_name = azurerm_resource_group.rg.name
+  resource_group_name = var.resource_group_name
   dns_prefix          = random_pet.azurerm_kubernetes_cluster_dns_prefix.id
 
   identity {
