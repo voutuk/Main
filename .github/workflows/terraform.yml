@@ -29,7 +29,6 @@ jobs:
       working-directory: ${{ env.WORKING_DIR }}
       run: terraform init
 
-
     - name: Terraform validate
       run: terraform validate
 
