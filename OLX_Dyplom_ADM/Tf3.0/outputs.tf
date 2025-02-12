@@ -1,9 +1,16 @@
-output "resource_group_name" {
-  description = "Назва створеної ресурсної групи"
-  value       = module.resource_group.resource_group_name
+# MAIN outputs.tf
+
+output "ansible_inventory_path" {
+  value       = module.ansible_inventory.inventory_path
+  description = "Path to the generated Ansible inventory file"
 }
 
-output "main_vm_private_ip" {
-  description = "Приватна IP-адреса основної ВМ"
-  value       = var.vm_private_ip
+output "jenkins_master_ip" {
+  value       = module.main_instance.public_ip
+  description = "Private IP address of the Jenkins master"
+}
+
+output "jenkins_agent_ips" {
+  value       = module.build_agent_instance.public_ips
+  description = "Private IP addresses of Jenkins agents"
 }

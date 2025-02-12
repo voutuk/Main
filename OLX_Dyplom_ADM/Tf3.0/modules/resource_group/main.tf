@@ -1,11 +1,6 @@
-terraform {
-  required_providers {
-    azurerm = {
-      source = "hashicorp/azurerm"
-    }
-  }
-}
+# modules/resource_group/main.tf
 
+# INFO: Resource Group Variables
 variable "azure_region" {
   type = string
 }
@@ -19,6 +14,7 @@ resource "azurerm_resource_group" "this" {
   location = var.azure_region
 }
 
+# INFO: Resource Group Outputs
 output "resource_group_name" {
   value = azurerm_resource_group.this.name
 }

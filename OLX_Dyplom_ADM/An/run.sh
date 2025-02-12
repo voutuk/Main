@@ -1,29 +1,23 @@
 chmod 600 azure_rsa
-az vm show -d -g dev-environment-rg -n dev-vm --query "publicIps" -o tsv
 
-sudo docker run -ti --rm \
-    -v $(pwd):/apps \
+# Run main inst installation
+MSYS_NO_PATHCONV=1 docker run -ti --rm \
+    -v "$(pwd)":/apps \
     -w /apps \
     alpine/ansible \
-    ansible-playbook vm-main.yml -i "52.169.73.162," --private-key=/apps/azure_rsa -u ubuntu --extra-vars "@vars.yml"
+    /bin/sh -c "chmod 600 azure_rsa && ansible-playbook main-inst.yml -i hosts --extra-vars '@vars.yml' -e ansible_host_key_checking=False"
 
-
-sudo docker run -ti --rm \
-    -v $(pwd):/apps \
+# Run jenkins save backup
+MSYS_NO_PATHCONV=1 docker run -ti --rm \
+    -v "$(pwd)":/apps \
     -w /apps \
     alpine/ansible \
-    ansible-playbook jen-slave.yml -i "89.168.87.17," --private-key=/apps/oracle_rsa -u ubuntu --extra-vars "@vars.yml"
+    /bin/sh -c "chmod 600 azure_rsa && ansible-playbook jenkins-save.yml -i hosts --extra-vars '@vars.yml' -e ansible_host_key_checking=False"
 
-
-sudo docker run -ti --rm \
-    -v $(pwd):/apps \
+# Run build inst installation
+MSYS_NO_PATHCONV=1 docker run -ti --rm \
+    -v "$(pwd)":/apps \
     -w /apps \
     alpine/ansible \
-    ansible-playbook jen-setup.yml -i "52.236.39.49," --private-key=/apps/azure_rsa -u ubuntu --extra-vars "@vars.yml"
+    /bin/sh -c "chmod 600 azure_rsa && ansible-playbook build-inst.yml -i hosts --extra-vars '@vars.yml' -e ansible_host_key_checking=False"
 
-
-sudo docker run -ti --rm \                
-    -v $(pwd):/apps \
-    -w /apps \
-    alpine/ansible \
-    ansible-playbook jen-slave.yml -i "20.13.128.144," --private-key=/apps/azure_rsa -u azureuser --extra-vars "@vars.yml"

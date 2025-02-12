@@ -1,0 +1,64 @@
+pipeline {
+    agent any
+
+    environment {
+        DOCKERHUB_CREDENTIALS = credentials('dockerhub-credentials')
+        DOCKERHUB_REPO_API = 'voutuk/olx-asp-api'
+        DOCKERHUB_REPO_CLIENT = 'voutuk/olx-client'
+        BUILD_TIMESTAMP = '2025-02-08-14-18-45' // Using provided timestamp
+    }
+
+    stages {
+        stage('🔒 Docker Hub Login') {
+            steps {
+                script {
+                    sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+                }
+            }
+        }
+
+        stage('📤 Push API Image') {
+            steps {
+                script {
+                    // Tag and push with latest tag
+                    sh """
+                        docker tag olx-asp-api:${BUILD_TIMESTAMP} ${DOCKERHUB_REPO_API}:latest
+                        docker push ${DOCKERHUB_REPO_API}:latest
+                        
+                        # Also push with timestamp tag
+                        docker tag olx-asp-api:${BUILD_TIMESTAMP} ${DOCKERHUB_REPO_API}:${BUILD_TIMESTAMP}
+                        docker push ${DOCKERHUB_REPO_API}:${BUILD_TIMESTAMP}
+                    """
+                }
+            }
+        }
+
+        stage('📤 Push Client Image') {
+            steps {
+                script {
+                    // Tag and push with latest tag
+                    sh """
+                        docker tag olx-client:${BUILD_TIMESTAMP} ${DOCKERHUB_REPO_CLIENT}:latest
+                        docker push ${DOCKERHUB_REPO_CLIENT}:latest
+                        
+                        # Also push with timestamp tag
+                        docker tag olx-client:${BUILD_TIMESTAMP} ${DOCKERHUB_REPO_CLIENT}:${BUILD_TIMESTAMP}
+                        docker push ${DOCKERHUB_REPO_CLIENT}:${BUILD_TIMESTAMP}
+                    """
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo '🎉 Push completed successfully!'
+        }
+        failure {
+            echo '💥 Push failed!'
+        }
+        always {
+            sh 'docker logout'
+        }
+    }
+}
