@@ -30,6 +30,7 @@ jobs:
       run: terraform init
 
     - name: Terraform validate
+      working-directory: ${{ env.WORKING_DIR }}
       run: terraform validate
 
     - name: Terraform Plan
@@ -51,3 +52,11 @@ jobs:
     - name: Deploy Build Agent Instance
       working-directory: ${{ env.WORKING_DIR }}
       run: terraform apply -target=module.build_agent_instance -auto-approve
+
+    - name: Deploy AKS Cluster
+      working-directory: ${{ env.WORKING_DIR }}
+      run: terraform apply -target=module.aks_cluster -auto-approve
+    
+    - name: Generate Ansible Inventory
+      working-directory: ${{ env.WORKING_DIR }}
+      run: terraform apply -target=module.ansible_inventory -auto-approve

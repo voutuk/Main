@@ -1,0 +1,64 @@
+name: Deploy Infrastructure
+
+on:
+  workflow_dispatch:
+    inputs:
+      modules:
+        description: 'Select modules to deploy (comma-separated)'
+        required: true
+        type: choice
+        options:
+          - main_instance
+          - build_agent_instance
+          - aks_cluster
+          - backup_storage
+          - ansible_inventory
+          - all
+
+env:
+  TF_VAR_doppler_token: ${{ secrets.TF_VAR_doppler_token }}
+  ARM_ACCESS_KEY: ${{ secrets.ARM_ACCESS_KEY }}
+  ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
+  ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
+  ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+  ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
+  TF_WORKING_DIR: ./OLX_Dyplom_ADM/Tf3.0
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  terraform:
+    name: 'Terraform Deploy'
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v2
+      with:
+        terraform_version: "1.9.8"
+      
+    - name: Terraform Init
+      working-directory: ${{ env.TF_WORKING_DIR }}
+      run: terraform init
+      
+    - name: Parse Modules Input
+      id: parse-modules
+      run: |
+        if [[ "${{ github.event.inputs.modules }}" == "all" ]]; then
+          echo "modules=main_instance,build_agent_instance,aks_cluster,backup_storage,ansible_inventory" >> $GITHUB_OUTPUT
+        else
+          echo "modules=${{ github.event.inputs.modules }}" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Deploy Selected Modules
+      run: |
+        IFS=',' read -ra MODULES <<< "${{ steps.parse-modules.outputs.modules }}"
+        for module in "${MODULES[@]}"; do
+          echo "Deploying module: $module"
+          terraform apply -target=module.$module -auto-approve
+        done

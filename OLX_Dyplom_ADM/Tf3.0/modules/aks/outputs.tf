@@ -1,10 +1,3 @@
-# modules/aks/outputs.tf
-
-output "resource_group_name" {
-  description = "Name of the created AKS resource group."
-  value       = azurerm_resource_group.rg.name
-}
-
 output "kubernetes_cluster_name" {
   description = "Name of the created AKS cluster."
   value       = azurerm_kubernetes_cluster.k8s.name
