@@ -56,6 +56,7 @@ jobs:
         fi
 
     - name: Deploy Selected Modules
+      working-directory: ${{ env.TF_WORKING_DIR }}
       run: |
         IFS=',' read -ra MODULES <<< "${{ steps.parse-modules.outputs.modules }}"
         for module in "${MODULES[@]}"; do
