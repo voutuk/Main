@@ -127,7 +127,7 @@
         name: restic
         state: present
     
-    - name: Run Jenkins Docker Compose
+    - name: Update restic
       shell: |
         restic self-update
 
