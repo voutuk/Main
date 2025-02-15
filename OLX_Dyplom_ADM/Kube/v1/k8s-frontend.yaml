@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: olx-client
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: olx-client
+  template:
+    metadata:
+      labels:
+        app: olx-client
+    spec:
+      containers:
+        - name: olx-client-container
+          image: voutuk/olx-client:2025-02-08-14-18-45
+          ports:
+            - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: olx-client-service
+spec:
+  type: ClusterIP
+  selector:
+    app: olx-client
+  ports:
+    - port: 80
+      targetPort: 80
