@@ -52,7 +52,7 @@ module "prod_cluster" {
 
 module "backup_bucket" {
   source      = "./modules/s3"
-  bucket_name = "my-company-backups-${var.environment}-${formatdate("YYYYMMDD", timestamp())}"
+  bucket_name = "gosell-backups-${var.environment}-${formatdate("YYYYMMDD", timestamp())}"
   environment = var.environment
 }
 
