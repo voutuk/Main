@@ -14,7 +14,13 @@ terraform apply -target=module.agent_rule_block_ssh -auto-approve      #INFO: Bl
 terraform destroy -target=module.create_main_nsg -auto-approve
 terraform destroy -target=module.create_agent_nsg -auto-approve
 # terraform refresh
-terraform state list
 
 terramate cloud login --github
 terramate create --all-terraform
+
+az login \
+  --service-principal \
+  --username "$ARM_CLIENT_ID" \
+  --password "$ARM_CLIENT_SECRET" \
+  --tenant "$ARM_TENANT_ID"
+

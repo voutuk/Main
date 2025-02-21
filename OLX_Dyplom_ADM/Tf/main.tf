@@ -10,9 +10,6 @@
 # Azure API Provider: https://registry.terraform.io/providers/azure/azapi/latest/docs
 # Doppler Provider: https://registry.terraform.io/providers/DopplerHQ/doppler/latest/docs
 
-# GitHub: https://github.com/voutuk/main
-# License: MIT License with Non-Commercial Use Restriction
-
 # Resource Groups for different components
 module "backup_storage_rg" {
   source              = "./modules/resource_group"
