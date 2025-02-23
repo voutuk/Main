@@ -2,12 +2,6 @@
 
 terraform {
   required_version = ">= 1.3.0"
-  backend "azurerm" {
-    resource_group_name  = "gosell-backup-storage"
-    storage_account_name = "gosellbackupmaximumlobst"
-    container_name       = "backups"
-    key                  = "tf_state/terraform.tfstate"
-  }
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
