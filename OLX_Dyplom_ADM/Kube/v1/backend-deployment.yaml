@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: olx-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: olx-backend
+  template:
+    metadata:
+      labels:
+        app: olx-backend
+    spec:
+      nodeSelector:
+        role: backend
+      containers:
+        - name: olx-api
+          image: voutuk/olx-api:latest
+          ports:
+            - containerPort: 8080
+          volumeMounts:
+            - name: images
+              mountPath: /app/uploading
+      volumes:
+        - name: images
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: olx-backend-service
+spec:
+  selector:
+    app: olx-backend
+  ports:
+    - name: http
+      protocol: TCP
+      port: 8080
+      targetPort: 8080

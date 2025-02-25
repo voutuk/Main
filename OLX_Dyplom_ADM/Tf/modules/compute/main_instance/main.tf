@@ -28,11 +28,16 @@ variable "vm_sku" {
 variable "nsg_id" {
   type = string
 }
+variable "tags" {
+  type        = map(string)
+  description = "Tags to be applied to the main instance"
+  default     = {}
+}
 
 # This delay is added to ensure the network is ready before continuing
 resource "time_sleep" "wait_30_seconds" {
   depends_on      = [azurerm_virtual_network.vm_vnet]
-  create_duration = "30s"
+  create_duration = "15s"
 }
 
 # Creating a Virtual Network
@@ -41,6 +46,7 @@ resource "azurerm_virtual_network" "vm_vnet" {
   resource_group_name = var.resource_group_name
   location            = var.location
   address_space       = ["10.0.0.0/16"]
+  tags = var.tags
 }
 
 # Creating a Subnet
@@ -61,6 +67,7 @@ resource "azurerm_network_interface" "vm_nic" {
   name                = "${var.vm_name}-nic"
   location            = var.location
   resource_group_name = var.resource_group_name
+  tags = var.tags
 
   ip_configuration {
     name                          = "internal"
@@ -83,12 +90,13 @@ resource "azurerm_public_ip" "vm_public_ip" {
   resource_group_name = var.resource_group_name
   allocation_method   = "Static"
   sku                 = "Basic"
+  tags = var.tags
 }
 
 # Wait for the public IP to be assigned
 resource "time_sleep" "wait_for_ip" {
   depends_on       = [azurerm_linux_virtual_machine.vm]
-  create_duration  = "60s"
+  create_duration  = "30s"
 }
 
 # Data lookup for the assigned public IP
@@ -109,6 +117,7 @@ resource "azurerm_linux_virtual_machine" "vm" {
   location            = var.location
   size                = var.vm_size
   admin_username      = var.admin_username
+  tags = var.tags
 
   network_interface_ids = [
     azurerm_network_interface.vm_nic.id

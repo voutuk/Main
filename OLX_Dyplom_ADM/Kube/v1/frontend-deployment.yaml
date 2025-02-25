@@ -12,9 +12,11 @@ spec:
       labels:
         app: olx-client
     spec:
+      nodeSelector:
+        role: frontend
       containers:
         - name: olx-client-container
-          image: voutuk/olx-client:2025-02-08-14-18-45
+          image: voutuk/olx-client:latest
           ports:
             - containerPort: 80
 ---
@@ -23,9 +25,11 @@ kind: Service
 metadata:
   name: olx-client-service
 spec:
-  type: ClusterIP
+  type: LoadBalancer
   selector:
     app: olx-client
   ports:
-    - port: 80
+    - name: http
+      protocol: TCP
+      port: 80
       targetPort: 80
