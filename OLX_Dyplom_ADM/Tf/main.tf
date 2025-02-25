@@ -18,36 +18,24 @@ module "backup_storage_rg" {
   source              = "./modules/resource_group"
   resource_group_name = "${var.rg_prefix}-backup-storage"
   location            = "westeurope"  # You can change this region
-  tags = {
-    purpose = "backup_storage"
-  }
 }
 
 module "aks_cluster_rg" {
   source              = "./modules/resource_group"
   resource_group_name = "${var.rg_prefix}-aks-cluster"
   location            = "northeurope"  # You can change this region
-  tags = {
-    purpose = "aks_cluster"
-  }
 }
 
 module "main_instance_rg" {
   source              = "./modules/resource_group"
   resource_group_name = "${var.rg_prefix}-main-instance"
   location            = "westus"  # You can change this region
-  tags = {
-    purpose = "main_instance"
-  }
 }
 
 module "build_agent_rg" {
   source              = "./modules/resource_group"
   resource_group_name = "${var.rg_prefix}-build-agents"
   location            = "eastus"  # You can change this region
-  tags = {
-    purpose = "build_agent_instance"
-  }
 }
 
 # Network Security Group

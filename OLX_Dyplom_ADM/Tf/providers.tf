@@ -28,16 +28,5 @@ terraform {
   }
 }
 
-provider "doppler" {
-  doppler_token = var.doppler_token
-}
-
+# Remove the provider blocks from here as they are now managed by Terragrunt
 data "doppler_secrets" "az-creds" {}
-
-provider "azurerm" {
-  features {}
-  subscription_id = var.azure_subscription_id
-  client_id       = data.doppler_secrets.az-creds.map.CLIENT_ID
-  client_secret   = data.doppler_secrets.az-creds.map.CLIENT_SECRET
-  tenant_id       = data.doppler_secrets.az-creds.map.TENANT_ID
-}
