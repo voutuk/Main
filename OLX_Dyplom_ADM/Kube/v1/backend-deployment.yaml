@@ -22,11 +22,11 @@ spec:
             - containerPort: 8080
           resources:
             requests:
-              cpu: "500m"
-              memory: "1Gi"
+              cpu: "2"
+              memory: "3Gi"
             limits:
-              cpu: "1"
-              memory: "2Gi"
+              cpu: "2"
+              memory: "4Gi"
           env:
             - name: ASPNETCORE_ENVIRONMENT
               value: "Production"

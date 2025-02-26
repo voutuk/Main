@@ -5,16 +5,20 @@ metadata:
   namespace: gosell
   annotations:
     kubernetes.io/ingress.class: azure/application-gateway
-    appgw.ingress.kubernetes.io/ssl-redirect: "false"
-    appgw.ingress.kubernetes.io/use-private-ip: "false"
-    appgw.ingress.kubernetes.io/connection-draining: "true"
-    appgw.ingress.kubernetes.io/connection-draining-timeout: "30"
-    appgw.ingress.kubernetes.io/backend-path-prefix: "/"
+    appgw.ingress.kubernetes.io/health-probe-path: "/api/Category/get"
+    appgw.ingress.kubernetes.io/health-probe-status-codes: "200-399"
 spec:
   rules:
   - http:
       paths:
       - path: /api
+        pathType: Prefix
+        backend:
+          service:
+            name: olx-backend-service
+            port:
+              number: 80
+      - path: /images
         pathType: Prefix
         backend:
           service:
