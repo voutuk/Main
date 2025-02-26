@@ -47,5 +47,4 @@ locals {
 # Global variables that can be referenced in child configurations
 inputs = {
   doppler_token = get_env("DOPPLER_TOKEN")
-  tags          = local.common_tags
 }

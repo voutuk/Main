@@ -19,9 +19,3 @@ terragrunt state list
 
 terramate cloud login --github
 terramate create --all-terragrunt
-
-
-az login --service-principal \
-  --username "d44739fa-e64a-4a6d-9456-ee6cb4c00628" \
-  --password "6jV8Q~eMgyacqTgEN-4uj7FUaV7Y1l4KDuiora7B" \
-  --tenant "ae561515-9385-4483-bef2-aec8255d3705"

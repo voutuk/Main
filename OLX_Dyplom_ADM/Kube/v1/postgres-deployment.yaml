@@ -1,21 +1,7 @@
-apiVersion: v1
-kind: Service
-metadata:
-  name: postgres-service
-  namespace: gosell
-spec:
-  selector:
-    app: postgres
-  ports:
-    - port: 5432
-      targetPort: 5432
-  type: ClusterIP
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: postgres-deployment
-  namespace: gosell
+  name: postgres-server
 spec:
   replicas: 1
   selector:
@@ -29,13 +15,6 @@ spec:
       containers:
         - name: postgres
           image: postgres:15
-          resources:
-            requests:
-              cpu: "200m"
-              memory: "512Mi"
-            limits:
-              cpu: "500m"
-              memory: "1Gi"
           ports:
             - containerPort: 5432
           env:
@@ -47,7 +26,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: postgres-secret
-                  key: postgres-password
+                  key: POSTGRES_PASSWORD
             - name: PGDATA
               value: /var/lib/postgresql/data/pgdata
           volumeMounts:
@@ -63,7 +42,6 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: postgres-pvc
-  namespace: gosell
 spec:
   accessModes:
     - ReadWriteOnce

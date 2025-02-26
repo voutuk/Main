@@ -7,12 +7,6 @@ variable "doppler_token" {
   sensitive   = true
 }
 
-variable "tags" {
-  description = "A mapping of tags to assign to resources"
-  type        = map(string)
-  default     = {}
-}
-
 # Variables for Azure
 variable "azure_subscription_id" {
   type        = string
