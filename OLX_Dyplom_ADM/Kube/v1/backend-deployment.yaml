@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: olx-backend
+  namespace: gosell
 spec:
   replicas: 1
   selector:
@@ -19,6 +20,16 @@ spec:
           image: voutuk/olx-api:latest
           ports:
             - containerPort: 8080
+          resources:
+            requests:
+              cpu: "500m"
+              memory: "1Gi"
+            limits:
+              cpu: "1"
+              memory: "2Gi"
+          env:
+            - name: ASPNETCORE_ENVIRONMENT
+              value: "Production"
           volumeMounts:
             - name: images
               mountPath: /app/uploading
@@ -30,11 +41,13 @@ apiVersion: v1
 kind: Service
 metadata:
   name: olx-backend-service
+  namespace: gosell
 spec:
+  type: ClusterIP
   selector:
     app: olx-backend
   ports:
     - name: http
       protocol: TCP
-      port: 8080
+      port: 80
       targetPort: 8080

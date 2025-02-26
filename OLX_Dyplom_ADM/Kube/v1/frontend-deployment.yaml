@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: olx-client
+  namespace: gosell
 spec:
   replicas: 1
   selector:
@@ -17,6 +18,13 @@ spec:
       containers:
         - name: olx-client-container
           image: voutuk/olx-client:latest
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "200m"
+              memory: "256Mi"
           ports:
             - containerPort: 80
 ---
@@ -24,8 +32,9 @@ apiVersion: v1
 kind: Service
 metadata:
   name: olx-client-service
+  namespace: gosell
 spec:
-  type: LoadBalancer
+  type: ClusterIP
   selector:
     app: olx-client
   ports:

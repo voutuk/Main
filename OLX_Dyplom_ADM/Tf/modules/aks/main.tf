@@ -28,11 +28,13 @@ variable "aks_vm_size" {
   type        = string
   description = "Size of the VMs in the AKS node pool"
 }
+
 variable "tags" {
   type        = map(string)
   description = "Tags to be applied to the AKS cluster"
   default     = {}
 }
+
 # Generates a name for the AKS cluster
 resource "random_pet" "azurerm_kubernetes_cluster_name" {
   prefix = "cluster"
