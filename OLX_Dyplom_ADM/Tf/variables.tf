@@ -13,6 +13,12 @@ variable "tags" {
   default     = {}
 }
 
+variable "backup_storage_prefix" {
+  type        = string
+  description = "The prefix for the Azure backup storage name."
+  default     = "gosellbackup"
+}
+
 # Variables for Azure
 variable "azure_subscription_id" {
   type        = string
@@ -71,26 +77,50 @@ variable "main_vm_name" {
 
 # Variables for AKS
 
-variable "backup_storage_prefix" {
+variable "aks_name" {
+  description = "Name of the AKS cluster"
   type        = string
-  description = "The prefix for the Azure backup storage name."
-  default     = "gosellbackup"
+  default     = "gosell-aks"
 }
 
-variable "aks_vm_size" {
+variable "dns_prefix" {
+  description = "DNS prefix for the AKS cluster"
   type        = string
-  description = "The size of the Virtual Machine used in the AKS node pool."
-  default     = "Standard_B2s"
+  default     = "gosell"
 }
 
-variable "node_count" {
-  type        = number
-  description = "The initial number of nodes for the node pool."
-  default     = 2
+# variable "log_analytics_workspace_name" {
+#   description = "Name of the Log Analytics workspace"
+#   type        = string
+#   default     = "gosell-logs"
+# }
+
+variable "vnet_name" {
+  description = "Name of the virtual network"
+  type        = string
+  default     = "gosell-vnet"
 }
 
-variable "aks_admin_username" {
+variable "address_space" {
+  description = "Address space for the virtual network"
+  type        = list(string)
+  default     = ["20.0.0.0/16"]
+}
+
+variable "subnet_name" {
+  description = "Name of the AKS subnet"
   type        = string
-  description = "The admin username for the AKS cluster."
-  default     = "ubuntu"
+  default     = "gosell-aks-subnet"
+}
+
+variable "subnet_address_prefix" {
+  description = "Address prefix for the AKS subnet"
+  type        = list(string)
+  default     = ["20.0.1.0/24"]
+}
+
+variable "front_door_name" {
+  description = "Name of the Azure Front Door"
+  type        = string
+  default     = "gosell-frontdoor"
 }

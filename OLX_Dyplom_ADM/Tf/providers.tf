@@ -11,15 +11,19 @@ terraform {
       source  = "azure/azapi"
       version = "~>1.5"
     }
+    kubernetes = {
+      source  = "hashicorp/kubernetes"
+      version = "~> 2.0"
+    }
+    helm = {
+      source  = "hashicorp/helm"
+      version = "~> 2.5"
+    }
     doppler = {
       source = "DopplerHQ/doppler"
     }
     time = {
       source = "hashicorp/time"
-    }
-    random = {
-      source  = "hashicorp/random"
-      version = "~>3.0"
     }
     local = {
       source  = "hashicorp/local"

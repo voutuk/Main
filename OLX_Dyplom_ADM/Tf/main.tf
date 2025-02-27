@@ -107,12 +107,28 @@ module "agent_rule_block_ssh" {
 module "aks_cluster" {
   source                  = "./modules/aks"
   resource_group_name     = module.aks_cluster_rg.resource_group_name
-  resource_group_location = module.aks_cluster_rg.resource_group_location
-  aks_vm_size             = var.aks_vm_size
-  aks_node_count          = var.node_count
-  aks_admin_username      = var.aks_admin_username
-  ssh_public_key_data     = data.doppler_secrets.az-creds.map.SSHPUB
+  location                = module.aks_cluster_rg.resource_group_location
+  cluster_name            = var.aks_name
+  dns_prefix              = var.dns_prefix
+  vnet_name               = var.vnet_name
+  vnet_address_space      = var.address_space
+  subnet_name             = var.subnet_name
+  subnet_address_prefix   = var.subnet_address_prefix
   tags                    = var.tags
+}
+
+module "front_door" {
+  source              = "./modules/front_door"
+  resource_group_name = module.aks_cluster_rg.resource_group_name
+  front_door_name     = var.front_door_name
+  backend_host_header = module.aks_cluster.outputs.cluster_fqdn
+  backend_address     = module.aks_cluster.outputs.cluster_fqdn
+  tags                = var.tags
+}
+
+module "ingress" {
+  source                  = "./modules/ingress"
+  kubernetes_cluster_name = module.aks_cluster.outputs.cluster_name
 }
 
 # Storage Account for backups
