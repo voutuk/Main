@@ -1,76 +1,86 @@
-# INFO: Variables for AKS
-variable "ssh_public_key_data" {
-  type        = string
-  description = "Public SSH key data used by the AKS cluster"
-}
-
-variable "aks_admin_username" {
-  type        = string
-  description = "Admin username for the AKS cluster"
-}
-
-variable "resource_group_name" {
-  type        = string
-  description = "Name of the resource group where AKS will be created"
-}
-
-variable "resource_group_location" {
-  type        = string
-  description = "Location where the AKS cluster will be created"
-}
-
-variable "aks_node_count" {
-  type        = number
-  description = "Number of nodes in the default AKS node pool"
-}
-
-variable "aks_vm_size" {
-  type        = string
-  description = "Size of the VMs in the AKS node pool"
-}
-variable "tags" {
-  type        = map(string)
-  description = "Tags to be applied to the AKS cluster"
-  default     = {}
-}
-# Generates a name for the AKS cluster
-resource "random_pet" "azurerm_kubernetes_cluster_name" {
-  prefix = "cluster"
-}
-
-# Generates a DNS prefix for the AKS cluster
-resource "random_pet" "azurerm_kubernetes_cluster_dns_prefix" {
-  prefix = "dns"
-}
-
-# Creates the AKS cluster
-resource "azurerm_kubernetes_cluster" "k8s" {
-  location            = var.resource_group_location
-  name                = random_pet.azurerm_kubernetes_cluster_name.id
+# Створення мережевої інфраструктури
+resource "azurerm_virtual_network" "vnet" {
+  name                = var.vnet_name
+  location            = var.location
   resource_group_name = var.resource_group_name
-  dns_prefix          = random_pet.azurerm_kubernetes_cluster_dns_prefix.id
-  tags                = var.tags
+  address_space       = var.vnet_address_space
+  
+  tags = {
+    environment = "production"
+    application = "gosell"
+  }
+}
+
+resource "azurerm_subnet" "aks_subnet" {
+  name                 = var.subnet_name
+  resource_group_name  = var.resource_group_name
+  virtual_network_name = azurerm_virtual_network.vnet.name
+  address_prefixes     = var.subnet_address_prefix
+}
+
+# Створення AKS кластера
+resource "azurerm_kubernetes_cluster" "cluster" {
+  name                = var.cluster_name
+  location            = var.location
+  resource_group_name = var.resource_group_name
+  dns_prefix          = var.dns_prefix
+  kubernetes_version  = var.kubernetes_version
+
+  default_node_pool {
+    name                = "system"
+    vm_size             = "Standard_B2s"
+    enable_auto_scaling = true
+    min_count           = 2
+    max_count           = 3
+    vnet_subnet_id      = azurerm_subnet.aks_subnet.id
+    os_disk_size_gb     = 30
+    node_labels = {
+      "nodepool-type" = "system"
+      "environment"   = "production"
+    }
+    node_taints = ["CriticalAddonsOnly=true:NoSchedule"]
+  }
 
   identity {
     type = "SystemAssigned"
   }
 
-  default_node_pool {
-    name       = "agentpool"
-    vm_size    = var.aks_vm_size
-    node_count = var.aks_node_count
+  network_profile {
+    network_plugin    = "azure"
+    load_balancer_sku = "standard"
+    network_policy    = "calico"
   }
 
-  linux_profile {
-    admin_username = var.aks_admin_username
-
-    ssh_key {
-      key_data = var.ssh_public_key_data
+  dynamic "oms_agent" {
+    for_each = var.log_analytics_workspace_id != null ? [1] : []
+    content {
+      log_analytics_workspace_id = var.log_analytics_workspace_id
     }
   }
 
-  network_profile {
-    network_plugin    = "kubenet"
-    load_balancer_sku = "standard"
+  tags = {
+    environment = "production"
+    application = "gosell"
+  }
+}
+
+resource "azurerm_kubernetes_cluster_node_pool" "app_pool" {
+  name                  = "apppool"
+  kubernetes_cluster_id = azurerm_kubernetes_cluster.cluster.id
+  vm_size               = "Standard_D4s_v3"
+  enable_auto_scaling   = true
+  min_count             = 2
+  max_count             = 5
+  vnet_subnet_id        = azurerm_subnet.aks_subnet.id
+  os_disk_size_gb       = 120
+  node_labels = {
+    "nodepool-type" = "application"
+    "environment"   = "production"
+    "app"           = "gosell"
+  }
+  
+  tags = {
+    environment = "production"
+    application = "gosell"
   }
 }
