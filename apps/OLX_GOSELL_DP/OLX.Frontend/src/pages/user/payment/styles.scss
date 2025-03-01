@@ -1,0 +1,50 @@
+@use '../../../styles/global-colors.scss' as globalColors;
+
+.payment-form {
+    .ant-picker {
+        border: 1px solid #9B7A5B !important;
+        color: #9B7A5B !important;
+
+        &:hover,
+        &:focus,
+        &:active {
+            border-color: #9B7A5B !important;
+            box-shadow: none !important;
+        }
+
+        .ant-picker-input>input {
+            color: #9B7A5B !important;
+
+            &::placeholder {
+                color: rgba(155, 122, 91, 0.5) !important;
+            }
+        }
+    }
+
+    .ant-input {
+        color: #9B7A5B !important;
+
+        &::placeholder {
+            color: rgba(155, 122, 91, 0.5) !important;
+        }
+    }
+
+    .ant-input:-moz-autofill {
+        box-shadow: 0 0 0px 1000px #fff inset !important;
+        color: globalColors.$controlsColor !important;
+    }
+
+    .ant-input:-webkit-autofill {
+        box-shadow: 0 0 0px 1000px #fff inset !important;
+        -webkit-text-fill-color: globalColors.$controlsColor !important;
+        border: 1px solid globalColors.$controlsColor !important;
+    }
+
+    input[disabled],
+    .ant-picker[disabled] {
+        color: #9B7A5B !important;
+        border-color: #9B7A5B !important;
+        opacity: 0.6;
+    }
+
+}

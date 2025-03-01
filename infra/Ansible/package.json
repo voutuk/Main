@@ -1,0 +1,8 @@
+{
+  "name": "ansible-infrastructure",
+  "version": "1.0.0",
+  "description": "Runt the Ansible playbooks for the infrastructure deployment",
+  "license": "AFL-3.0",
+  "private": true,
+  "author": "Yurii Voutuk <voutuk@icloud.com>"
+}

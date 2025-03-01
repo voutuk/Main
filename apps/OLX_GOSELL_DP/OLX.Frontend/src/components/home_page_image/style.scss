@@ -1,0 +1,7 @@
+@use '../../styles/global_bg.scss' as backgrounds;
+
+.main-page-image {
+    background-image: backgrounds.$mainPageBg ;
+    background-repeat:round;
+    background-attachment:scroll;
+}

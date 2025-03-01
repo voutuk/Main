@@ -1,0 +1,16 @@
+{
+  "name": "OLX_GOSELL_DP",
+  "version": "1.0.0",
+  "description": "GoSell OLX Dyplom Project",
+  "license": "AFL-3.0",
+  "private": true,
+  "author": "Olexandr Kovalchuk <Kovalchuk.olex@gmail.com>",
+  "scripts": {
+    "build": "docker compose --profile full build",
+    "build:prod": "docker compose --profile prod build",
+    "up": "docker compose --profile full up -d",
+    "up:back": "docker compose --profile back up -d",
+    "up:front": "docker compose --profile front up -d",
+    "down": "docker compose --profile full down"
+  }
+}

@@ -1,8 +1,8 @@
-![Project Logo](./images/black.png)
+![Project Logo](./md/black.png)
 
-[18_E_LEARN README](./18_E_LEARN/README.md)
+[18_E_LEARN README](./apps/18_E_LEARN/README.md)
 
-[OLX_Dyplom_ADM README](./OLX_Dyplom_ADM/README.md)
+[OLX_GOSELL_DP README](./apps/OLX_GOSELL_DP/README.md)
 
 ### Tags
 TODO, FIXME, INFO

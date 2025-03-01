@@ -1,0 +1,34 @@
+.filter-radio {
+    .ant-radio-wrapper {
+        font-family: 'Montserrat', sans-serif !important;
+        font-size: clamp(14px, 1.7vh, 36px) !important;
+
+        &:hover {
+            color: #9B7A5B;
+        }
+    }
+
+    .ant-radio-checked .ant-radio-inner,
+    .ant-radio-inner:hover {
+        border-color: #9B7A5B;
+        background-color: #9B7A5B;
+
+    }
+
+    .ant-radio-inner {
+        width: 16px;
+        height: 16px;
+        border-color: #9B7A5B !important;
+    }
+}
+
+.big-radio {
+    @extend .filter-radio;
+
+    .ant-radio-inner {
+        width: 25px;
+        height: 25px;
+        border-width: 2px;
+        opacity: .5;
+    }
+}

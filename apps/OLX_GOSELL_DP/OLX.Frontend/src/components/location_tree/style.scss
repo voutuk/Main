@@ -1,0 +1,52 @@
+.location-select {
+    font-family: 'Montserrat', sans-serif !important;
+    color: #3A211C !important;
+}
+
+.location-select {
+    .ant-select-selector {
+        font-family: 'Montserrat', sans-serif !important;
+        color: #3A211C !important;
+        border: none !important;
+        box-shadow: none !important;
+        outline: none !important;
+    }
+
+    .ant-select-selector:focus,
+    .ant-select-selector:hover,
+    .ant-select-selector:active {
+        border-color: #9B7A5B !important;
+        box-shadow: none !important;
+        outline: none !important;
+    }
+
+    .ant-select-selection-placeholder {
+        color: #3A211C !important;
+        font-family: 'Montserrat', sans-serif !important;
+    }
+
+    .ant-select-selection-item {
+        font-family: 'Montserrat', sans-serif !important;
+        color: #3A211C !important;
+    }
+
+    .ant-select-dropdown {
+        font-family: 'Montserrat', sans-serif !important;
+        color: #3A211C !important;
+    }
+
+    .ant-select-arrow {
+        color: #9B7A5B !important;
+    }
+
+}
+
+.ant-select-tree .ant-select-tree-treenode {
+    font-family: 'Montserrat', sans-serif ;
+    color: #3A211C;
+}
+
+.ant-select-tree .ant-select-tree-treenode-selected .ant-select-tree-node-content-wrapper {
+    background-color: #9B7A5B !important;
+    color: #fff !important;
+}

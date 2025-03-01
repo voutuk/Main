@@ -1,0 +1,36 @@
+@use '../../../../styles//global-colors.scss' as colors;
+@use '../../../../styles/global_bg.scss' as backgrounds;
+
+.ant-menu-item,
+.ant-menu-item:focus,
+.ant-menu-submenu-title {
+  border-radius: 0px !important;
+  border-radius: 0px !important;
+}
+
+.ant-menu-item.ant-menu-item-selected{
+  background-color: colors.$hoverColor !important;
+}
+
+.ant-menu-item-selected,
+.ant-menu-item:hover,
+.ant-menu-submenu-title:hover {
+  background-color: colors.$hoverColor !important;
+}
+
+.ant-menu-submenu-title,
+.ant-menu-item {
+  margin: 0 !important;
+}
+
+.ant-menu,
+.ant-menu-submenu-title,
+.ant-menu-item,
+#my-menu.ant-menu-vertical,
+.ant-menu-vertical {
+  background-color: colors.$sideBarColor !important;
+  background-image: backgrounds.$sideBarBg !important;
+  background-repeat: repeat !important;
+  background-attachment: fixed !important;
+  border-radius: 2px !important;
+}
