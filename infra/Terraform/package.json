@@ -1,0 +1,59 @@
+{
+  "name": "terraform-infrastructure",
+  "version": "1.0.0",
+  "description": "Infrastructure as Code for Azure deployment using Terragrunt",
+  "license": "AFL-3.0",
+  "private": true,
+  "author": "Yurii Voutuk <voutuk@icloud.com>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/voutuk/Main/infra/Terraform"
+  },
+  "scripts": {
+    "// Base commands": "Basic terragrunt commands with env support",
+    "init": "terragrunt init",
+    "plan": "terragrunt plan",
+    "apply": "terragrunt apply --parallelism=10 -auto-approve",
+    "destroy": "terragrunt destroy --parallelism=10 -auto-approve",
+    "refresh": "terragrunt refresh",
+    "output": "terragrunt output",
+    "state": "terragrunt state list",
+    "show": "terragrunt show",
+
+    "// Instances": "VM instance management",
+    "apply:instance:main": "terragrunt apply -target=module.main_instance -auto-approve",
+    "apply:instance:build": "terragrunt apply -target=module.build_agent_instance -auto-approve",
+    "apply:instances": "terragrunt apply -target=module.main_instance -target=module.build_agent_instance -auto-approve",
+    "destroy:instance:main": "terragrunt destroy -target=module.main_instance -auto-approve",
+    "destroy:instance:build": "terragrunt destroy -target=module.build_agent_instance -auto-approve",
+    "destroy:instances": "terragrunt destroy -target=module.main_instance -target=module.build_agent_instance -auto-approve",
+
+    "// AKS & Networking": "AKS cluster and related infrastructure",
+    "apply:aks": "terragrunt apply -target=module.aks_cluster -auto-approve",
+    "apply:front-door": "terragrunt apply -target=module.front_door -auto-approve",
+    "apply:ingress": "terragrunt apply -target=module.ingress -auto-approve",
+    "apply:aks:full": "terragrunt apply -target=module.aks_cluster -target=module.front_door -target=module.ingress -auto-approve",
+    "destroy:aks": "terragrunt destroy -target=module.aks_cluster -auto-approve",
+    "destroy:front-door": "terragrunt destroy -target=module.front_door -auto-approve",
+    "destroy:ingress": "terragrunt destroy -target=module.ingress -auto-approve",
+    "destroy:aks:full": "terragrunt destroy -target=module.ingress -target=module.front_door -target=module.aks_cluster -auto-approve",
+
+    "// Storage & Inventory": "Storage and inventory management",
+    "apply:storage": "terragrunt apply -target=module.backup_storage -auto-approve",
+    "apply:inventory": "terragrunt apply -target=module.ansible_inventory -auto-approve",
+    "destroy:storage": "terragrunt destroy -target=module.backup_storage -auto-approve",
+    "destroy:inventory": "terragrunt destroy -target=module.ansible_inventory -auto-approve",
+    
+    "// Security & NSG": "Network security groups and rules management",
+    "block-ssh:main": "terragrunt apply -target=module.main_rule_block_ssh -auto-approve",
+    "block-ssh:build": "terragrunt apply -target=module.agent_rule_block_ssh -auto-approve",
+    "unblock-ssh:main": "terragrunt destroy -target=module.main_rule_block_ssh -auto-approve",
+    "unblock-ssh:build": "terragrunt destroy -target=module.agent_rule_block_ssh -auto-approve",
+    "destroy:nsg:main": "terragrunt destroy -target=module.create_main_nsg -auto-approve",
+    "destroy:nsg:build": "terragrunt destroy -target=module.create_agent_nsg -auto-approve",
+    "destroy:nsg:all": "terragrunt destroy -target=module.create_main_nsg -target=module.create_agent_nsg -auto-approve",
+
+    "// Utils": "Utility scripts",
+    "rover": "bash rover.sh"
+  }
+}

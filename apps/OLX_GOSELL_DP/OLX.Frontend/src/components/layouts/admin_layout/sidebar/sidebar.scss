@@ -1,0 +1,13 @@
+@use '../../../../styles//global-colors.scss' as colors;
+@use '../../../../styles/global_bg.scss' as backgrounds;
+
+.user-container,
+.ant-layout-sider {
+    background-image: backgrounds.$sideBarBg !important;
+    background-repeat: repeat !important;
+    background-color: colors.$sideBarColor !important;
+    background-attachment: fixed !important;
+}
+.ant-layout-sider-trigger{
+    background-color:  colors.$hoverColor !important;
+}

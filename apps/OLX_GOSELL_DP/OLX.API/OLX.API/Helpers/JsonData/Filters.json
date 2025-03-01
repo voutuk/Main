@@ -1,0 +1,271 @@
+﻿[
+  {
+    "name": "Стан",
+    "values": [ "Нове", "Вживане" ]
+  },
+  {
+    "name": "Розмір",
+    "values": [ "50", "56", "62", "68", "74", "80", "86", "92", "98", "104", "110", "116", "122", "128", "134", "140", "146", "152" ]
+  },
+  {
+    "name": "Розмір екрану",
+    "values": [ "13 дюймів", "14 дюймів", "15.6 дюймів", "17 дюймів", "21.5 дюймів", "24 дюйми", "27 дюймів", "32 дюйми" ]
+  },
+  {
+    "name": "Розмір екрану телефону",
+    "values": [
+      "4.0\" і менше",
+      "4.1\" - 4.9\"",
+      "5.0\" - 5.4\"",
+      "5.5\" - 5.9\"",
+      "6.0\" - 6.4\"",
+      "6.5\" і більше"
+    ]
+  },
+  {
+    "name": "Розширення екрану телефону",
+    "values": [
+      "320x480",
+      "360x640",
+      "375x667",
+      "414x896",
+      "720x1280",
+      "1080x1920",
+      "1440x2560"
+    ]
+  },
+  {
+    "name": "Об'єм оперативної пам'яті",
+    "values": [ "4 ГБ", "8 ГБ", "16 ГБ", "32 ГБ", "64 ГБ", "128 ГБ" ]
+  },
+  {
+    "name": "Тип процесора",
+    "values": [ "Intel Core i3", "Intel Core i5", "Intel Core i7", "Intel Core i9", "AMD Ryzen 3", "AMD Ryzen 5", "AMD Ryzen 7", "AMD Ryzen 9", "Apple M1", "Apple M2" ]
+  },
+  {
+    "name": "Тип накопичувача",
+    "values": [ "HDD", "SSD", "NVMe SSD", "Hybrid (HDD+SSD)" ]
+  },
+  {
+    "name": "Об'єм накопичувача",
+    "values": [ "128 ГБ", "256 ГБ", "512 ГБ", "1 ТБ", "2 ТБ", "4 ТБ" ]
+  },
+  {
+    "name": "Відеокарта",
+    "values": [ "NVIDIA GeForce GTX 1650", "NVIDIA GeForce RTX 3060", "NVIDIA GeForce RTX 3070", "NVIDIA GeForce RTX 3080", "AMD Radeon RX 6600", "AMD Radeon RX 6700 XT", "AMD Radeon RX 6800 XT" ]
+  },
+  {
+    "name": "Форм-фактор материнської плати",
+    "values": [ "ATX", "Micro-ATX", "Mini-ITX", "E-ATX" ]
+  },
+  {
+    "name": "Потужність блоку живлення",
+    "values": [ "400 Вт", "500 Вт", "600 Вт", "750 Вт", "850 Вт", "1000 Вт", "1200 Вт" ]
+  },
+  {
+    "name": "Тип охолодження процесора",
+    "values": [ "Повітряне", "Рідинне" ]
+  },
+  {
+    "name": "Кількість USB портів",
+    "values": [ "2", "4", "6", "8", "10", "12" ]
+  },
+  {
+    "name": "Тип пам'яті",
+    "values": [ "DDR3", "DDR4", "DDR5" ]
+  },
+  {
+    "name": "Частота оперативної пам'яті",
+    "values": [ "2133 МГц", "2400 МГц", "2666 МГц", "3200 МГц", "3600 МГц", "4000 МГц" ]
+  },
+  {
+    "name": "Роздільна здатність екрану",
+    "values": [ "Full HD (1920x1080)", "Quad HD (2560x1440)", "4K (3840x2160)", "5K (5120x2880)", "8K (7680x4320)" ]
+  },
+  {
+    "name": "Бренд телефону",
+    "values": [ "Apple", "Samsung", "Xiaomi", "Huawei", "OnePlus", "Realme", "Oppo", "Vivo", "Google", "Nokia", "Sony", "Motorola", "Asus", "Honor", "Meizu", "ZTE", "Lenovo", "BlackBerry", "HTC", "Alcatel" ]
+  },
+  {
+    "name": "Бренд ноутбука",
+    "values": [ "Apple", "Dell", "HP", "Lenovo", "Asus", "Acer", "MSI", "Razer", "Microsoft", "Samsung", "LG", "Huawei", "Toshiba", "Sony", "Gigabyte", "Xiaomi", "Chuwi", "Alienware", "Fujitsu", "Panasonic" ]
+  },
+  {
+    "name": "Бренд процесора",
+    "values": [ "Intel", "AMD", "Apple (M-серія)", "Qualcomm", "MediaTek", "Samsung (Exynos)" ]
+  },
+  {
+    "name": "Бренд відеокарти",
+    "values": [ "NVIDIA", "AMD", "Intel", "Asus", "MSI", "Gigabyte", "EVGA", "Zotac", "Sapphire", "PowerColor", "Palit", "Inno3D", "PNY" ]
+  },
+  {
+    "name": "Бренд оперативної пам'яті",
+    "values": [ "Corsair", "Kingston", "G.Skill", "Crucial", "HyperX", "Team Group", "Patriot", "ADATA", "Samsung", "Micron", "PNY", "Silicon Power" ]
+  },
+  {
+    "name": "Бренд накопичувача",
+    "values": [ "Samsung", "Western Digital", "Seagate", "Crucial", "Kingston", "SanDisk", "Toshiba", "ADATA", "Intel", "Transcend", "PNY", "Team Group" ]
+  },
+  {
+    "name": "Бренд материнської плати",
+    "values": [ "Asus", "MSI", "Gigabyte", "ASRock", "Intel", "Biostar", "EVGA", "Supermicro", "NZXT" ]
+  },
+  {
+    "name": "Бренд систем охолодження",
+    "values": [ "Cooler Master", "Noctua", "Thermaltake", "Corsair", "Be Quiet!", "Deepcool", "NZXT", "Arctic", "Zalman", "SilverStone", "Phanteks", "Lian Li", "Scythe" ]
+  },
+  {
+    "name": "Бренд корпусів",
+    "values": [ "Cooler Master", "NZXT", "Thermaltake", "Corsair", "Be Quiet!", "Lian Li", "Phanteks", "SilverStone", "Fractal Design", "Antec", "Zalman", "Deepcool" ]
+  },
+  {
+    "name": "Бренд блоків живлення",
+    "values": [ "Corsair", "Cooler Master", "Be Quiet!", "Thermaltake", "Seasonic", "EVGA", "NZXT", "SilverStone", "Antec", "FSP", "Gigabyte" ]
+  },
+  {
+    "name": "Частота процесора",
+    "values": [
+      "До 1.0 ГГц",
+      "1.1 - 1.5 ГГц",
+      "1.6 - 2.0 ГГц",
+      "2.1 - 2.5 ГГц",
+      "2.6 - 3.0 ГГц",
+      "3.1 ГГц і більше"
+    ]
+  },
+  {
+    "name": "Кеш процесора",
+    "values": [
+      "До 4 МБ",
+      "4-8 МБ",
+      "8-12 МБ",
+      "12-16 МБ",
+      "16-32 МБ",
+      "32 МБ і більше"
+    ]
+  },
+  {
+    "name": "Комплектація",
+    "values": [
+      "BOX (з кулером)",
+      "Tray (без кулера)"
+    ]
+  },
+  {
+    "name": "Кількість ядер",
+    "values": [
+      "1 ядро",
+      "2 ядра",
+      "4 ядра",
+      "6 ядер",
+      "8 ядер",
+      "12 ядер і більше"
+    ]
+  },
+  {
+    "name": "Кількість потоків",
+    "values": [
+      "До 4 потоків",
+      "4-8 потоків",
+      "8-12 потоків",
+      "12-16 потоків",
+      "16 і більше потоків"
+    ]
+  },
+  {
+    "name": "Підтримка розгону",
+    "values": [
+      "Так",
+      "Ні"
+    ]
+  },
+  {
+    "name": "Роз'єм (Socket)",
+    "values": [
+      "LGA 1200",
+      "LGA 1700",
+      "AM4",
+      "AM5",
+      "TR4",
+      "sTRX4",
+      "Інші"
+    ]
+  },
+  {
+    "name": "Енергоспоживання (TDP)",
+    "values": [
+      "До 35 Вт",
+      "35-65 Вт",
+      "65-95 Вт",
+      "95-125 Вт",
+      "125 Вт і більше"
+    ]
+  },
+  {
+    "name": "Інтегроване відео",
+    "values": [
+      "Так",
+      "Ні"
+    ]
+  },
+  {
+    "name": "Підтримка технологій",
+    "values": [
+      "Intel Hyper-Threading",
+      "AMD SMT",
+      "Intel Turbo Boost",
+      "AMD Precision Boost",
+      "Інші"
+    ]
+  },
+  {
+    "name": "Бренд монітора",
+    "values": [
+      "Samsung",
+      "LG",
+      "Dell",
+      "ASUS",
+      "Acer",
+      "HP",
+      "MSI",
+      "Philips",
+      "BenQ",
+      "Lenovo",
+      "ViewSonic",
+      "Gigabyte",
+      "Sony",
+      "Apple",
+      "Huawei",
+      "Xiaomi",
+      "Eizo",
+      "AOC"
+    ]
+  },
+  {
+    "name": "Частота оновлення",
+    "values": [
+      "60 Гц",
+      "75 Гц",
+      "100 Гц",
+      "120 Гц",
+      "144 Гц",
+      "165 Гц",
+      "240 Гц",
+      "360 Гц"
+    ]
+  },
+  {
+    "name": "Тип екрану",
+    "values": [
+      "IPS",
+      "VA",
+      "TN",
+      "OLED",
+      "QLED",
+      "Mini-LED",
+      "PLS",
+      "AMOLED",
+      "LCD"
+    ]
+  }
+]

@@ -18,8 +18,9 @@ terraform.tfvars
 
 # MY
 #*.tfvars
+node_modules
 *.pem
-terraform.exe
+terraform.exed
 .env
 .env.*
 !.env.example

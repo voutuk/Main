@@ -1,0 +1,11 @@
+{
+  "name": "kubernetes-infrastructure",
+  "version": "1.0.0",
+  "description": "Deployment of Kubernetes cluster on Azure",
+  "license": "AFL-3.0",
+  "private": true,
+  "author": "Yurii Voutuk <voutuk@icloud.com>",
+  "scripts": {
+    "pre": "bash get-aks.sh"
+  }
+}

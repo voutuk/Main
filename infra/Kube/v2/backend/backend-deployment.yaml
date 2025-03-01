@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  namespace: gosell
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      nodeSelector:
+        kubernetes.io/os: linux
+        agentpool: default
+      containers:
+      - name: backend
+        image: voutuk/olx-api:latest
+        ports:
+        - containerPort: 8080
+        envFrom:
+        - configMapRef:
+            name: backend-config
+        resources:
+          limits:
+            cpu: "3"
+            memory: "4G"
+          requests:
+            cpu: "1"
+            memory: "1G"

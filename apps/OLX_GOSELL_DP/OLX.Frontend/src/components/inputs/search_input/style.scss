@@ -1,0 +1,26 @@
+@use '../../../styles/global-colors.scss' as globalColors;
+
+.search-input
+.ant-input {
+  font-family: 'Montserrat', sans-serif !important;
+}
+
+
+.search-input
+.ant-input-outlined,
+.ant-input-outlined:focus,
+.ant-input-outlined:hover{
+  border-color: globalColors.$controlsColor;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+
+.ant-input-prefix {
+    font-size: 10px !important; /* Змінюємо розмір тексту префікса */
+    display: flex;
+    align-items: center; /* Вирівнюємо по центру */
+  }
+
+
+

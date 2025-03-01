@@ -1,0 +1,8 @@
+
+.breadcrumb-link {
+    font-size: clamp(14px, 1.8vh, 36px);
+    &:hover{
+        text-decoration: underline;
+        background-color: transparent !important;
+    }
+}

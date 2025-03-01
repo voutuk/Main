@@ -1,0 +1,29 @@
+ .settings-tabs{
+    .ant-tabs-ink-bar {
+        display: none !important;
+    }
+   
+    .ant-tabs-content-holder {
+        border-left: none !important;
+    }
+   
+   
+    .ant-tabs-tab {
+        padding: 0 !important;
+        margin: 0 !important;
+        font-size: clamp(14px, 2.1vh, 30px) !important;
+        margin-bottom: 2.5vh !important;
+    }
+   
+    .ant-tabs-tab-btn:hover {
+        color: black
+    }
+   
+    .ant-tabs-tab-active .ant-tabs-tab-btn {
+        text-decoration: underline;
+        color: black !important;
+        font-weight: 550;
+    }
+ }
+ 
+ 
