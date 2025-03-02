@@ -1,0 +1,4 @@
+NAME                   CPU %     MEM USAGE / LIMIT
+olx_container          194.13%   339.7MiB / 7.708GiB
+postgresDB             116.55%   379.4MiB / 7.708GiB
+olx_client_container   3.83%     5.418MiB / 7.708GiB

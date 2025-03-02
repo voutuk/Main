@@ -13,3 +13,5 @@ Publish with Docker-Compose
 ## Білд імеджів для прода 
 
 `docker compose --profile prod build` - білд
+
+## Ресурси на використання
