@@ -153,5 +153,5 @@ module "ansible_inventory" {
   main_instance_ip = module.main_instance.public_ip
   build_agent_ips  = module.build_agent_instance.public_ips
   admin_username   = var.vm_admin_username
-  inventory_path   = "../An/hosts"
+  inventory_path   = "../Ansible/hosts"
 }
