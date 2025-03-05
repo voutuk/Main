@@ -26,11 +26,21 @@ pipeline {
                     url: 'https://github.com/voutuk/OLX_Dyplom_ADM'
             }
         }
-
+        
+        stage('🏗️ Build Frontend') {
+            steps {
+                script {
+                    sh """
+                        docker compose --progress=plain --profile full build --no-cache
+                    """
+                }
+            }
+        }
+        
         stage('🚀 Docker UP') {
             steps {
                 script {
-                    sh 'docker compose --profile full up -d'
+                    sh 'docker compose -f docker-compose.yml up -d'
                     sh 'docker ps'
                 }
             }
