@@ -3,11 +3,6 @@ pipeline {
         label 'docker-agent' 
     }
     
-    environment {
-        FRONTEND_IMAGE = 'olx-client'
-        BACKEND_IMAGE = 'olx-api'
-    }
-    
     options {
         ansiColor('xterm')
         timestamps()
@@ -31,46 +26,11 @@ pipeline {
                     url: 'https://github.com/voutuk/OLX_Dyplom_ADM'
             }
         }
-        
-        stage('🏗️ Build Frontend') {
-            steps {
-                script {
-                    docker.withRegistry('', '') {
-                        def frontendImage = docker.build(
-                            "${FRONTEND_IMAGE}:${BUILD_NUMBER}",
-                            "--no-cache --progress=plain -f ./OLX.Frontend/Dockerfile.stage ./OLX.Frontend"
-                        )
-                        env.FRONTEND_IMAGE_ID = frontendImage.id
-                        // Also tag with timestamp
-                    }
-                }
-            }
-        }
-        
-        stage('🏗️ Build Backend') {
-            steps {
-                script {
-                    docker.withRegistry('', '') {
-                        def backendImage = docker.build(
-                            "${BACKEND_IMAGE}:${BUILD_NUMBER}",
-                            "--no-cache --progress=plain ./OLX.API "
-                        )
-                        env.BACKEND_IMAGE_ID = backendImage.id
-                        // Also tag with timestamp
-                    }
-                }
-            }
-        }
-        
+
         stage('🚀 Docker UP') {
             steps {
                 script {
-                    sh """
-                        docker image inspect ${FRONTEND_IMAGE}:${BUILD_NUMBER}
-                        docker image inspect ${BACKEND_IMAGE}:${BUILD_NUMBER}
-                    """
-
-                    sh 'docker compose -f docker-compose.yml up -d'
+                    sh 'docker compose --profile full up -d'
                     sh 'docker ps'
                 }
             }
