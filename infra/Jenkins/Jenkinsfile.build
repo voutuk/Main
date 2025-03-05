@@ -27,7 +27,7 @@ pipeline {
             }
         }
         
-        stage('🏗️ Build Frontend') {
+        stage('🏗️ Build Stage version') {
             steps {
                 script {
                     sh """
@@ -40,7 +40,7 @@ pipeline {
         stage('🚀 Docker UP') {
             steps {
                 script {
-                    sh 'docker compose -f docker-compose.yml up -d'
+                    sh 'docker compose --profile full up -d'
                     sh 'docker ps'
                 }
             }
