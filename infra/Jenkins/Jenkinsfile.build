@@ -3,14 +3,6 @@ pipeline {
         label 'docker-agent' 
     }
     
-    environment {
-        FRONTEND_IMAGE = 'olx-client'
-        BACKEND_IMAGE = 'olx-asp-api'
-        DOCKER_BUILDKIT = '1'
-        DOCKER_HOST = 'unix:///var/run/docker.sock'
-        BUILD_TIMESTAMP = '2025-02-08-14-18-45' // Using provided timestamp
-    }
-    
     options {
         ansiColor('xterm')
         timestamps()
@@ -35,34 +27,12 @@ pipeline {
             }
         }
         
-        stage('🏗️ Build Frontend') {
+        stage('🏗️ Build Stage version') {
             steps {
                 script {
-                    docker.withRegistry('', '') {
-                        def frontendImage = docker.build(
-                            "${FRONTEND_IMAGE}:${BUILD_NUMBER}",
-                            "--no-cache --progress=plain ./OLX.Frontend"
-                        )
-                        env.FRONTEND_IMAGE_ID = frontendImage.id
-                        // Also tag with timestamp
-                        sh "docker tag ${FRONTEND_IMAGE}:${BUILD_NUMBER} ${FRONTEND_IMAGE}:${BUILD_TIMESTAMP}"
-                    }
-                }
-            }
-        }
-        
-        stage('🏗️ Build Backend') {
-            steps {
-                script {
-                    docker.withRegistry('', '') {
-                        def backendImage = docker.build(
-                            "${BACKEND_IMAGE}:${BUILD_NUMBER}",
-                            "--no-cache --progress=plain ./OLX.API"
-                        )
-                        env.BACKEND_IMAGE_ID = backendImage.id
-                        // Also tag with timestamp
-                        sh "docker tag ${BACKEND_IMAGE}:${BUILD_NUMBER} ${BACKEND_IMAGE}:${BUILD_TIMESTAMP}"
-                    }
+                    sh """
+                        docker compose --progress=plain --profile full build --no-cache
+                    """
                 }
             }
         }
@@ -70,12 +40,7 @@ pipeline {
         stage('🚀 Docker UP') {
             steps {
                 script {
-                    sh """
-                        docker image inspect ${FRONTEND_IMAGE}:${BUILD_NUMBER}
-                        docker image inspect ${BACKEND_IMAGE}:${BUILD_NUMBER}
-                    """
-
-                    sh 'docker compose -f docker-compose.yml up -d'
+                    sh 'docker compose --profile full up -d'
                     sh 'docker ps'
                 }
             }

@@ -6,6 +6,9 @@
   "private": true,
   "author": "Yurii Voutuk <voutuk@icloud.com>",
   "scripts": {
-    "pre": "bash get-aks.sh"
+    "pre": "bash get-aks.sh",
+    "helm": "helm package helm/",
+    "helm:deploy": "helm install olx-website ./GoSell-0.1.0.tgz --namespace gosell --create-namespace",
+    "helm:upd": "helm upgrade --install olx-website ./GoSell-0.1.0.tgz --namespace gosell"
   }
 }

@@ -81,6 +81,12 @@
         name: docker
         state: present
 
+    - name: Add ubuntu user to the docker group
+      user:
+        name: ubuntu
+        groups: docker
+        append: yes
+        
     - name: Create docker configuration directory
       file:
         path: /etc/docker
@@ -110,17 +116,18 @@
           [Service]
           ExecStart=
           ExecStart=/usr/bin/dockerd
-          SocketMode=0666
         dest: /etc/systemd/system/docker.service.d/override.conf
         mode: '0644'
       notify:
         - Daemon reload
         - Restart Docker
 
-    - name: Set permissions on Docker socket
+    # Using group permissions instead of 0666 permissions
+    - name: Set appropriate ownership and permissions on Docker socket
       file:
         path: /var/run/docker.sock
-        mode: '0666'
+        group: docker
+        mode: '0660'
       notify: Restart Docker
 
     - name: Ensure Docker service is running
@@ -128,13 +135,13 @@
         name: docker
         state: started
         enabled: yes
-
+  
   handlers:
     - name: Daemon reload
       systemd:
         daemon_reload: yes
 
     - name: Restart Docker
-      systemd:
+      service:
         name: docker
         state: restarted

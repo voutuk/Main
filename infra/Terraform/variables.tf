@@ -1,29 +1,22 @@
 # MAIN variables.tf
 
-# Variables for the Doppler integration
+# Main variables for the project
+
 variable "doppler_token" {
   type        = string
   description = "Doppler token"
   sensitive   = true
 }
 
-variable "tags" {
-  description = "A mapping of tags to assign to resources"
-  type        = map(string)
-  default     = {}
-}
-
-variable "backup_storage_prefix" {
-  type        = string
-  description = "The prefix for the Azure backup storage name."
-  default     = "gosellbackup"
-}
-
-# Variables for Azure
 variable "azure_subscription_id" {
   type        = string
   description = "The ID of your Azure subscription."
   default     = "3eba8433-8aaf-40ef-9be5-87b8edefec97"
+}
+variable "backup_storage_prefix" {
+  type        = string
+  description = "The prefix for the Azure backup storage name."
+  default     = "gosellbackup"
 }
 
 variable "rg_prefix" {
@@ -83,6 +76,12 @@ variable "aks_name" {
   default     = "gosell-aks"
 }
 
+variable "aks_location" {
+  description = "Location of the AKS cluster"
+  type        = string
+  default     = "northeurope"
+}
+
 variable "dns_prefix" {
   description = "DNS prefix for the AKS cluster"
   type        = string
@@ -104,17 +103,19 @@ variable "subnet_name" {
 variable "address_space" {
   description = "The address space of the virtual network"
   type        = list(string)
-  default     = ["10.0.0.0/16"]  # This must contain subnet_address_prefix
+  default     = ["10.0.0.0/16"]
 }
 
 variable "subnet_address_prefix" {
   description = "The address prefix for the subnet"
   type        = list(string)
-  default     = ["10.0.1.0/24"]  # This must be within address_space
+  default     = ["10.0.1.0/24"] 
 }
 
-variable "front_door_name" {
-  description = "Name of the Azure Front Door"
-  type        = string
-  default     = "gosell-frontdoor"
+
+# Other variables
+variable "tags" {
+  description = "A mapping of tags to assign to resources"
+  type        = map(string)
+  default     = {}
 }

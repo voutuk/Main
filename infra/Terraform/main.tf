@@ -21,7 +21,7 @@ module "backup_storage_rg" {
 module "aks_cluster_rg" {
   source              = "./modules/resource_group"
   resource_group_name = "gosell-aks-cluster"
-  location            = "northeurope"  # You can change this region
+  location            = var.aks_location  # You can change this region
   tags                = var.tags
 }
 
@@ -122,21 +122,6 @@ module "aks_cluster" {
   system_max_node_count   = 2
 }
 
-
-module "front_door" {
-  source              = "./modules/front_door"
-  resource_group_name = module.aks_cluster_rg.resource_group_name
-  front_door_name     = var.front_door_name
-  backend_host_header = module.aks_cluster.fqdn
-  backend_address     = module.aks_cluster.fqdn
-  tags                = var.tags
-}
-
-module "ingress" {
-  source                  = "./modules/ingress"
-  kubernetes_cluster_name = module.aks_cluster.name
-}
-
 # Storage Account for backups
 module "backup_storage" {
   source                = "./modules/backup_storage"
@@ -149,9 +134,9 @@ module "backup_storage" {
 
 # Ansible Inventory
 module "ansible_inventory" {
-  source           = "./modules/ansible_inventory"
+  source           = "./modules/ansible"
   main_instance_ip = module.main_instance.public_ip
   build_agent_ips  = module.build_agent_instance.public_ips
   admin_username   = var.vm_admin_username
-  inventory_path   = "../An/hosts"
+  inventory_path   = "../Ansible/hosts"
 }
