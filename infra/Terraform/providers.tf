@@ -7,18 +7,6 @@ terraform {
       source  = "hashicorp/azurerm"
       version = "~> 3.0"
     }
-    azapi = {
-      source  = "azure/azapi"
-      version = "~>1.5"
-    }
-    kubernetes = {
-      source  = "hashicorp/kubernetes"
-      version = "~> 2.0"
-    }
-    helm = {
-      source  = "hashicorp/helm"
-      version = "~> 2.5"
-    }
     doppler = {
       source = "DopplerHQ/doppler"
     }
@@ -32,5 +20,16 @@ terraform {
   }
 }
 
-# Remove the provider blocks from here as they are now managed by Terragrunt
+provider "azurerm" {
+  features {}
+  subscription_id = var.azure_subscription_id
+  client_id       = data.doppler_secrets.az-creds.map.CLIENT_ID
+  client_secret   = data.doppler_secrets.az-creds.map.CLIENT_SECRET
+  tenant_id       = data.doppler_secrets.az-creds.map.TENANT_ID
+}
+
 data "doppler_secrets" "az-creds" {}
+
+provider "doppler" {
+  doppler_token = var.doppler_token
+}
