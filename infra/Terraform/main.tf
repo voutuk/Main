@@ -21,7 +21,7 @@ module "backup_storage_rg" {
 module "aks_cluster_rg" {
   source              = "./modules/resource_group"
   resource_group_name = "gosell-aks-cluster"
-  location            = "northeurope"  # You can change this region
+  location            = var.aks_location  # You can change this region
   tags                = var.tags
 }
 
@@ -124,17 +124,15 @@ module "aks_cluster" {
 
 
 module "front_door" {
-  source              = "./modules/front_door"
-  resource_group_name = module.aks_cluster_rg.resource_group_name
-  front_door_name     = var.front_door_name
-  backend_host_header = module.aks_cluster.fqdn
-  backend_address     = module.aks_cluster.fqdn
-  tags                = var.tags
-}
-
-module "ingress" {
-  source                  = "./modules/ingress"
-  kubernetes_cluster_name = module.aks_cluster.name
+  source                   = "./modules/front_door"
+  resource_group_name      = module.aks_cluster_rg.resource_group_name
+  location                 = module.aks_cluster_rg.resource_group_location
+  aks_cluster_name         = var.aks_name
+  front_door_name          = var.front_door_name
+  domain_name              = var.domain_name
+  node_resource_group_name = module.aks_cluster.node_resource_group
+  tags                     = var.tags
+  depends_on = [ module.aks_cluster ]
 }
 
 # Storage Account for backups

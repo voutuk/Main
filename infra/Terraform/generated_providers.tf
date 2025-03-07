@@ -18,22 +18,29 @@ provider "azapi" {
   tenant_id       = data.doppler_secrets.az-creds.map.TENANT_ID
 }
 
+# Отримання даних про існуючий AKS кластер
+data "azurerm_kubernetes_cluster" "existing" {
+  name                = var.aks_name
+  resource_group_name = var.aks_location
+}
+
+# Конфігурація Kubernetes провайдера
+provider "kubernetes" {
+  host                   = data.azurerm_kubernetes_cluster.existing.kube_config.0.host
+  client_certificate     = base64decode(data.azurerm_kubernetes_cluster.existing.kube_config.0.client_certificate)
+  client_key             = base64decode(data.azurerm_kubernetes_cluster.existing.kube_config.0.client_key)
+  cluster_ca_certificate = base64decode(data.azurerm_kubernetes_cluster.existing.kube_config.0.cluster_ca_certificate)
+}
+
+# Конфігурація Helm провайдера
 provider "helm" {
   kubernetes {
-    host                   = module.aks_cluster.host
-    client_certificate     = base64decode(module.aks_cluster.client_certificate)
-    client_key             = base64decode(module.aks_cluster.client_key)
-    cluster_ca_certificate = base64decode(module.aks_cluster.ca_certificate)
+    host                   = data.azurerm_kubernetes_cluster.existing.kube_config.0.host
+    client_certificate     = base64decode(data.azurerm_kubernetes_cluster.existing.kube_config.0.client_certificate)
+    client_key             = base64decode(data.azurerm_kubernetes_cluster.existing.kube_config.0.client_key)
+    cluster_ca_certificate = base64decode(data.azurerm_kubernetes_cluster.existing.kube_config.0.cluster_ca_certificate)
   }
 }
-
-provider "kubernetes" {
-  host                   = module.aks_cluster.host
-  client_certificate     = base64decode(module.aks_cluster.client_certificate)
-  client_key             = base64decode(module.aks_cluster.client_key)
-  cluster_ca_certificate = base64decode(module.aks_cluster.ca_certificate)
-}
-
 
 provider "time" {}
 provider "random" {}

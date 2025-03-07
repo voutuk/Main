@@ -13,12 +13,12 @@ backend:
     ASPNETCORE_ENVIRONMENT: Production
   replicas: 1
   resources:
-    requests:
-      memory: "128Mi"
-      cpu: "100m"
     limits:
-      memory: "256Mi"
-      cpu: "200m"
+      cpu: 1
+      memory: 2G
+    requests:
+      cpu: 1
+      memory: 2G
 
 frontend:
   name: frontend

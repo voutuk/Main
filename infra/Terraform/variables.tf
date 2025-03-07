@@ -83,6 +83,12 @@ variable "aks_name" {
   default     = "gosell-aks"
 }
 
+variable "aks_location" {
+  description = "Location of the AKS cluster"
+  type        = string
+  default     = "northeurope"
+}
+
 variable "dns_prefix" {
   description = "DNS prefix for the AKS cluster"
   type        = string
@@ -117,4 +123,10 @@ variable "front_door_name" {
   description = "Name of the Azure Front Door"
   type        = string
   default     = "gosell-frontdoor"
+}
+
+variable "domain_name" {
+  description = "The domain name for the Azure Front Door"
+  type        = string
+  default     = "pluton.pp.ua"
 }
