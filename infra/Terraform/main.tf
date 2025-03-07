@@ -122,19 +122,6 @@ module "aks_cluster" {
   system_max_node_count   = 2
 }
 
-
-module "front_door" {
-  source                   = "./modules/front_door"
-  resource_group_name      = module.aks_cluster_rg.resource_group_name
-  location                 = module.aks_cluster_rg.resource_group_location
-  aks_cluster_name         = var.aks_name
-  front_door_name          = var.front_door_name
-  domain_name              = var.domain_name
-  node_resource_group_name = module.aks_cluster.node_resource_group
-  tags                     = var.tags
-  depends_on = [ module.aks_cluster ]
-}
-
 # Storage Account for backups
 module "backup_storage" {
   source                = "./modules/backup_storage"
@@ -147,7 +134,7 @@ module "backup_storage" {
 
 # Ansible Inventory
 module "ansible_inventory" {
-  source           = "./modules/ansible_inventory"
+  source           = "./modules/ansible"
   main_instance_ip = module.main_instance.public_ip
   build_agent_ips  = module.build_agent_instance.public_ips
   admin_username   = var.vm_admin_username
