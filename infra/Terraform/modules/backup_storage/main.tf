@@ -1,25 +1,5 @@
 # modules/backup_storage/main.tf
 
-# INFO: Backup Storage Variables
-variable "resource_group_name" {
-  type = string
-}
-variable "location" {
-  type = string
-}
-variable "backup_storage_prefix" {
-  type = string
-}
-variable "container_name" {
-  type        = string
-  default     = "backups"
-  description = "The name of the container in the Storage Account where backups will be stored."
-}
-variable "tags" {
-  type        = map(string)
-  description = "Tags to be applied to the Storage Account and container."
-  default     = {}
-}
 
 # Generate a random name for the storage account using a prefix
 resource "random_pet" "as_storage_name" {
@@ -61,18 +41,3 @@ resource "azurerm_storage_container" "backup_container" {
   # }
 }
 
-# INFO: Backup Storage Outputs
-output "storage_account_id" {
-  description = "ID of the created Storage Account."
-  value       = azurerm_storage_account.backup_sa.id
-}
-
-output "storage_account_name" {
-  description = "Name of the created Storage Account."
-  value       = azurerm_storage_account.backup_sa.name
-}
-
-output "backup_container_name" {
-  description = "Name of the container for backups."
-  value       = azurerm_storage_container.backup_container.name
-}

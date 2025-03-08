@@ -1,46 +1,5 @@
-# INFO: Build Agent Variables
-variable "location" {
-  type        = string
-  description = "The Azure region where build agent resources will be created"
-}
-variable "resource_group_name" {
-  type        = string
-  description = "Name of the resource group"
-}
-variable "instance_count" {
-  type        = number
-  description = "Number of build agent instances to create"
-  default     = 1
-}
-variable "vm_name" {
-  type        = string
-  description = "Base name for the VM instances"
-}
-variable "vm_size" {
-  type        = string
-  description = "The size of the VM"
-}
-variable "admin_username" {
-  type        = string
-  description = "Admin username for the VM"
-}
-variable "ssh_public_key" {
-  type        = string
-  description = "SSH public key for VM access"
-}
-variable "vm_sku" {
-  type        = string
-  description = "The SKU of the VM image"
-}
-variable "nsg_id" {
-  type        = string
-  description = "Network Security Group ID"
-}
-variable "tags" {
-  type        = map(string)
-  description = "Tags to be applied to the build agent resources"
-  default     = {}
-}
+# modules/compute/build_agent_instance/main.tf
+
 
 # Create a new virtual network for build agents
 resource "azurerm_virtual_network" "build_agent_vnet" {
@@ -124,20 +83,4 @@ resource "azurerm_linux_virtual_machine" "build_agent_vm" {
     sku       = var.vm_sku
     version   = "latest"
   }
-}
-
-# INFO: Build Agent Outputs
-output "private_ips" {
-  value       = [for nic in azurerm_network_interface.build_agent_nic : nic.private_ip_address]
-  description = "List of private IP addresses for build agents"
-}
-
-output "public_ips" {
-  value       = [for pip in azurerm_public_ip.build_agent_pip : pip.ip_address]
-  description = "List of public IP addresses for build agents"
-}
-
-output "vm_names" {
-  value       = [for vm in azurerm_linux_virtual_machine.build_agent_vm : vm.name]
-  description = "List of build agent VM names"
 }
