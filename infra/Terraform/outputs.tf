@@ -1,19 +1,21 @@
 # MAIN outputs.tf
 
-output "ansible_inventory_path" {
-  value       = module.ansible_inventory.inventory_path
-  description = "Path to the generated Ansible inventory file"
-}
+# INFO: Find main file ansible inventory file Fixme
+# output "ansible_inventory_path" {
+#   value       = module.ansible_inventory.inventory_path
+#   description = "Path to the generated Ansible inventory file"
+# }
 
 output "jenkins_master_ip" {
   value       = module.main_instance.public_ip
   description = "Private IP address of the Jenkins master"
 }
 
-output "jenkins_agent_ips" {
-  value       = module.vvms_instance.public_ips
-  description = "Private IP addresses of Jenkins agents"
-}
+# INFO: Find main file ansible inventory file Fixme
+# output "jenkins_agent_ips" {
+#   value       = module.vvms_instance.public_ips
+#   description = "Private IP addresses of Jenkins agents"
+# }
 
 output "AZURE_CONTAINER_NAME" {
   value       = module.backup_storage.backup_container_name
