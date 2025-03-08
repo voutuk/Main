@@ -20,7 +20,7 @@ module "backup_storage_rg" {
 
 module "aks_cluster_rg" {
   source              = "./modules/resource_group"
-  resource_group_name = "gosell-aks-cluster"
+  resource_group_name = "${var.rg_prefix}-aks-cluster"
   location            = var.aks_location  # You can change this region
   tags                = var.tags
 }

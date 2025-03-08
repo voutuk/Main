@@ -1,18 +1,12 @@
 # MAIN variables.tf
 
 # Main variables for the project
-
-variable "doppler_token" {
+variable "DOPPLER_AUTH_TOKEN" {
+  description = "Токен для доступу до Doppler"
   type        = string
-  description = "Doppler token"
   sensitive   = true
 }
 
-variable "azure_subscription_id" {
-  type        = string
-  description = "The ID of your Azure subscription."
-  default     = "3eba8433-8aaf-40ef-9be5-87b8edefec97"
-}
 variable "backup_storage_prefix" {
   type        = string
   description = "The prefix for the Azure backup storage name."
@@ -69,7 +63,6 @@ variable "main_vm_name" {
 }
 
 # Variables for AKS
-
 variable "aks_name" {
   description = "Name of the AKS cluster"
   type        = string
