@@ -12,7 +12,7 @@ resource "azurerm_virtual_network" "vm_vnet" {
   name                = "${var.vm_name}-vnet"
   resource_group_name = var.resource_group_name
   location            = var.location
-  address_space       = ["10.0.0.0/16"]
+  address_space       = ["10.1.0.0/16"]
   tags = var.tags
 }
 
@@ -21,11 +21,11 @@ resource "azurerm_subnet" "vm_subnet" {
   name                 = "${var.vm_name}-subnet"
   resource_group_name  = var.resource_group_name
   virtual_network_name = azurerm_virtual_network.vm_vnet.name
-  address_prefixes     = ["10.0.1.0/24"]
+  address_prefixes     = ["10.1.1.0/24"]
 
   depends_on = [
     azurerm_virtual_network.vm_vnet,
-    time_sleep.wait_30_seconds
+    # time_sleep.wait_30_seconds
   ]
 }
 
@@ -34,7 +34,7 @@ resource "azurerm_network_interface" "vm_nic" {
   name                = "${var.vm_name}-nic"
   location            = var.location
   resource_group_name = var.resource_group_name
-  tags = var.tags
+  tags                = var.tags
 
   ip_configuration {
     name                          = "internal"
@@ -55,9 +55,9 @@ resource "azurerm_public_ip" "vm_public_ip" {
   name                = "${var.vm_name}-public-ip"
   location            = var.location
   resource_group_name = var.resource_group_name
-  allocation_method   = "Static"
+  allocation_method   = "Dynamic"
   sku                 = "Basic"
-  tags = var.tags
+  tags                = var.tags
 }
 
 # Wait for the public IP to be assigned
@@ -84,7 +84,7 @@ resource "azurerm_linux_virtual_machine" "vm" {
   location            = var.location
   size                = var.vm_size
   admin_username      = var.admin_username
-  tags = var.tags
+  tags                = var.tags
 
   network_interface_ids = [
     azurerm_network_interface.vm_nic.id

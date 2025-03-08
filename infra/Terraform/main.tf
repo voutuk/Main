@@ -32,7 +32,7 @@ module "main_instance_rg" {
   tags                = var.tags
 }
 
-module "build_agent_rg" {
+module "vvms_instance_rg" {
   source              = "./modules/resource_group"
   resource_group_name = "${var.rg_prefix}-build-agents"
   location            = "eastus"  # You can change this region
@@ -45,17 +45,16 @@ module "create_main_nsg" {
   resource_group_name = module.main_instance_rg.resource_group_name
   location            = module.main_instance_rg.resource_group_location
   nsg_name            = "main-nsg"
-  vnet_address_space  = "10.0.0.0/16"
+  vnet_address_space  = "10.1.0.0/16"
   tags                = var.tags
 }
 
-module "create_builder_nsg" {
+module "create_vvms_nsg" {
   source              = "./modules/nsg"
-  resource_group_name = module.build_agent_rg.resource_group_name
-  location            = module.build_agent_rg.resource_group_location
-  nsg_name            = "agent-nsg"
-  vnet_address_space  = "10.1.0.0/16"
-  tags                = var.tags
+  resource_group_name = module.vvms_instance_rg.resource_group_name
+  location            = module.vvms_instance_rg.resource_group_location
+  nsg_name            = "vvms-nsg"
+  vnet_address_space  = "10.2.0.0/16"
 }
 
 # Main VM
@@ -68,23 +67,22 @@ module "main_instance" {
   admin_username      = var.vm_admin_username
   vm_private_ip       = var.vm_private_ip
   ssh_public_key      = data.doppler_secrets.az-creds.map.SSHPUB
-  vm_sku              = var.vm_sku
+  vm_sku              = var.sku
   nsg_id              = module.create_main_nsg.nsg_id
   tags                = var.tags
 }
 
 # Build-Agent VM
-module "build_agent_instance" {
-  source              = "./modules/compute/build_agent_instance"
-  resource_group_name = module.build_agent_rg.resource_group_name
-  location            = module.build_agent_rg.resource_group_location
-  vm_name             = "build-ub"
-  vm_size             = var.build_agent_vm_size
-  admin_username      = var.vm_admin_username
+module "vvms_instance" {
+  source              = "./modules/compute/vvms"
+  resource_group_name = module.vvms_instance_rg.resource_group_name
+  location            = module.vvms_instance_rg.resource_group_location
   ssh_public_key      = data.doppler_secrets.az-creds.map.SSHPUB
+  vm_sku              = var.vvms_sku
+  sku                 = var.sku
+  vmss_name           = var.vmss_name
   instance_count      = var.instance_count
-  vm_sku              = var.vm_sku
-  nsg_id              = module.create_builder_nsg.nsg_id
+  admin_username      = var.vm_admin_username
   tags                = var.tags
 }
 
@@ -98,8 +96,8 @@ module "main_rule_block_ssh" {
 
 module "agent_rule_block_ssh" {
   source              = "./modules/nsg_rule"
-  resource_group_name = module.build_agent_rg.resource_group_name
-  nsg_name            = module.create_builder_nsg.nsg_name
+  resource_group_name = module.vvms_instance_rg.resource_group_name
+  nsg_name            = module.create_vvms_nsg.nsg_name
   priority            = 150
 }
 
@@ -133,10 +131,11 @@ module "backup_storage" {
 }
 
 # Ansible Inventory
-module "ansible_inventory" {
-  source           = "./modules/ansible"
-  main_instance_ip = module.main_instance.public_ip
-  build_agent_ips  = module.build_agent_instance.public_ips
-  admin_username   = var.vm_admin_username
-  inventory_path   = "../Ansible/hosts"
-}
+# FIXME: ADD vvms public IPs and gen add files
+# module "ansible_inventory" {
+#   source           = "./modules/ansible"
+#   main_instance_ip = module.main_instance.public_ip
+#   build_agent_ips  = module.vvms_instance.public_ips
+#   admin_username   = var.vm_admin_username
+#   inventory_path   = "../Ansible/hosts"
+# }

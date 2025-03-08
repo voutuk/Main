@@ -14,7 +14,7 @@ inputs = {
   tags = merge(
     local.common_vars.locals.common_tags,
     {
-      Component = "build-agent"
+      Component = "vvms-instance"
     }
   )
 }

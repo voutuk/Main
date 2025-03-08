@@ -20,11 +20,11 @@
 
     "// Instances": "VM instance management",
     "apply:instance:main": "doppler run -- terragrunt apply -target=module.main_instance -auto-approve",
-    "apply:instance:build": "doppler run -- terragrunt apply -target=module.build_agent_instance -auto-approve",
-    "apply:instances": "doppler run -- terragrunt apply -target=module.main_instance -target=module.build_agent_instance -auto-approve",
+    "apply:instance:vvms": "doppler run -- terragrunt apply -target=module.vvms_instance -auto-approve",
+    "apply:instances": "doppler run -- terragrunt apply -target=module.main_instance -target=module.vvms_instance -auto-approve",
     "destroy:instance:main": "doppler run -- terragrunt destroy -target=module.main_instance -auto-approve",
-    "destroy:instance:build": "doppler run -- terragrunt destroy -target=module.build_agent_instance -auto-approve",
-    "destroy:instances": "doppler run -- terragrunt destroy -target=module.main_instance -target=module.build_agent_instance -auto-approve",
+    "destroy:instance:vvms": "doppler run -- terragrunt destroy -target=module.vvms_instance -auto-approve",
+    "destroy:instances": "doppler run -- terragrunt destroy -target=module.main_instance -target=module.vvms_instance -auto-approve",
 
     "// AKS & Networking": "AKS cluster and related infrastructure",
     "apply:aks": "doppler run -- terragrunt apply -target=module.aks_cluster -auto-approve",

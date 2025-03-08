@@ -11,7 +11,7 @@ output "jenkins_master_ip" {
 }
 
 output "jenkins_agent_ips" {
-  value       = module.build_agent_instance.public_ips
+  value       = module.vvms_instance.public_ips
   description = "Private IP addresses of Jenkins agents"
 }
 

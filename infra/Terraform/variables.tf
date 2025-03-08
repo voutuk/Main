@@ -26,12 +26,6 @@ variable "main_instance_vm_size" {
   default     = "Standard_B2ms"
 }
 
-variable "build_agent_vm_size" {
-  type        = string
-  description = "The size (SKU) of the Build-Agent virtual machine."
-  default     = "Standard_B2s"
-}
-
 variable "vm_admin_username" {
   type        = string
   description = "The administrative login for the VM."
@@ -44,10 +38,16 @@ variable "vm_private_ip" {
   default     = "10.0.1.5"
 }
 
-variable "vm_sku" {
+variable "sku" {
   type        = string
   description = "The SKU of the VM image."
   default     = "22_04-lts"
+}
+
+variable "vvms_sku" {
+  type        = string
+  description = "The SKU of the VM image."
+  default     = "Standard_B2s"
 }
 
 variable "instance_count" {
@@ -60,6 +60,12 @@ variable "main_vm_name" {
   type        = string
   description = "The name of the main VM."
   default     = "main-vm"
+}
+
+variable "vmss_name" {
+  type        = string
+  description = "The name of the VM Scale Set."
+  default     = "vvms"
 }
 
 # Variables for AKS
