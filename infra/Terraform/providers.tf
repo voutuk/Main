@@ -1,5 +1,3 @@
-# MAIN providers.tf
-
 terraform {
   required_version = ">= 1.3.0"
   required_providers {
@@ -8,7 +6,8 @@ terraform {
       version = "~> 3.0"
     }
     doppler = {
-      source = "DopplerHQ/doppler"
+      source  = "DopplerHQ/doppler"
+      version = "~> 1.2"
     }
     time = {
       source = "hashicorp/time"
@@ -22,14 +21,16 @@ terraform {
 
 provider "azurerm" {
   features {}
-  subscription_id = var.azure_subscription_id
-  client_id       = data.doppler_secrets.az-creds.map.CLIENT_ID
-  client_secret   = data.doppler_secrets.az-creds.map.CLIENT_SECRET
-  tenant_id       = data.doppler_secrets.az-creds.map.TENANT_ID
+  
+  use_cli = false
+  subscription_id = data.doppler_secrets.az-creds.map.ARM_SUBSCRIPTION_ID
+  client_id       = data.doppler_secrets.az-creds.map.ARM_CLIENT_ID
+  client_secret   = data.doppler_secrets.az-creds.map.ARM_CLIENT_SECRET
+  tenant_id       = data.doppler_secrets.az-creds.map.ARM_TENANT_ID
 }
 
 data "doppler_secrets" "az-creds" {}
 
 provider "doppler" {
-  doppler_token = var.doppler_token
+  doppler_token = var.DOPPLER_AUTH_TOKEN
 }

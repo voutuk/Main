@@ -21,8 +21,6 @@ terraform.tfvars
 node_modules
 *.pem
 terraform.exed
-.env
-.env.*
 !.env.example
 *.pfx
 *.key
@@ -35,3 +33,7 @@ oracle_rsa
 vars.yml
 **/tf-tmp/*
 temp.txt
+# Doppler environment files
+.env
+.env.*
+backend.tf
