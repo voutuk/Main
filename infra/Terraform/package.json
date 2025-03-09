@@ -17,7 +17,10 @@
     "apply": "doppler run -- terragrunt apply -auto-approve",
     "destroy": "doppler run -- terragrunt destroy -auto-approve",
     "state": "doppler run -- terragrunt state list",
-
+    "refresh": "doppler run -- terragrunt refresh",
+    "output": "doppler run -- terragrunt output",
+    "validate": "doppler run -- terragrunt validate",
+    
     "// Instances ": "VM instance management",
     "apply:instance:main": "doppler run -- terragrunt apply -target=module.main_instance -auto-approve",
     "apply:instance:vvms": "doppler run -- terragrunt apply -target=module.vvms_instance -auto-approve",

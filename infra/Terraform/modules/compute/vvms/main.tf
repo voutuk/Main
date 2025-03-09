@@ -21,6 +21,11 @@ resource "azurerm_nat_gateway_public_ip_association" "nat_pip_association" {
   public_ip_address_id = azurerm_public_ip.nat_gw_pub_ip.id
 }
 
+resource "azurerm_network_interface_security_group_association" "vm_nic_nsg" {
+  network_interface_id      = azurerm_subnet.main_subnet.id
+  network_security_group_id = var.nsg_id
+}
+
 # Віртуальна мережа
 resource "azurerm_virtual_network" "main_vnet" {
   name                = "${var.vmss_name}-vnet"

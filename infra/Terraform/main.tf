@@ -83,6 +83,7 @@ module "vvms_instance" {
   vmss_name           = var.vmss_name
   instance_count      = var.instance_count
   admin_username      = var.vm_admin_username
+  nsg_id              = module.create_vvms_nsg.nsg_id
   tags                = var.tags
 }
 

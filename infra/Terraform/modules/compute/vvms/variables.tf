@@ -48,3 +48,8 @@ variable "sku" {
   description = "SKU образу віртуальної машини."
   default     = "22_04-lts"
 }
+
+variable "nsg_id" {
+  type        = string
+  description = "ID Network Security Group, який буде призначений для віртуальних машин."
+}
