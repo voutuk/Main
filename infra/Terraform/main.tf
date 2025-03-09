@@ -94,7 +94,7 @@ module "main_rule_block_ssh" {
   priority            = 150
 }
 
-module "agent_rule_block_ssh" {
+module "vvms_rule_block_ssh" {
   source              = "./modules/nsg_rule"
   resource_group_name = module.vvms_instance_rg.resource_group_name
   nsg_name            = module.create_vvms_nsg.nsg_name

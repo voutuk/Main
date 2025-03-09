@@ -10,7 +10,7 @@
     "url": "git+https://github.com/voutuk/Main/infra/Terraform"
   },
   "scripts": {
-    "// Base commands": "Basic terragrunt commands with env support",
+    "// Base commands ": "Basic terragrunt commands with env support",
     "pre": "terraform apply -target=module.backup_storage -auto-approve",
     "init": "doppler run -- terragrunt init",
     "plan": "doppler run -- terragrunt plan",
@@ -18,7 +18,7 @@
     "destroy": "doppler run -- terragrunt destroy -auto-approve",
     "state": "doppler run -- terragrunt state list",
 
-    "// Instances": "VM instance management",
+    "// Instances ": "VM instance management",
     "apply:instance:main": "doppler run -- terragrunt apply -target=module.main_instance -auto-approve",
     "apply:instance:vvms": "doppler run -- terragrunt apply -target=module.vvms_instance -auto-approve",
     "apply:instances": "doppler run -- terragrunt apply -target=module.main_instance -target=module.vvms_instance -auto-approve",
@@ -26,29 +26,26 @@
     "destroy:instance:vvms": "doppler run -- terragrunt destroy -target=module.vvms_instance -auto-approve",
     "destroy:instances": "doppler run -- terragrunt destroy -target=module.main_instance -target=module.vvms_instance -auto-approve",
 
-    "// AKS & Networking": "AKS cluster and related infrastructure",
+    "// AKS ": "AKS cluster and related infrastructure",
     "apply:aks": "doppler run -- terragrunt apply -target=module.aks_cluster -auto-approve",
-    "apply:front-door": "doppler run -- terragrunt apply -target=module.front_door -auto-approve",
-    "apply:aks:full": "doppler run -- terragrunt apply -target=module.aks_cluster -target=module.front_door -auto-approve",
     "destroy:aks": "doppler run -- terragrunt destroy -target=module.aks_cluster -auto-approve",
-    "destroy:front-door": "doppler run -- terragrunt destroy -target=module.front_door -auto-approve",
-    "destroy:aks:full": "doppler run -- terragrunt destroy -target=module.front_door -target=module.aks_cluster -auto-approve",
 
-    "// Storage & Inventory": "Storage and inventory management",
+    "// Storage & Inventory ": "Storage and inventory management",
     "apply:inventory": "doppler run -- terragrunt apply -target=module.ansible_inventory -auto-approve",
-    "destroy:storage": "doppler run -- terragrunt destroy -target=module.backup_storage -auto-approve",
+    "apply:storage": "doppler run -- terragrunt apply -target=module.backup_storage -auto-approve",
     "destroy:inventory": "doppler run -- terragrunt destroy -target=module.ansible_inventory -auto-approve",
+    "destroy:storage": "doppler run -- terragrunt destroy -target=module.backup_storage -auto-approve",
     
-    "// Security & NSG": "Network security groups and rules management",
+    "// Security & NSG ": "Network security groups and rules management",
     "block-ssh:main": "doppler run -- terragrunt apply -target=module.main_rule_block_ssh -auto-approve",
-    "block-ssh:build": "doppler run -- terragrunt apply -target=module.agent_rule_block_ssh -auto-approve",
+    "block-ssh:vvms": "doppler run -- terragrunt apply -target=module.vvms_rule_block_ssh -auto-approve",
     "unblock-ssh:main": "doppler run -- terragrunt destroy -target=module.main_rule_block_ssh -auto-approve",
-    "unblock-ssh:build": "doppler run -- terragrunt destroy -target=module.agent_rule_block_ssh -auto-approve",
+    "unblock-ssh:vvms": "doppler run -- terragrunt destroy -target=module.vvms_rule_block_ssh -auto-approve",
     "destroy:nsg:main": "doppler run -- terragrunt destroy -target=module.create_main_nsg -auto-approve",
-    "destroy:nsg:build": "doppler run -- terragrunt destroy -target=module.create_agent_nsg -auto-approve",
-    "destroy:nsg:all": "doppler run -- terragrunt destroy -target=module.create_main_nsg -target=module.create_agent_nsg -auto-approve",
+    "destroy:nsg:vvms": "doppler run -- terragrunt destroy -target=module.create_vvms_nsg -auto-approve",
+    "destroy:nsg:all": "doppler run -- terragrunt destroy -target=module.create_main_nsg -target=module.create_vvms_nsg -auto-approve",
 
-    "// Utils": "Utility scripts",
+    "// Utils ": "Utility scripts",
     "rover": "bash rover.sh"
   }
 }
