@@ -53,3 +53,11 @@ variable "nsg_id" {
   type        = string
   description = "ID Network Security Group, який буде призначений для віртуальних машин."
 }
+
+variable "vnet_address_space" {
+  type = list(string)
+}
+
+variable "subnet_address_space" {
+  type = list(string)
+}

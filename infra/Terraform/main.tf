@@ -59,32 +59,36 @@ module "create_vvms_nsg" {
 
 # Main VM
 module "main_instance" {
-  source              = "./modules/compute/main_instance"
-  resource_group_name = module.main_instance_rg.resource_group_name
-  location            = module.main_instance_rg.resource_group_location
-  vm_name             = var.main_vm_name
-  vm_size             = var.main_instance_vm_size
-  admin_username      = var.vm_admin_username
-  vm_private_ip       = var.vm_private_ip
-  ssh_public_key      = data.doppler_secrets.az-creds.map.SSHPUB
-  vm_sku              = var.sku
-  nsg_id              = module.create_main_nsg.nsg_id
-  tags                = var.tags
+  source               = "./modules/compute/main_instance"
+  resource_group_name  = module.main_instance_rg.resource_group_name
+  location             = module.main_instance_rg.resource_group_location
+  vm_name              = var.main_vm_name
+  vm_size              = var.main_instance_vm_size
+  admin_username       = var.vm_admin_username
+  vnet_address_space   = var.main_vnet_address_space
+  subnet_address_space = var.main_subnet_address_space
+  vm_private_ip        = var.vm_private_ip   # INFO: CHECK THIS IP
+  ssh_public_key       = data.doppler_secrets.az-creds.map.SSHPUB
+  vm_sku               = var.sku
+  nsg_id               = module.create_main_nsg.nsg_id
+  tags                 = var.tags
 }
 
 # Build-Agent VM
 module "vvms_instance" {
-  source              = "./modules/compute/vvms"
-  resource_group_name = module.vvms_instance_rg.resource_group_name
-  location            = module.vvms_instance_rg.resource_group_location
-  ssh_public_key      = data.doppler_secrets.az-creds.map.SSHPUB
-  vm_sku              = var.vvms_sku
-  sku                 = var.sku
-  vmss_name           = var.vmss_name
-  instance_count      = var.instance_count
-  admin_username      = var.vm_admin_username
-  nsg_id              = module.create_vvms_nsg.nsg_id
-  tags                = var.tags
+  source               = "./modules/compute/vvms"
+  resource_group_name  = module.vvms_instance_rg.resource_group_name
+  location             = module.vvms_instance_rg.resource_group_location
+  ssh_public_key       = data.doppler_secrets.az-creds.map.SSHPUB
+  vm_sku               = var.vvms_sku
+  sku                  = var.sku
+  vmss_name            = var.vmss_name
+  instance_count       = var.instance_count
+  admin_username       = var.vm_admin_username
+  vnet_address_space   = var.vvms_vnet_address_space
+  subnet_address_space = var.vvms_subnet_address_space
+  nsg_id               = module.create_vvms_nsg.nsg_id
+  tags                 = var.tags
 }
 
 # Module to block SSH access (deny)
@@ -113,8 +117,8 @@ module "aks_cluster" {
   vnet_name               = var.vnet_name
   subnet_name             = var.subnet_name
   tags                    = var.tags
-  vnet_address_space      = var.address_space
-  subnet_address_prefix   = var.subnet_address_prefix
+  vnet_address_space      = var.ask_address_space
+  subnet_address_prefix   = var.ask_subnet_address_prefix
   # Add system node pool configuration
   system_node_count       = 1
   system_min_node_count   = 1

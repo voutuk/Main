@@ -20,6 +20,36 @@ variable "rg_prefix" {
 }
 
 # Variables for VMs
+variable "main_vnet_address_space" {
+  type        = list(string)
+  description = "The address space for the main virtual network."
+  default     = ["10.1.0.0/20"]
+}
+
+variable "main_subnet_address_space" {
+  type        = list(string)
+  description = "The address space for the main subnet."
+  default     = ["10.1.1.0/24"]
+}
+
+variable "vm_private_ip" {
+  type        = string
+  description = "The private IP address for the main VM."
+  default     = "10.1.1.5"
+}
+
+variable "vvms_vnet_address_space" {
+  type        = list(string)
+  description = "The address space for the vvms virtual network."
+  default     = ["10.2.0.0/20"]
+}
+
+variable "vvms_subnet_address_space" {
+  type        = list(string)
+  description = "The address space for the vvms subnet."
+  default     = ["10.2.1.0/24"]
+}
+
 variable "main_instance_vm_size" {
   type        = string
   description = "The size (SKU) of the main virtual machine."
@@ -30,12 +60,6 @@ variable "vm_admin_username" {
   type        = string
   description = "The administrative login for the VM."
   default     = "ubuntu"
-}
-
-variable "vm_private_ip" {
-  type        = string
-  description = "The private IP address for the main VM."
-  default     = "10.0.1.5"
 }
 
 variable "sku" {
@@ -99,16 +123,16 @@ variable "subnet_name" {
   default     = "gosell-aks-subnet"
 }
 
-variable "address_space" {
+variable "ask_address_space" {
   description = "The address space of the virtual network"
   type        = list(string)
-  default     = ["10.0.0.0/16"]
+  default     = ["10.3.0.0/20"]
 }
 
-variable "subnet_address_prefix" {
+variable "ask_subnet_address_prefix" {
   description = "The address prefix for the subnet"
   type        = list(string)
-  default     = ["10.0.1.0/24"] 
+  default     = ["10.3.1.0/24"] 
 }
 
 
