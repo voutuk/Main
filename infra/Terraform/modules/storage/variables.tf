@@ -1,4 +1,4 @@
-# modules/backup_storage/variables.tf
+# modules/storage/variables.tf
 
 variable "resource_group_name" {
   type = string
@@ -8,15 +8,17 @@ variable "location" {
   type = string
 }
 
-variable "backup_storage_prefix" {
+variable "storage_prefix" {
   type = string
 }
 
 variable "container_name" {
   type        = string
-  default     = "backups"
-  description = "The name of the container in the Storage Account where backups will be stored."
+  default     = "storage"
+  description = "The name of the container in the Storage Account will be stored."
 }
+
+
 
 variable "tags" {
   type        = map(string)

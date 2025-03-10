@@ -10,68 +10,59 @@
 # Azure API Provider: https://registry.terraform.io/providers/azure/azapi/latest/docs
 # Doppler Provider: https://registry.terraform.io/providers/DopplerHQ/doppler/latest/docs
 
+
 # Resource Groups for different components
-module "backup_storage_rg" {
+module "storage_rg" {
   source              = "./modules/resource_group"
-  resource_group_name = "${var.rg_prefix}-backup-storage"
-  location            = "westeurope"  # You can change this region
+  resource_group_name = "${var.rg_prefix}-storage"
+  location            = var.dev_locate
   tags                = var.tags
 }
 
 module "aks_cluster_rg" {
   source              = "./modules/resource_group"
   resource_group_name = "${var.rg_prefix}-aks-cluster"
-  location            = var.aks_location  # You can change this region
-  tags                = var.tags
-}
-
-module "main_instance_rg" {
-  source              = "./modules/resource_group"
-  resource_group_name = "${var.rg_prefix}-main-instance"
-  location            = "westus"  # You can change this region
+  location            = var.prod_locate
   tags                = var.tags
 }
 
 module "vvms_instance_rg" {
   source              = "./modules/resource_group"
   resource_group_name = "${var.rg_prefix}-build-agents"
-  location            = "eastus"  # You can change this region
+  location            = var.dev_locate
+  tags                = var.tags
+}
+
+module "container_rg" {
+  source              = "./modules/resource_group"
+  resource_group_name = "${var.rg_prefix}-main"
+  location            = var.dev_locate
   tags                = var.tags
 }
 
 # Network Security Group
-module "create_main_nsg" {
+module "create_vvms_nsg" {
   source              = "./modules/nsg"
-  resource_group_name = module.main_instance_rg.resource_group_name
-  location            = module.main_instance_rg.resource_group_location
-  nsg_name            = "main-nsg"
-  vnet_address_space  = "10.1.0.0/16"
+  resource_group_name = module.container_rg.resource_group_name
+  location            = module.container_rg.resource_group_location
+  nsg_name            = "vvms-nsg"
+  vnet_address_space  = "10.2.0.0/16"  #FIXME
   tags                = var.tags
 }
 
-module "create_vvms_nsg" {
-  source              = "./modules/nsg"
-  resource_group_name = module.vvms_instance_rg.resource_group_name
-  location            = module.vvms_instance_rg.resource_group_location
-  nsg_name            = "vvms-nsg"
-  vnet_address_space  = "10.2.0.0/16"
-}
-
 # Main VM
-module "main_instance" {
-  source               = "./modules/compute/main_instance"
-  resource_group_name  = module.main_instance_rg.resource_group_name
-  location             = module.main_instance_rg.resource_group_location
-  vm_name              = var.main_vm_name
-  vm_size              = var.main_instance_vm_size
-  admin_username       = var.vm_admin_username
-  vnet_address_space   = var.main_vnet_address_space
-  subnet_address_space = var.main_subnet_address_space
-  vm_private_ip        = var.vm_private_ip   # INFO: CHECK THIS IP
-  ssh_public_key       = data.doppler_secrets.az-creds.map.SSHPUB
-  vm_sku               = var.sku
-  nsg_id               = module.create_main_nsg.nsg_id
-  tags                 = var.tags
+module "container_instance" {
+  source                  = "./modules/compute/container_instance"
+  resource_group_name     = module.container_rg.resource_group_name
+  location                = module.container_rg.resource_group_location
+  container_name          = "jenkins"
+  jenkins_image           = "jenkins/jenkins:lts"
+  cloudflare_tunnel_token = data.doppler_secrets.az-creds.map.CLOUDFLARE_TUNNEL_TOKEN
+  storage_account_name    = module.storage_account.storage_account_name
+  storage_account_key     = module.storage_account.accoutn_key
+  docker_hub_password     = var.docker_hub_username
+  docker_hub_username     = data.doppler_secrets.az-creds.map.DOCKERHUB_KEY
+  tags                    = var.tags
 }
 
 # Build-Agent VM
@@ -89,14 +80,6 @@ module "vvms_instance" {
   subnet_address_space = var.vvms_subnet_address_space
   nsg_id               = module.create_vvms_nsg.nsg_id
   tags                 = var.tags
-}
-
-# Module to block SSH access (deny)
-module "main_rule_block_ssh" {
-  source              = "./modules/nsg_rule"
-  resource_group_name = module.main_instance_rg.resource_group_name
-  nsg_name            = module.create_main_nsg.nsg_name
-  priority            = 150
 }
 
 module "vvms_rule_block_ssh" {
@@ -125,22 +108,12 @@ module "aks_cluster" {
   system_max_node_count   = 2
 }
 
-# Storage Account for backups
-module "backup_storage" {
-  source                = "./modules/backup_storage"
-  resource_group_name   = module.backup_storage_rg.resource_group_name
-  location              = module.backup_storage_rg.resource_group_location
-  backup_storage_prefix = var.backup_storage_prefix
-  container_name        = "backups"
+# Storage Account 
+module "storage_account" {
+  source                = "./modules/storage"
+  resource_group_name   = module.storage_rg.resource_group_name
+  location              = module.storage_rg.resource_group_location
+  storage_prefix        = var.storage_prefix
+  container_name        = "storage-container"
   tags                  = var.tags
 }
-
-# Ansible Inventory
-# FIXME: ADD vvms public IPs and gen add files
-# module "ansible_inventory" {
-#   source           = "./modules/ansible"
-#   main_instance_ip = module.main_instance.public_ip
-#   build_agent_ips  = module.vvms_instance.public_ips
-#   admin_username   = var.vm_admin_username
-#   inventory_path   = "../Ansible/hosts"
-# }

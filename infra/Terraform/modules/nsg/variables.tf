@@ -9,11 +9,11 @@ variable "location" {
 }
 
 variable "vnet_address_space" {
-  type    = string
+  type = string
 }
 
 variable "nsg_name" {
-  type    = string
+  type = string
 }
 
 variable "tags" {

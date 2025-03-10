@@ -1,10 +1,10 @@
-# modules/backup_storage/main.tf
+# modules/storage/main.tf
 
 
 # Generate a random name for the storage account using a prefix
 resource "random_pet" "as_storage_name" {
-  prefix    = var.backup_storage_prefix
-  separator = ""
+  prefix    = var.storage_prefix
+  separator = "-"
 }
 
 locals {
@@ -14,7 +14,7 @@ locals {
 }
 
 # Create the Storage Account
-resource "azurerm_storage_account" "backup_sa" {
+resource "azurerm_storage_account" "sa" {
   name                          = local.sanitized_storage_name
   resource_group_name           = var.resource_group_name
   location                      = var.location
@@ -33,7 +33,7 @@ resource "azurerm_storage_account" "backup_sa" {
 # Create the container for backups
 resource "azurerm_storage_container" "backup_container" {
   name                  = var.container_name
-  storage_account_name  = azurerm_storage_account.backup_sa.name
+  storage_account_name  = azurerm_storage_account.sa.name
   container_access_type = "private"
   # INFO: Вернути назад
   # lifecycle {

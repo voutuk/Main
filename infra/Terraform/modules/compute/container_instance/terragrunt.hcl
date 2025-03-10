@@ -14,7 +14,7 @@ inputs = {
   tags = merge(
     local.common_vars.locals.common_tags,
     {
-      Component = "main-instance"
+      Component = "container_instance"
     }
   )
 }

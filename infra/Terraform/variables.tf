@@ -7,7 +7,13 @@ variable "DOPPLER_AUTH_TOKEN" {
   sensitive   = true
 }
 
-variable "backup_storage_prefix" {
+variable "docker_hub_username" {
+  description = "Ім'я користувача Docker Hub"
+  type        = string
+  default     = "voutuk"
+}
+
+variable "storage_prefix" {
   type        = string
   description = "The prefix for the Azure backup storage name."
   default     = "gosellbackup"
@@ -17,6 +23,18 @@ variable "rg_prefix" {
   type        = string
   description = "Region group prefix."
   default     = "gosell"
+}
+
+variable "dev_locate" {
+  type        = string
+  description = "The location for the development environment."
+  default     = "westeurope"
+}
+
+variable "prod_locate" {
+  type        = string
+  description = "The location for the production environment."
+  default     = "northeurope"
 }
 
 # Variables for VMs
