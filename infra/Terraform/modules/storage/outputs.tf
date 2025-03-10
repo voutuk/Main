@@ -1,11 +1,11 @@
 # modules/storage/outputs.tf
 
-output "storage_account_id" {
+output "account_id" {
   description = "ID of the created Storage Account."
   value       = azurerm_storage_account.sa.id
 }
 
-output "storage_account_name" {
+output "account_name" {
   description = "Name of the created Storage Account."
   value       = azurerm_storage_account.sa.name
 }

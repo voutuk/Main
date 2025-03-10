@@ -2,8 +2,8 @@
 # License: Academic Free License ("AFL") v. 3.0
 #
 # Purpose: This Terraform configuration deploys a development instance 
-#          with 2 build-agent VMs, 1 main VM, 1 NSG, and an NSG rule.
-# Prerequisites: A Doppler .env secret key.
+#   of Jenkins CI, a build-agent VM, an AKS cluster, and a storage account.
+# Prerequisites: yarn run pre
 # Variables: ./variables.tf
 #
 # Azure Provider: https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs
@@ -19,85 +19,60 @@ module "storage_rg" {
   tags                = var.tags
 }
 
-module "aks_cluster_rg" {
+module "aks_rg" {
   source              = "./modules/resource_group"
   resource_group_name = "${var.rg_prefix}-aks-cluster"
   location            = var.prod_locate
   tags                = var.tags
 }
 
-module "vvms_instance_rg" {
+module "instance_rg" {
   source              = "./modules/resource_group"
-  resource_group_name = "${var.rg_prefix}-build-agents"
+  resource_group_name = "${var.rg_prefix}-instance"
   location            = var.dev_locate
   tags                = var.tags
 }
 
-module "container_rg" {
-  source              = "./modules/resource_group"
-  resource_group_name = "${var.rg_prefix}-main"
-  location            = var.dev_locate
+# Network module
+module "network" {
+  source              = "./modules/instance/net"
+  resource_group_name = module.instance_rg.name
+  location            = module.instance_rg.location
+  vnet_name           = "instance-network"
   tags                = var.tags
 }
 
-# Network Security Group
-module "create_vvms_nsg" {
-  source              = "./modules/nsg"
-  resource_group_name = module.vvms_instance_rg.resource_group_name
-  location            = module.vvms_instance_rg.resource_group_location
-  nsg_name            = "vvms-nsg"
-  vnet_address_space  = "10.2.0.0/16"  #FIXME
-  tags                = var.tags
-}
-
-# Main VM
-module "container_instance" {
-  source                  = "./modules/compute/container_instance"
-  resource_group_name     = module.container_rg.resource_group_name
-  location                = module.container_rg.resource_group_location
-  container_name          = "jenkins"
-  jenkins_image           = "mirror.gcr.io/jenkins/jenkins:lts"
-  doppler_auth            = var.DOPPLER_AUTH_TOKEN
-  cloudflare_tunnel_token = data.doppler_secrets.az-creds.map.CLOUDFLARE_TUNNEL_TOKEN
-  storage_account_name    = module.storage_account.storage_account_name
-  storage_account_key     = module.storage_account.account_key
-  docker_hub_password     = var.docker_hub_username
-  docker_hub_username     = data.doppler_secrets.az-creds.map.DOCKERHUB_KEY
-  tags                    = var.tags
+# Jenkins CI module
+module "ci" {
+  source                   = "./modules/instance/ci"
+  resource_group_name      = module.instance_rg.name
+  location                 = module.instance_rg.location
+  container_name           = "jenkins-ci"
+  subnet_id                = module.network.ci_subnet_id
+  storage_account_name     = module.sa.account_name
+  storage_account_key      = module.sa.account_key
+  doppler_auth             = data.doppler_secrets.az-creds.map.TF_VAR_DOPPLER_AUTH_TOKEN
+  cloudflare_tunnel_token  = data.doppler_secrets.az-creds.map.CLOUDFLARE_TUNNEL_TOKEN
+  tags                     = var.tags
 }
 
 # Build-Agent VM
-module "vvms_instance" {
-  source                = "./modules/compute/vvms"
-  resource_group_name   = module.vvms_instance_rg.resource_group_name
-  location              = module.vvms_instance_rg.resource_group_location
-  ssh_public_key        = data.doppler_secrets.az-creds.map.SSHPUB
-  cloudflare_zone_id    = data.doppler_secrets.az-creds.map.CLOUDFLARE_ZONE_ID
-  # cloudflare_account_id = data.doppler_secrets.az-creds.map.CLOUDFLARE_ACCOUNT_ID
-  network_security_group_name = module.create_vvms_nsg.nsg_name
-  nsg_id                = module.create_vvms_nsg.nsg_id
-  vm_sku                = var.vvms_sku
-  sku                   = var.sku
-  vmss_name             = var.vmss_name
-  instance_count        = var.instance_count
-  admin_username        = var.vm_admin_username
-  vnet_address_space    = var.vvms_vnet_address_space
-  subnet_address_space  = var.vvms_subnet_address_space
-  tags                  = var.tags
-}
-
-module "vvms_rule_block_ssh" {
-  source              = "./modules/nsg_rule"
-  resource_group_name = module.vvms_instance_rg.resource_group_name
-  nsg_name            = module.create_vvms_nsg.nsg_name
-  priority            = 150
+module "vms" {
+  source              = "./modules/instance/vms"
+  resource_group_name = module.instance_rg.name
+  location            = module.instance_rg.location
+  subnet_id           = module.network.vm_subnet_id
+  vm_name_prefix      = "jenkins-agent"
+  vm_count            = 2
+  admin_ssh_key_data  = data.doppler_secrets.az-creds.map.SSHPUB
+  tags                = var.tags
 }
 
 # AKS cluster module
 module "aks_cluster" {
   source                  = "./modules/aks"
-  resource_group_name     = module.aks_cluster_rg.resource_group_name
-  location                = module.aks_cluster_rg.resource_group_location
+  resource_group_name     = module.aks_rg.name
+  location                = module.aks_rg.location
   cluster_name            = var.aks_name
   dns_prefix              = var.dns_prefix
   kubernetes_version      = "1.30.9"
@@ -113,10 +88,10 @@ module "aks_cluster" {
 }
 
 # Storage Account 
-module "storage_account" {
+module "sa" {
   source                = "./modules/storage"
-  resource_group_name   = module.storage_rg.resource_group_name
-  location              = module.storage_rg.resource_group_location
+  resource_group_name   = module.storage_rg.name
+  location              = module.storage_rg.location
   storage_prefix        = var.storage_prefix
   container_name        = "storage-container"
   tags                  = var.tags

@@ -25,9 +25,9 @@ resource "azurerm_storage_account" "sa" {
   public_network_access_enabled = true
   tags                          = var.tags
   # INFO: Вернути назад
-  lifecycle {
-    prevent_destroy = true
-  }
+  # lifecycle {
+  #   prevent_destroy = true
+  # }
 }
 
 # Create the container for backups
@@ -36,8 +36,8 @@ resource "azurerm_storage_container" "backup_container" {
   storage_account_name  = azurerm_storage_account.sa.name
   container_access_type = "private"
   # INFO: Вернути назад
-  lifecycle {
-    prevent_destroy = true
-  }
+  # lifecycle {
+  #   prevent_destroy = true
+  # }
 }
 

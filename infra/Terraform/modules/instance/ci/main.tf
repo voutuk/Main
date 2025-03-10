@@ -1,5 +1,4 @@
-
-# File Share for Jenkins data
+# File Share for Jenkins data stays the same
 resource "azurerm_storage_share" "jenkins_data" {
   name                 = "jenkins-data"
   storage_account_name = var.storage_account_name
@@ -9,12 +8,13 @@ resource "azurerm_storage_share" "jenkins_data" {
   }
 }
 
-# Container Instance with WARP sidecar
+# Container Instance with WARP sidecar - update to use private networking
 resource "azurerm_container_group" "jenkins" {
   name                = var.container_name
   location            = var.location
   resource_group_name = var.resource_group_name
-  ip_address_type     = "Public"
+  ip_address_type     = "Private"  # Changed from Public to Private
+  subnet_ids          = [var.subnet_id]  # Added subnet reference
   os_type             = "Linux"
   tags                = var.tags
   
@@ -45,7 +45,6 @@ resource "azurerm_container_group" "jenkins" {
 
     environment_variables = {
       "JENKINS_OPTS" = "--prefix=/jenkins"
-
     }
     secure_environment_variables = {
       "DOPPLER_TOKEN" = var.doppler_auth
@@ -58,9 +57,8 @@ resource "azurerm_container_group" "jenkins" {
     cpu    = 0.5
     memory = 0.5
     
-    # Command to start WARP in tunnel mode
     commands = [
-      "cloudflared",  # Ім'я виконуваного файлу
+      "cloudflared",
       "tunnel", 
       "--no-autoupdate", 
       "run", 
@@ -68,7 +66,6 @@ resource "azurerm_container_group" "jenkins" {
       var.cloudflare_tunnel_token
     ]
     
-    # Environment variables for Cloudflare configuration
     environment_variables = {
       "TUNNEL_METRICS"      = "0.0.0.0:2000", 
       "TUNNEL_LOGLEVEL"     = "info"
@@ -80,7 +77,7 @@ resource "azurerm_container_group" "jenkins" {
   }
 }
 
-# Network Security Group for Jenkins
+# Network Security Group for Jenkins - can remain as is
 resource "azurerm_network_security_group" "jenkins" {
   name                = "jenkins-nsg"
   location            = var.location
@@ -110,4 +107,10 @@ resource "azurerm_network_security_group" "jenkins" {
     source_address_prefix      = "*"
     destination_address_prefix = "*"
   }
+}
+
+# Add output for private IP
+output "jenkins_ip_private" {
+  description = "The private IP address of the Jenkins container instance"
+  value       = azurerm_container_group.jenkins.ip_address
 }

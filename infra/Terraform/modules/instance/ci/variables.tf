@@ -61,19 +61,13 @@ variable "tags" {
   default     = {}
 }
 
-variable "docker_hub_username" {
-  description = "Docker Hub username"
-  type        = string
-} 
-
-variable "docker_hub_password" {
-  description = "Docker Hub password"
-  type        = string
-  sensitive   = true  
-}
-
 variable "doppler_auth" {
   description = "Doppler auth token"
   type        = string
   sensitive   = true
+}
+
+variable "subnet_id" {
+  description = "ID of the subnet for the container instance"
+  type        = string
 }
