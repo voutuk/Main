@@ -68,15 +68,11 @@ module "vvms" {
   instance_count              = var.instance_count
   admin_username              = "ubuntu"
   ssh_public_key              = data.doppler_secrets.az-creds.map.SSHPUB
-  nsg_id                      = azurerm_network_security_group.jenkins.id
-  network_security_group_name = azurerm_network_security_group.jenkins.name
   subnet_id                   = module.network.vmss_subnet_id
   cloudflare_zone_id          = data.doppler_secrets.az-creds.map.CLOUDFLARE_ZONE_ID
   private_dns_zone_name       = module.network.private_dns_zone_name
   tags                        = var.tags
 }
-
-
 
 # AKS cluster module
 module "aks" {

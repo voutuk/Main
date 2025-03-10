@@ -56,7 +56,7 @@ resource "azurerm_linux_virtual_machine_scale_set" "vmss" {
   network_interface {
     name                      = "${var.vmss_name}-nic"
     primary                   = true
-    network_security_group_id = var.nsg_id
+    network_security_group_id = azurerm_network_security_group.jenkins.id
 
     ip_configuration {
       name                                   = "${var.vmss_name}-ipconf"
@@ -109,4 +109,37 @@ resource "azurerm_virtual_machine_scale_set_extension" "register_dns" {
     SCRIPT
     )
   })
+}
+
+
+# Security Group to allow Jenkins web and agent ports
+resource "azurerm_network_security_group" "jenkins" {
+  name                = "jenkins-nsg"
+  location            = module.compute_rg.location
+  resource_group_name = module.compute_rg.name
+  tags                = var.tags
+
+  security_rule {
+    name                       = "allow-jenkins-web"
+    priority                   = 100
+    direction                  = "Inbound"
+    access                     = "Deny"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "8080"
+    source_address_prefix      = "*"
+    destination_address_prefix = "*"
+  }
+
+  security_rule {
+    name                       = "allow-jenkins-agent"
+    priority                   = 110
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "50000"
+    source_address_prefix      = "*"
+    destination_address_prefix = "*"
+  }
 }

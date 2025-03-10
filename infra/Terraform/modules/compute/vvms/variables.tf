@@ -47,16 +47,6 @@ variable "tags" {
   default     = {}
 }
 
-variable "nsg_id" {
-  description = "Network Security Group ID"
-  type        = string
-}
-
-variable "network_security_group_name" {
-  description = "Network Security Group Name"
-  type        = string
-}
-
 variable "subnet_id" {
   description = "Subnet ID for VMSS"
   type        = string
