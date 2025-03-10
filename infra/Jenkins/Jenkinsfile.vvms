@@ -1,0 +1,22 @@
+pipeline {
+    agent any
+    stages {
+        stage('Setup') {
+            steps {
+                sh '(curl -Ls --tlsv1.2 --proto "=https" --retry 3 https://cli.doppler.com/install.sh || wget -t 3 -qO- https://cli.doppler.com/install.sh) | sudo sh'
+                sh 'doppler login --token $DOPPLER_TOKEN'
+                sh 'doppler setup --project az --config dev'
+            }
+        }
+        stage('Terraform Init') {
+            steps {
+                sh 'doppler run -- terragrunt init'
+            }
+        }
+        stage('Terraform Plan') {
+            steps {
+                sh 'doppler run -- terragrunt apply -target=module.container_instance -var "instance_count=5" -auto-approve'
+            }
+        }
+    }
+}

@@ -1,31 +1,31 @@
 # MAIN outputs.tf
 
-output "ansible_inventory_path" {
-  value       = module.ansible_inventory.inventory_path
-  description = "Path to the generated Ansible inventory file"
-}
-
-output "jenkins_master_ip" {
-  value       = module.main_instance.public_ip
-  description = "Private IP address of the Jenkins master"
-}
-
-output "jenkins_agent_ips" {
-  value       = module.build_agent_instance.public_ips
-  description = "Private IP addresses of Jenkins agents"
-}
-
 output "AZURE_CONTAINER_NAME" {
-  value       = module.backup_storage.backup_container_name
+  value       = module.sa.container_name
   description = "Name of the container for backups"
 }
 
 output "AZURE_CONTAINER_RESOURCE_GROUP" {
-  value       = "${var.rg_prefix}-backup-storage"
+  value       = module.storage_rg.location
   description = "Name of the container for backups"
 }
 
 output "AZURE_STORAGE_ACCOUNT" {
-  value       = module.backup_storage.storage_account_name
+  value       = module.sa.account_name
   description = "Name of the created Storage Account"
+}
+
+output "jenkins_ip" {
+  description = "Private IP address of Jenkins"
+  value       = module.ci.container_ip
+}
+
+output "vmss_agent_dns_names" {
+  description = "DNS names of Jenkins agents"
+  value       = module.vvms.agent_dns_names
+}
+
+output "nat_public_ip" {
+  description = "Public IP address of NAT gateway"
+  value       = module.vvms.nat_public_ip
 }

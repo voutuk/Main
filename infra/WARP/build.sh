@@ -1,0 +1,1 @@
+docker build --build-arg GOST_VERSION=2.11.5 --build-arg TARGETPLATFORM=linux/amd64 . -t voutuk/warp-trust:latest

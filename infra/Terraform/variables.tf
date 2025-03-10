@@ -7,7 +7,13 @@ variable "DOPPLER_AUTH_TOKEN" {
   sensitive   = true
 }
 
-variable "backup_storage_prefix" {
+variable "docker_hub_username" {
+  description = "Ім'я користувача Docker Hub"
+  type        = string
+  default     = "voutuk"
+}
+
+variable "storage_prefix" {
   type        = string
   description = "The prefix for the Azure backup storage name."
   default     = "gosellbackup"
@@ -19,17 +25,53 @@ variable "rg_prefix" {
   default     = "gosell"
 }
 
+variable "dev_locate" {
+  type        = string
+  description = "The location for the development environment."
+  default     = "westeurope"
+}
+
+variable "prod_locate" {
+  type        = string
+  description = "The location for the production environment."
+  default     = "northeurope"
+}
+
 # Variables for VMs
+variable "main_vnet_address_space" {
+  type        = list(string)
+  description = "The address space for the main virtual network."
+  default     = ["10.1.0.0/20"]
+}
+
+variable "main_subnet_address_space" {
+  type        = list(string)
+  description = "The address space for the main subnet."
+  default     = ["10.1.1.0/24"]
+}
+
+variable "vm_private_ip" {
+  type        = string
+  description = "The private IP address for the main VM."
+  default     = "10.1.1.5"
+}
+
+variable "vvms_vnet_address_space" {
+  type        = list(string)
+  description = "The address space for the vvms virtual network."
+  default     = ["10.2.0.0/20"]
+}
+
+variable "vvms_subnet_address_space" {
+  type        = list(string)
+  description = "The address space for the vvms subnet."
+  default     = ["10.2.1.0/24"]
+}
+
 variable "main_instance_vm_size" {
   type        = string
   description = "The size (SKU) of the main virtual machine."
   default     = "Standard_B2ms"
-}
-
-variable "build_agent_vm_size" {
-  type        = string
-  description = "The size (SKU) of the Build-Agent virtual machine."
-  default     = "Standard_B2s"
 }
 
 variable "vm_admin_username" {
@@ -38,16 +80,16 @@ variable "vm_admin_username" {
   default     = "ubuntu"
 }
 
-variable "vm_private_ip" {
-  type        = string
-  description = "The private IP address for the main VM."
-  default     = "10.0.1.5"
-}
-
-variable "vm_sku" {
+variable "sku" {
   type        = string
   description = "The SKU of the VM image."
   default     = "22_04-lts"
+}
+
+variable "vvms_sku" {
+  type        = string
+  description = "The SKU of the VM image."
+  default     = "Standard_B2s"
 }
 
 variable "instance_count" {
@@ -60,6 +102,12 @@ variable "main_vm_name" {
   type        = string
   description = "The name of the main VM."
   default     = "main-vm"
+}
+
+variable "vmss_name" {
+  type        = string
+  description = "The name of the VM Scale Set."
+  default     = "vvms"
 }
 
 # Variables for AKS
@@ -93,16 +141,16 @@ variable "subnet_name" {
   default     = "gosell-aks-subnet"
 }
 
-variable "address_space" {
+variable "ask_address_space" {
   description = "The address space of the virtual network"
   type        = list(string)
-  default     = ["10.0.0.0/16"]
+  default     = ["10.3.0.0/20"]
 }
 
-variable "subnet_address_prefix" {
+variable "ask_subnet_address_prefix" {
   description = "The address prefix for the subnet"
   type        = list(string)
-  default     = ["10.0.1.0/24"] 
+  default     = ["10.3.1.0/24"] 
 }
 
 

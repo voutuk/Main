@@ -37,7 +37,7 @@ inputs = {
 
 terraform {
   after_hook "cleanup_backend" {
-    commands = ["apply", "plan", "destroy", "init", "validate"]
+    commands = ["apply", "plan", "destroy", "init", "validate", "refresh", "import", "output", "state", "taint", "untaint"]
     execute  = ["rm", "-f", "backend.tf"]
   }
 }

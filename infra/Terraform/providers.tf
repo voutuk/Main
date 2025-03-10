@@ -16,6 +16,10 @@ terraform {
       source  = "hashicorp/local"
       version = "~> 2.0"
     }
+    cloudflare = {
+      source = "cloudflare/cloudflare"
+      version = "~> 4.0" 
+    }
   }
 }
 
@@ -27,6 +31,10 @@ provider "azurerm" {
   client_id       = data.doppler_secrets.az-creds.map.ARM_CLIENT_ID
   client_secret   = data.doppler_secrets.az-creds.map.ARM_CLIENT_SECRET
   tenant_id       = data.doppler_secrets.az-creds.map.ARM_TENANT_ID
+}
+
+provider "cloudflare" {
+  api_token = data.doppler_secrets.az-creds.map.CLOUDFLARE_API_TOKEN
 }
 
 data "doppler_secrets" "az-creds" {}

@@ -10,133 +10,95 @@
 # Azure API Provider: https://registry.terraform.io/providers/azure/azapi/latest/docs
 # Doppler Provider: https://registry.terraform.io/providers/DopplerHQ/doppler/latest/docs
 
+
 # Resource Groups for different components
-module "backup_storage_rg" {
+module "storage_rg" {
   source              = "./modules/resource_group"
-  resource_group_name = "${var.rg_prefix}-backup-storage"
-  location            = "westeurope"  # You can change this region
+  resource_group_name = "${var.rg_prefix}-storage"
+  location            = var.dev_locate
   tags                = var.tags
 }
 
 module "aks_cluster_rg" {
   source              = "./modules/resource_group"
   resource_group_name = "${var.rg_prefix}-aks-cluster"
-  location            = var.aks_location  # You can change this region
+  location            = var.prod_locate
   tags                = var.tags
 }
 
-module "main_instance_rg" {
+module "compute_rg" {
   source              = "./modules/resource_group"
-  resource_group_name = "${var.rg_prefix}-main-instance"
-  location            = "westus"  # You can change this region
+  resource_group_name = "${var.rg_prefix}-compute"
+  location            = var.dev_locate
   tags                = var.tags
 }
 
-module "build_agent_rg" {
-  source              = "./modules/resource_group"
-  resource_group_name = "${var.rg_prefix}-build-agents"
-  location            = "eastus"  # You can change this region
-  tags                = var.tags
+module "network" {
+  source                    = "./modules/compute/net"
+  base_name                 = "devops"
+  resource_group_name       = module.compute_rg.name
+  location                  = module.compute_rg.location
+  vnet_address_space        = ["10.0.0.0/16"]
+  ci_subnet_address_space   = ["10.0.1.0/24"]
+  vmss_subnet_address_space = ["10.0.2.0/24"]
+  private_dns_zone_name     = "jenkins.internal"
+  tags                      = var.tags
 }
 
-# Network Security Group
-module "create_main_nsg" {
-  source              = "./modules/nsg"
-  resource_group_name = module.main_instance_rg.resource_group_name
-  location            = module.main_instance_rg.resource_group_location
-  nsg_name            = "main-nsg"
-  vnet_address_space  = "10.0.0.0/16"
-  tags                = var.tags
+# Jenkins CI
+module "ci" {
+  source                  = "./modules/compute/ci"
+  container_name          = "jenkins"
+  resource_group_name     = module.compute_rg.name
+  location                = module.compute_rg.location
+  storage_account_name    = module.sa.account_name
+  storage_account_key     = module.sa.account_key
+  doppler_auth            = data.doppler_secrets.az-creds.map.TF_VAR_DOPPLER_AUTH_TOKEN
+  cloudflare_tunnel_token = data.doppler_secrets.az-creds.map.CLOUDFLARE_TUNNEL_TOKEN
+  subnet_id               = module.network.ci_subnet_id
+  tags                    = var.tags
 }
 
-module "create_builder_nsg" {
-  source              = "./modules/nsg"
-  resource_group_name = module.build_agent_rg.resource_group_name
-  location            = module.build_agent_rg.resource_group_location
-  nsg_name            = "agent-nsg"
-  vnet_address_space  = "10.1.0.0/16"
-  tags                = var.tags
-}
-
-# Main VM
-module "main_instance" {
-  source              = "./modules/compute/main_instance"
-  resource_group_name = module.main_instance_rg.resource_group_name
-  location            = module.main_instance_rg.resource_group_location
-  vm_name             = var.main_vm_name
-  vm_size             = var.main_instance_vm_size
-  admin_username      = var.vm_admin_username
-  vm_private_ip       = var.vm_private_ip
-  ssh_public_key      = data.doppler_secrets.az-creds.map.SSHPUB
-  vm_sku              = var.vm_sku
-  nsg_id              = module.create_main_nsg.nsg_id
-  tags                = var.tags
-}
-
-# Build-Agent VM
-module "build_agent_instance" {
-  source              = "./modules/compute/build_agent_instance"
-  resource_group_name = module.build_agent_rg.resource_group_name
-  location            = module.build_agent_rg.resource_group_location
-  vm_name             = "build-ub"
-  vm_size             = var.build_agent_vm_size
-  admin_username      = var.vm_admin_username
-  ssh_public_key      = data.doppler_secrets.az-creds.map.SSHPUB
-  instance_count      = var.instance_count
-  vm_sku              = var.vm_sku
-  nsg_id              = module.create_builder_nsg.nsg_id
-  tags                = var.tags
-}
-
-# Module to block SSH access (deny)
-module "main_rule_block_ssh" {
-  source              = "./modules/nsg_rule"
-  resource_group_name = module.main_instance_rg.resource_group_name
-  nsg_name            = module.create_main_nsg.nsg_name
-  priority            = 150
-}
-
-module "agent_rule_block_ssh" {
-  source              = "./modules/nsg_rule"
-  resource_group_name = module.build_agent_rg.resource_group_name
-  nsg_name            = module.create_builder_nsg.nsg_name
-  priority            = 150
+# VM Scale Set для Jenkins агентів
+module "vvms" {
+  source                      = "./modules/compute/vvms"
+  vmss_name                   = "jenkins-agents"
+  resource_group_name         = module.compute_rg.name
+  location                    = module.compute_rg.location
+  instance_count              = var.instance_count
+  admin_username              = "ubuntu"
+  ssh_public_key              = data.doppler_secrets.az-creds.map.SSHPUB
+  subnet_id                   = module.network.vmss_subnet_id
+  cloudflare_zone_id          = data.doppler_secrets.az-creds.map.CLOUDFLARE_ZONE_ID
+  private_dns_zone_name       = module.network.private_dns_zone_name
+  tags                        = var.tags
 }
 
 # AKS cluster module
-module "aks_cluster" {
+module "aks" {
   source                  = "./modules/aks"
-  resource_group_name     = module.aks_cluster_rg.resource_group_name
-  location                = module.aks_cluster_rg.resource_group_location
+  resource_group_name     = module.aks_cluster_rg.name
+  location                = module.aks_cluster_rg.location
   cluster_name            = var.aks_name
   dns_prefix              = var.dns_prefix
   kubernetes_version      = "1.30.9"
   vnet_name               = var.vnet_name
   subnet_name             = var.subnet_name
   tags                    = var.tags
-  vnet_address_space      = var.address_space
-  subnet_address_prefix   = var.subnet_address_prefix
+  vnet_address_space      = var.ask_address_space
+  subnet_address_prefix   = var.ask_subnet_address_prefix
   # Add system node pool configuration
   system_node_count       = 1
   system_min_node_count   = 1
   system_max_node_count   = 2
 }
 
-# Storage Account for backups
-module "backup_storage" {
-  source                = "./modules/backup_storage"
-  resource_group_name   = module.backup_storage_rg.resource_group_name
-  location              = module.backup_storage_rg.resource_group_location
-  backup_storage_prefix = var.backup_storage_prefix
-  container_name        = "backups"
+# Storage Account 
+module "sa" {
+  source                = "./modules/storage"
+  resource_group_name   = module.storage_rg.name
+  location              = module.storage_rg.location
+  storage_prefix        = var.storage_prefix
+  container_name        = "storage-container"
   tags                  = var.tags
-}
-
-# Ansible Inventory
-module "ansible_inventory" {
-  source           = "./modules/ansible"
-  main_instance_ip = module.main_instance.public_ip
-  build_agent_ips  = module.build_agent_instance.public_ips
-  admin_username   = var.vm_admin_username
-  inventory_path   = "../Ansible/hosts"
 }
