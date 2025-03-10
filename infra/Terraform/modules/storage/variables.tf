@@ -18,8 +18,6 @@ variable "container_name" {
   description = "The name of the container in the Storage Account will be stored."
 }
 
-
-
 variable "tags" {
   type        = map(string)
   description = "Tags to be applied to the Storage Account and container."
