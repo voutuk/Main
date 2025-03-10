@@ -49,9 +49,19 @@ variable "sku" {
   default     = "22_04-lts"
 }
 
+variable "network_security_group_name" {
+  type        = string
+  description = "ID Network Security Group, який буде призначений для віртуальних машин."
+}
+
 variable "nsg_id" {
   type        = string
   description = "ID Network Security Group, який буде призначений для віртуальних машин."
+}
+
+variable "cloudflare_zone_id" {
+  type        = string
+  description = "ID зони Cloudflare."
 }
 
 variable "vnet_address_space" {

@@ -4,6 +4,9 @@ resource "azurerm_storage_share" "jenkins_data" {
   name                 = "jenkins-data"
   storage_account_name = var.storage_account_name
   quota                = 50
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
 # Container Instance with WARP sidecar
@@ -42,6 +45,10 @@ resource "azurerm_container_group" "jenkins" {
 
     environment_variables = {
       "JENKINS_OPTS" = "--prefix=/jenkins"
+
+    }
+    secure_environment_variables = {
+      "DOPPLER_TOKEN" = var.doppler_auth
     }
   }
   # Cloudflare WARP sidecar container

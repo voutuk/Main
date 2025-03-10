@@ -71,3 +71,9 @@ variable "docker_hub_password" {
   type        = string
   sensitive   = true  
 }
+
+variable "doppler_auth" {
+  description = "Doppler auth token"
+  type        = string
+  sensitive   = true
+}

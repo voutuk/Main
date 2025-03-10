@@ -43,8 +43,8 @@ module "container_rg" {
 # Network Security Group
 module "create_vvms_nsg" {
   source              = "./modules/nsg"
-  resource_group_name = module.container_rg.resource_group_name
-  location            = module.container_rg.resource_group_location
+  resource_group_name = module.vvms_instance_rg.resource_group_name
+  location            = module.vvms_instance_rg.resource_group_location
   nsg_name            = "vvms-nsg"
   vnet_address_space  = "10.2.0.0/16"  #FIXME
   tags                = var.tags
@@ -57,6 +57,7 @@ module "container_instance" {
   location                = module.container_rg.resource_group_location
   container_name          = "jenkins"
   jenkins_image           = "mirror.gcr.io/jenkins/jenkins:lts"
+  doppler_auth            = var.DOPPLER_AUTH_TOKEN
   cloudflare_tunnel_token = data.doppler_secrets.az-creds.map.CLOUDFLARE_TUNNEL_TOKEN
   storage_account_name    = module.storage_account.storage_account_name
   storage_account_key     = module.storage_account.account_key
@@ -67,19 +68,22 @@ module "container_instance" {
 
 # Build-Agent VM
 module "vvms_instance" {
-  source               = "./modules/compute/vvms"
-  resource_group_name  = module.vvms_instance_rg.resource_group_name
-  location             = module.vvms_instance_rg.resource_group_location
-  ssh_public_key       = data.doppler_secrets.az-creds.map.SSHPUB
-  vm_sku               = var.vvms_sku
-  sku                  = var.sku
-  vmss_name            = var.vmss_name
-  instance_count       = var.instance_count
-  admin_username       = var.vm_admin_username
-  vnet_address_space   = var.vvms_vnet_address_space
-  subnet_address_space = var.vvms_subnet_address_space
-  nsg_id               = module.create_vvms_nsg.nsg_id
-  tags                 = var.tags
+  source                = "./modules/compute/vvms"
+  resource_group_name   = module.vvms_instance_rg.resource_group_name
+  location              = module.vvms_instance_rg.resource_group_location
+  ssh_public_key        = data.doppler_secrets.az-creds.map.SSHPUB
+  cloudflare_zone_id    = data.doppler_secrets.az-creds.map.CLOUDFLARE_ZONE_ID
+  # cloudflare_account_id = data.doppler_secrets.az-creds.map.CLOUDFLARE_ACCOUNT_ID
+  network_security_group_name = module.create_vvms_nsg.nsg_name
+  nsg_id                = module.create_vvms_nsg.nsg_id
+  vm_sku                = var.vvms_sku
+  sku                   = var.sku
+  vmss_name             = var.vmss_name
+  instance_count        = var.instance_count
+  admin_username        = var.vm_admin_username
+  vnet_address_space    = var.vvms_vnet_address_space
+  subnet_address_space  = var.vvms_subnet_address_space
+  tags                  = var.tags
 }
 
 module "vvms_rule_block_ssh" {
