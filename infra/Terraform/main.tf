@@ -56,10 +56,10 @@ module "container_instance" {
   resource_group_name     = module.container_rg.resource_group_name
   location                = module.container_rg.resource_group_location
   container_name          = "jenkins"
-  jenkins_image           = "jenkins/jenkins:lts"
+  jenkins_image           = "mirror.gcr.io/jenkins/jenkins:lts"
   cloudflare_tunnel_token = data.doppler_secrets.az-creds.map.CLOUDFLARE_TUNNEL_TOKEN
   storage_account_name    = module.storage_account.storage_account_name
-  storage_account_key     = module.storage_account.accoutn_key
+  storage_account_key     = module.storage_account.account_key
   docker_hub_password     = var.docker_hub_username
   docker_hub_username     = data.doppler_secrets.az-creds.map.DOCKERHUB_KEY
   tags                    = var.tags

@@ -95,7 +95,7 @@ variable "vvms_sku" {
 variable "instance_count" {
   type        = number
   description = "The number of Build-Agent instances."
-  default     = 2
+  default     = 0
 }
 
 variable "main_vm_name" {

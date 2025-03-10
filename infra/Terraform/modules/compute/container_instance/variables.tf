@@ -20,12 +20,6 @@ variable "container_name" {
   default     = "jenkins"
 }
 
-variable "dns_name_label" {
-  description = "DNS name label for the container group"
-  type        = string
-  default     = "jenkins"
-}
-
 variable "jenkins_image" {
   description = "Docker image for Jenkins"
   type        = string

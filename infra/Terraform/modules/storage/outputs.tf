@@ -15,7 +15,7 @@ output "container_name" {
   value       = azurerm_storage_container.backup_container.name
 }
 
-output "accoutn_key" {
+output "account_key" {
   description = "Primary access key for the Storage Account."
   value       = azurerm_storage_account.sa.primary_access_key
 }

@@ -12,7 +12,6 @@ resource "azurerm_container_group" "jenkins" {
   location            = var.location
   resource_group_name = var.resource_group_name
   ip_address_type     = "Public"
-  dns_name_label      = var.dns_name_label
   os_type             = "Linux"
   tags                = var.tags
   
@@ -49,8 +48,8 @@ resource "azurerm_container_group" "jenkins" {
   container {
     name   = "cloudflare-warp"
     image  = "mirror.gcr.io/cloudflare/cloudflared:latest"
-    cpu    = 1
-    memory = 1
+    cpu    = 0.5
+    memory = 0.5
     
     # Command to start WARP in tunnel mode
     commands = [
@@ -61,13 +60,6 @@ resource "azurerm_container_group" "jenkins" {
       "--token", 
       var.cloudflare_tunnel_token
     ]
-    
-    # Mount shared volume for tunnel credentials
-    volume {
-      name       = "cloudflare-config"
-      mount_path = "/etc/cloudflared"
-      empty_dir  = true
-    }
     
     # Environment variables for Cloudflare configuration
     environment_variables = {
@@ -92,7 +84,7 @@ resource "azurerm_network_security_group" "jenkins" {
     name                       = "allow-jenkins-web"
     priority                   = 100
     direction                  = "Inbound"
-    access                     = "Allow"
+    access                     = "Deny"
     protocol                   = "Tcp"
     source_port_range          = "*"
     destination_port_range     = "8080"
