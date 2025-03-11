@@ -31,8 +31,8 @@ locals {
 
 resource "local_file" "jenkinsfile" {
   content = templatefile(local.template_path, {
-    acr_name = azurerm_container_registry.acr.name
-    resource_group_name = azurerm_container_registry.acr.resource_group_name
+    ACR_NAME = azurerm_container_registry.acr.name
+    RESOURCE_GROUP_NAME = azurerm_container_registry.acr.resource_group_name
     tags = var.tags
   })
   filename = var.jenkinsfile_path

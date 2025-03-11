@@ -1,6 +1,6 @@
 pipeline {
     agent {
-        label 'az-plug' 
+        label 'system-node' 
     }
 
     options {
@@ -13,55 +13,43 @@ pipeline {
     stages {
         stage('🔍 Checkout') {
             steps {
-                git branch: 'main', 
-                    url: 'https://github.com/voutuk/OLX_Dyplom_ADM'
+                git 'https://github.com/voutuk/OLX_Dyplom_ADM'
             }
         }
 
         stage('🔍 Azure Login') {
             steps {
-                withCredentials([azureServicePrincipal('az-service-principal')]) {
-                    sh '''
-                        az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID
-                        az account set -s $AZURE_SUBSCRIPTION_ID
-                    '''
+                withCredentials([azureServicePrincipal('azure-credentials')]) {
+                    azureCLI commands: [
+                        [script: "echo 'Successfully logged in to Azure'"]
+                    ]
                 }
             }
         }
-        
+
         stage('🚀 Build Frontend prod version') {
             steps {
-                sh '''
-                    az acr build \\
-                      --registry ${acr_name} \\
-                      --resource-group ${resource_group_name} \\
-                      --image olx-client:latest \\
-                      --file ./OLX.Frontend/ \\
-                      ./OLX.Frontend/
-                '''
+                azureCLI commands: [
+                    [script: "az acr build --registry ${ACR_NAME} --resource-group ${RESOURCE_GROUP_NAME} --image olx-client:latest --file ./OLX.Frontend/ ./OLX.Frontend/"]
+                ]
             }
         }
+
         stage('🚀 Build Backend prod version') {
             steps {
-                sh '''
-                    az acr build \\
-                      --registry ${acr_name} \\
-                      --resource-group ${resource_group_name} \\
-                      --image olx-api:latest \\
-                      --file ./OLX.API/ \\
-                      ./OLX.API/
-                '''
+                azureCLI commands: [
+                    [script: "az acr build --registry ${ACR_NAME} --resource-group ${RESOURCE_GROUP_NAME} --image olx-api:latest --file ./OLX.API/ ./OLX.API/"]
+                ]
             }
         }
     }
-    
+
     post {
         always {
-            sh 'az logout'
+            azureCLI commands: [
+                [script: "echo 'Logging out from Azure'"]
+            ]
             cleanWs()
-        }
-        success {
-            echo "Successfully pushed image to ACR"
         }
     }
 }
