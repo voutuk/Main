@@ -34,13 +34,14 @@ module "instance_rg" {
 }
 
 module "network" {
-  source                  = "./modules/instance/net"
-  base_name               = "minimal"
-  resource_group_name     = module.instance_rg.name
-  location                = module.instance_rg.location
-  vnet_address_space      = ["10.0.0.0/16"]
-  ci_subnet_address_space = ["10.0.1.0/24"]
-  tags                    = var.tags
+  source                      = "./modules/instance/net"
+  base_name                   = "minimal"
+  resource_group_name         = module.instance_rg.name
+  location                    = module.instance_rg.location
+  vnet_address_space          = ["10.0.0.0/16"]
+  ci_subnet_address_space     = ["10.0.1.0/24"]
+  azplug_subnet_address_space = ["10.0.2.0/24"]
+  tags                        = var.tags
 }
 
 # Jenkins CI
