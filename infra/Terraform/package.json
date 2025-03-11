@@ -21,13 +21,9 @@
     "output": "doppler run -- terragrunt output",
     "validate": "doppler run -- terragrunt validate",
     
-    "// Instances ": "VM instance management",
-    "apply:instance:ci": "doppler run -- terragrunt apply -target=module.ci -auto-approve",
-    "apply:instance:vms": "doppler run -- terragrunt apply -target=module.vms -auto-approve",
-    "apply:instance": "doppler run -- terragrunt apply -target=module.ci -target=module.vms -auto-approve",
-    "destroy:instance:ci": "doppler run -- terragrunt destroy -target=module.ci -auto-approve",
-    "destroy:instance:vms": "doppler run -- terragrunt destroy -target=module.vms -auto-approve",
-    "destroy:instance": "doppler run -- terragrunt destroy -target=module.ci -target=module.vms -auto-approve",
+    "// Container instance ": "Continers management",
+    "apply:ci": "doppler run -- terragrunt apply -target=module.ci -auto-approve",
+    "destroy:ci": "doppler run -- terragrunt destroy -target=module.ci -auto-approve",
 
     "// AKS ": "AKS cluster and related infrastructure",
     "apply:aks": "doppler run -- terragrunt apply -target=module.aks -auto-approve",

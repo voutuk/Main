@@ -26,13 +26,13 @@ variable "jenkins_image" {
   default     = "mirror.gcr.io/jenkins/jenkins:latest"
 }
 
-variable "cpu" {
+variable "jenkins_cpu" {
   description = "CPU cores allocation"
   type        = number
   default     = 2
 }
 
-variable "memory" {
+variable "jenkins_memory" {
   description = "Memory allocation in GB"
   type        = number
   default     = 4
@@ -70,4 +70,10 @@ variable "doppler_auth" {
 variable "subnet_id" {
   description = "ID of the subnet for the container instance"
   type        = string
+}
+
+variable "storage_quota" {
+  description = "Storage quota for the file share in GB"
+  type        = number
+  default     = 20
 }

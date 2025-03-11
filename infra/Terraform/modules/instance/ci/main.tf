@@ -1,29 +1,33 @@
-# File Share for Jenkins data stays the same
 resource "azurerm_storage_share" "jenkins_data" {
   name                 = "jenkins-data"
   storage_account_name = var.storage_account_name
-  quota                = 50
-  lifecycle {
-    prevent_destroy = true
-  }
+  quota                = var.storage_quota
 }
 
-# Container Instance with WARP sidecar - update to use private networking
 resource "azurerm_container_group" "jenkins" {
   name                = var.container_name
   location            = var.location
   resource_group_name = var.resource_group_name
-  ip_address_type     = "Private"  # Changed from Public to Private
-  subnet_ids          = [var.subnet_id]  # Added subnet reference
+  ip_address_type     = "Private"
+  subnet_ids          = [var.subnet_id]
   os_type             = "Linux"
+  restart_policy      = "Always"
   tags                = var.tags
   
-  # Jenkins Container
+  # Використовуємо базову SKU для економії коштів
+  sku                 = "Standard"
+
   container {
     name   = "jenkins"
-    image  = var.jenkins_image
-    cpu    = var.cpu
-    memory = var.memory
+    image  = "mirror.gcr.io/jenkins/jenkins:lts-alpine-jdk17"
+    cpu    = var.jenkins_cpu
+    memory = var.jenkins_memory
+
+    environment_variables = {
+      "JENKINS_OPTS" = "--prefix=/jenkins"
+      # Додамо опцію для зменшення використання пам'яті
+      "JAVA_OPTS"    = "-Xmx1536m -Xms512m"
+    }
 
     ports {
       port     = 8080
@@ -42,75 +46,30 @@ resource "azurerm_container_group" "jenkins" {
       storage_account_key  = var.storage_account_key
       share_name           = azurerm_storage_share.jenkins_data.name
     }
-
-    environment_variables = {
-      "JENKINS_OPTS" = "--prefix=/jenkins"
-    }
-    secure_environment_variables = {
-      "DOPPLER_TOKEN" = var.doppler_auth
-    }
   }
-  # Cloudflare WARP sidecar container
+
   container {
-    name   = "cloudflare-warp"
-    image  = "mirror.gcr.io/cloudflare/cloudflared:latest"
-    cpu    = 0.5
-    memory = 0.5
-    
-    commands = [
-      "cloudflared",
-      "tunnel", 
-      "--no-autoupdate", 
-      "run", 
-      "--token", 
-      var.cloudflare_tunnel_token
-    ]
+    name    = "cloudflare-warp"
+    image   = "mirror.gcr.io/cloudflare/cloudflared:latest"
+    cpu     = 0.2
+    memory  = 0.2
     
     environment_variables = {
-      "TUNNEL_METRICS"      = "0.0.0.0:2000", 
-      "TUNNEL_LOGLEVEL"     = "info"
+      "TUNNEL_LOGLEVEL" = "info"
+      "TUNNEL_METRICS"  = "0.0.0.0:2000"
     }
-    
+
     secure_environment_variables = {
       "TUNNEL_TOKEN" = var.cloudflare_tunnel_token
     }
+
+    commands = [
+      "cloudflared",
+      "tunnel",
+      "--no-autoupdate",
+      "run",
+      "--token",
+      var.cloudflare_tunnel_token,
+    ]
   }
-}
-
-# Network Security Group for Jenkins - can remain as is
-resource "azurerm_network_security_group" "jenkins" {
-  name                = "jenkins-nsg"
-  location            = var.location
-  resource_group_name = var.resource_group_name
-  tags                = var.tags
-
-  security_rule {
-    name                       = "allow-jenkins-web"
-    priority                   = 100
-    direction                  = "Inbound"
-    access                     = "Deny"
-    protocol                   = "Tcp"
-    source_port_range          = "*"
-    destination_port_range     = "8080"
-    source_address_prefix      = "*"
-    destination_address_prefix = "*"
-  }
-
-  security_rule {
-    name                       = "allow-jenkins-agent"
-    priority                   = 110
-    direction                  = "Inbound"
-    access                     = "Allow"
-    protocol                   = "Tcp"
-    source_port_range          = "*"
-    destination_port_range     = "50000"
-    source_address_prefix      = "*"
-    destination_address_prefix = "*"
-  }
-}
-
-# Add output for private IP
-output "jenkins_ip_private" {
-  description = "The private IP address of the Jenkins container instance"
-  value       = azurerm_container_group.jenkins.ip_address
 }

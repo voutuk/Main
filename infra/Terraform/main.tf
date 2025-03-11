@@ -2,7 +2,7 @@
 # License: Academic Free License ("AFL") v. 3.0
 #
 # Purpose: This Terraform configuration deploys a development instance 
-#   of Jenkins CI, a build-agent VM, an AKS cluster, and a storage account.
+#   of Jenkins CI, an AKS cluster, and a storage account.
 # Prerequisites: yarn run pre
 # Variables: ./variables.tf
 #
@@ -33,39 +33,31 @@ module "instance_rg" {
   tags                = var.tags
 }
 
-# Network module
 module "network" {
-  source              = "./modules/instance/net"
-  resource_group_name = module.instance_rg.name
-  location            = module.instance_rg.location
-  vnet_name           = "instance-network"
-  tags                = var.tags
+  source                  = "./modules/instance/net"
+  base_name               = "minimal"
+  resource_group_name     = module.instance_rg.name
+  location                = module.instance_rg.location
+  vnet_address_space      = ["10.0.0.0/16"]
+  ci_subnet_address_space = ["10.0.1.0/24"]
+  tags                    = var.tags
 }
 
-# Jenkins CI module
+# Jenkins CI
 module "ci" {
-  source                   = "./modules/instance/ci"
-  resource_group_name      = module.instance_rg.name
-  location                 = module.instance_rg.location
-  container_name           = "jenkins-ci"
-  subnet_id                = module.network.ci_subnet_id
-  storage_account_name     = module.sa.account_name
-  storage_account_key      = module.sa.account_key
-  doppler_auth             = data.doppler_secrets.az-creds.map.TF_VAR_DOPPLER_AUTH_TOKEN
-  cloudflare_tunnel_token  = data.doppler_secrets.az-creds.map.CLOUDFLARE_TUNNEL_TOKEN
-  tags                     = var.tags
-}
-
-# Build-Agent VM
-module "vms" {
-  source              = "./modules/instance/vms"
-  resource_group_name = module.instance_rg.name
-  location            = module.instance_rg.location
-  subnet_id           = module.network.vm_subnet_id
-  vm_name_prefix      = "jenkins-agent"
-  vm_count            = 2
-  admin_ssh_key_data  = data.doppler_secrets.az-creds.map.SSHPUB
-  tags                = var.tags
+  source                  = "./modules/instance/ci"
+  container_name          = "jenkins"
+  resource_group_name     = module.instance_rg.name
+  location                = module.instance_rg.location
+  storage_account_name    = module.sa.account_name
+  storage_account_key     = module.sa.account_key
+  doppler_auth            = data.doppler_secrets.az-creds.map.TF_VAR_DOPPLER_AUTH_TOKEN
+  cloudflare_tunnel_token = data.doppler_secrets.az-creds.map.CLOUDFLARE_TUNNEL_TOKEN
+  subnet_id               = module.network.ci_subnet_id
+  jenkins_cpu             = 1
+  jenkins_memory          = 2
+  storage_quota           = 20
+  tags                    = var.tags
 }
 
 # AKS cluster module

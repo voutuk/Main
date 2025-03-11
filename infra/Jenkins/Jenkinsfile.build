@@ -63,6 +63,13 @@ pipeline {
                 }
             }
         }
+        stage('⏸️ Manual Approval') {
+            steps {
+                script {
+                    input message: 'Continue with the pipeline?', ok: 'Proceed'
+                }
+            }
+        }
     }
     
     post {
