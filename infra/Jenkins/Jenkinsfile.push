@@ -19,7 +19,7 @@ pipeline {
 
         stage('🔍 Azure Login') {
             steps {
-                withCredentials([azureServicePrincipal('azure-credentials')]) {
+                withCredentials([azureServicePrincipal('az-service-principal')]) {
                     azureCLI commands: [
                         [script: "echo 'Successfully logged in to Azure'"]
                     ]
