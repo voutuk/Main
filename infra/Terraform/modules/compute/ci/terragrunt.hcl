@@ -9,3 +9,12 @@ locals {
 terraform {
   source = "."
 }
+
+inputs = {
+  tags = merge(
+    local.common_vars.locals.common_tags,
+    {
+      Component = "container_instance"
+    }
+  )
+}

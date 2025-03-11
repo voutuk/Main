@@ -61,7 +61,7 @@ module "ci" {
 }
 
 # AKS cluster module
-module "aks_cluster" {
+module "aks" {
   source                  = "./modules/aks"
   resource_group_name     = module.aks_rg.name
   location                = module.aks_rg.location
