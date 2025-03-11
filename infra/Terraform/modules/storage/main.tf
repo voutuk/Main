@@ -4,7 +4,7 @@
 # Generate a random name for the storage account using a prefix
 resource "random_pet" "as_storage_name" {
   prefix    = var.storage_prefix
-  separator = "-"
+  separator = ""
 }
 
 locals {

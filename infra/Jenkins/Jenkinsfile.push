@@ -3,61 +3,65 @@ pipeline {
         label 'az-plug' 
     }
 
-    environment {
-        DOCKERHUB_CREDENTIALS = credentials('dockerhub-credentials')
-        DOCKERHUB_REPO_API = 'voutuk/olx-api'
-        DOCKERHUB_REPO_CLIENT = 'voutuk/olx-client'
+    options {
+        ansiColor('xterm')
+        timestamps()
+        timeout(time: 30, unit: 'MINUTES')
+        buildDiscarder(logRotator(numToKeepStr: '5'))
     }
 
     stages {
-        stage('🔒 Docker Hub Login') {
+        stage('🔍 Checkout') {
             steps {
-                script {
-                    sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
-                }
+                git branch: 'main', 
+                    url: 'https://github.com/voutuk/OLX_Dyplom_ADM'
             }
         }
 
-        stage('🚀 Docker Build Prod') {
+        stage('🔍 Azure Login') {
             steps {
-                script {
-                    sh 'docker compose --profile prod build'
+                withCredentials([azureServicePrincipal('az-service-principal')]) {
+                    sh '''
+                        az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID
+                        az account set -s $AZURE_SUBSCRIPTION_ID
+                    '''
                 }
             }
         }
-
-        stage('📤 Push API Image') {
+        
+        stage('🚀 Build Frontend prod version') {
             steps {
-                script {
-                    // Tag and push with latest tag
-                    sh """
-                        docker push ${DOCKERHUB_REPO_API}:latest
-                    """
-                }
+                sh '''
+                    az acr build \\
+                      --registry gosellsquarevervet \\
+                      --resource-group gosell-storage \\
+                      --image olx-client:latest \\
+                      --file ./OLX.Frontend/ \\
+                      ./OLX.Frontend/
+                '''
             }
         }
-
-        stage('📤 Push Client Image') {
+        stage('🚀 Build Backend prod version') {
             steps {
-                script {
-                    // Tag and push with latest tag
-                    sh """
-                        docker push ${DOCKERHUB_REPO_CLIENT}:latest
-                    """
-                }
+                sh '''
+                    az acr build \\
+                      --registry gosellsquarevervet \\
+                      --resource-group gosell-storage \\
+                      --image olx-api:latest \\
+                      --file ./OLX.API/ \\
+                      ./OLX.API/
+                '''
             }
         }
     }
-
+    
     post {
-        success {
-            echo '🎉 Push completed successfully!'
-        }
-        failure {
-            echo '💥 Push failed!'
-        }
         always {
-            sh 'docker logout'
+            sh 'az logout'
+            cleanWs()
+        }
+        success {
+            echo "Successfully pushed image to ACR"
         }
     }
 }

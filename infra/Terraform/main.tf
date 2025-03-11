@@ -34,7 +34,7 @@ module "instance_rg" {
 }
 
 module "network" {
-  source                      = "./modules/instance/net"
+  source                      = "./modules/net"
   base_name                   = "minimal"
   resource_group_name         = module.instance_rg.name
   location                    = module.instance_rg.location
@@ -46,7 +46,7 @@ module "network" {
 
 # Jenkins CI
 module "ci" {
-  source                  = "./modules/instance/ci"
+  source                  = "./modules/ci"
   container_name          = "jenkins"
   resource_group_name     = module.instance_rg.name
   location                = module.instance_rg.location
@@ -88,4 +88,13 @@ module "sa" {
   storage_prefix        = var.storage_prefix
   container_name        = "storage-container"
   tags                  = var.tags
+}
+
+module "acr" {
+  source               = "./modules/acr"
+  acr_name             = "${var.rg_prefix}"
+  resource_group_name  = module.storage_rg.name
+  location             = module.storage_rg.location
+  service_principal_id = data.doppler_secrets.az-creds.map.PRINCIPAL_ID
+  tags                 = var.tags
 }

@@ -66,7 +66,9 @@ pipeline {
         stage('⏸️ Manual Approval') {
             steps {
                 script {
-                    input message: 'Continue with the pipeline?', ok: 'Proceed'
+                    timeout(time: 1, unit: 'DAYS') { 
+                        input message: 'Proceed with deployment?', ok: 'Proceed'
+                    }
                 }
             }
         }

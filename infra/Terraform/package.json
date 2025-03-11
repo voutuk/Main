@@ -32,6 +32,8 @@
     "// Storage & Inventory ": "Storage and inventory management",
     "apply:storage": "doppler run -- terragrunt apply -target=module.sa -auto-approve",
     "destroy:storage": "doppler run -- terragrunt destroy -target=module.sa -auto-approve",
+    "apply:acr": "doppler run -- terragrunt apply -target=module.acr -auto-approve",
+    "destroy:acr": "doppler run -- terragrunt destroy -target=module.acr -auto-approve",
 
     "// Utils ": "Utility scripts",
     "rover": "bash rover.sh"
