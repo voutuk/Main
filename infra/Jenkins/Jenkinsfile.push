@@ -32,34 +32,19 @@ pipeline {
 
         stage('🔍 Azure Login') {
             steps {
-                azureCLI principalCredentialId: 'az-service-principal', commands: [
-                    [script: "echo 'Successfully logged in to Azure'"]
-                ]
-            }
-        }
-
-        stage('🚀 Build Frontend prod version') {
-            steps {
-                azureCLI principalCredentialId: 'az-service-principal', commands: [
-                    [script: "az acr build --registry gosellsquarevervet --resource-group gosell-storage --image olx-client:latest --file ./OLX.Frontend/Dockerfile ./OLX.Frontend/"]
-                ]
-            }
-        }
-
-        stage('🚀 Build Backend prod version') {
-            steps {
-                azureCLI principalCredentialId: 'az-service-principal', commands: [
-                    [script: "az acr build --registry gosellsquarevervet --resource-group gosell-storage --image olx-api:latest --file ./OLX.API/Dockerfile ./OLX.API/"]
-                ]
+                node('az-plug') {
+                    withCredentials([azureServicePrincipal('az-service-principal')]) {
+                        sh 'az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID'
+                        sh 'az acr build --registry gosellsquarevervet --resource-group gosell-storage --image olx-client:latest --file ./OLX.Frontend/Dockerfile ./OLX.Frontend/'
+                        sh 'az acr build --registry gosellsquarevervet --resource-group gosell-storage --image olx-api:latest --file ./OLX.API/Dockerfile ./OLX.API/'
+                    }
+                }
             }
         }
     }
 
     post {
         always {
-            azureCLI principalCredentialId: 'az-service-principal', commands: [
-                [script: "echo 'Logging out from Azure'"]
-            ]
             cleanWs()
         }
     }
