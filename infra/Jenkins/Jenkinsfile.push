@@ -2,7 +2,7 @@ pipeline {
     agent {
         label 'az-plug' 
     }
-    
+
     environment {
         DISCORD_WEBHOOK = credentials('discord-webhook') // Підставляємо секрет
     }
@@ -15,8 +15,13 @@ pipeline {
     }
 
     stages {
-        stage('🔧 Setup Environment') {
+        stage('🔍 USE ') {
             steps {
+                step([$class: 'GitHubCommitStatusSetter',
+                     statusResultSource: [$class: 'ConditionalStatusResultSource',
+                     results: [[$class: 'AnyBuildResult', 
+                               message: 'Pipeline Proceeded', 
+                               state: 'PENDING']]]])
                 node('az-plug') {
                     sh '''
                         which az || {
@@ -25,12 +30,7 @@ pipeline {
                             echo "Azure CLI installed successfully"
                         }
                     '''
-                }
-            }
-        }
-        stage('🔍 USE ') {
-            steps {
-                node('az-plug') {
+                    git url: 'https://github.com/voutuk/OLX_Dyplom_ADM', branch: 'main'
                     sh 'ls -la'
                     withCredentials([azureServicePrincipal('az-service-principal')]) {
                         sh 'az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID'
@@ -52,6 +52,11 @@ pipeline {
                 title: env.JOB_NAME,
                 webhookURL: DISCORD_WEBHOOK
             )
+            step([$class: 'GitHubCommitStatusSetter',
+                         statusResultSource: [$class: 'ConditionalStatusResultSource',
+                         results: [[$class: 'AnyBuildResult', 
+                                   message: 'Deployed', 
+                                   state: 'SUCCESS']]]])
         }
         failure {
             discordSend(
@@ -62,6 +67,11 @@ pipeline {
                 title: env.JOB_NAME,
                 webhookURL: DISCORD_WEBHOOK
             )
+            step([$class: 'GitHubCommitStatusSetter',
+                         statusResultSource: [$class: 'ConditionalStatusResultSource',
+                         results: [[$class: 'AnyBuildResult', 
+                                   message: 'Failed', 
+                                   state: 'FAILURE']]]])
         }
         unstable {
             discordSend(
@@ -72,6 +82,11 @@ pipeline {
                 title: env.JOB_NAME,
                 webhookURL: DISCORD_WEBHOOK
             )
+            step([$class: 'GitHubCommitStatusSetter',
+                         statusResultSource: [$class: 'ConditionalStatusResultSource',
+                         results: [[$class: 'AnyBuildResult', 
+                                   message: 'Unstable',
+                                   state: 'FAILURE']]]]) 
         }
         always {
             cleanWs()

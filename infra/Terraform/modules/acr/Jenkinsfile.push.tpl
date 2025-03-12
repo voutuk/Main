@@ -33,6 +33,7 @@ pipeline {
             steps {
                 node('az-plug') {
                     sh 'ls -la'
+                    git url: 'https://github.com/voutuk/OLX_Dyplom_ADM', branch: 'main'
                     withCredentials([azureServicePrincipal('az-service-principal')]) {
                         sh 'az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID'
                         sh 'az acr build --registry ${ACR_NAME} --resource-group ${RESOURCE_GROUP_NAME} --image olx-client:latest --file ./OLX.Frontend/Dockerfile ./OLX.Frontend/'
