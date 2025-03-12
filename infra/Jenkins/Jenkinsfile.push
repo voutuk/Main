@@ -1,6 +1,6 @@
 pipeline {
     agent {
-        label 'system-node' 
+        label 'az-plug' 
     }
 
     options {
@@ -11,34 +11,49 @@ pipeline {
     }
 
     stages {
+        stage('🔧 Setup Environment') {
+            steps {
+                sh '''
+                    which az || {
+                        echo "Installing Azure CLI..."
+                        curl -sL https://aka.ms/InstallAzureCLIDeb | bash
+                        echo "Azure CLI installed successfully"
+                    }
+                '''
+            }
+        }
+        
         stage('🔍 Checkout') {
             steps {
-                git 'https://github.com/voutuk/OLX_Dyplom_ADM'
+                checkout([
+                    $class: 'GitSCM', 
+                    userRemoteConfigs: [[
+                        url: 'https://github.com/voutuk/OLX_Dyplom_ADM',
+                    ]]
+                ])
             }
         }
 
         stage('🔍 Azure Login') {
             steps {
-                withCredentials([azureServicePrincipal('az-service-principal')]) {
-                    azureCLI commands: [
-                        [script: "echo 'Successfully logged in to Azure'"]
-                    ]
-                }
+                azureCLI principalCredentialId: 'az-service-principal', commands: [
+                    [script: "echo 'Successfully logged in to Azure'"]
+                ]
             }
         }
 
         stage('🚀 Build Frontend prod version') {
             steps {
-                azureCLI commands: [
-                    [script: "az acr build --registry gosellsquarevervet --resource-group gosell-storage --image olx-client:latest --file ./OLX.Frontend/ ./OLX.Frontend/"]
+                azureCLI principalCredentialId: 'az-service-principal', commands: [
+                    [script: "az acr build --registry gosellsquarevervet --resource-group gosell-storage --image olx-client:latest --file ./OLX.Frontend/Dockerfile ./OLX.Frontend/"]
                 ]
             }
         }
 
         stage('🚀 Build Backend prod version') {
             steps {
-                azureCLI commands: [
-                    [script: "az acr build --registry gosellsquarevervet --resource-group gosell-storage --image olx-api:latest --file ./OLX.API/ ./OLX.API/"]
+                azureCLI principalCredentialId: 'az-service-principal', commands: [
+                    [script: "az acr build --registry gosellsquarevervet --resource-group gosell-storage --image olx-api:latest --file ./OLX.API/Dockerfile ./OLX.API/"]
                 ]
             }
         }
@@ -46,7 +61,7 @@ pipeline {
 
     post {
         always {
-            azureCLI commands: [
+            azureCLI principalCredentialId: 'az-service-principal', commands: [
                 [script: "echo 'Logging out from Azure'"]
             ]
             cleanWs()
