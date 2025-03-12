@@ -16,7 +16,7 @@ pipeline {
                 sh '''
                     which az || {
                         echo "Installing Azure CLI..."
-                        curl -sL https://aka.ms/InstallAzureCLIDeb | bash
+                        curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
                         echo "Azure CLI installed successfully"
                     }
                 '''
@@ -25,12 +25,8 @@ pipeline {
         
         stage('🔍 Checkout') {
             steps {
-                checkout([
-                    $class: 'GitSCM', 
-                    userRemoteConfigs: [[
-                        url: 'https://github.com/voutuk/OLX_Dyplom_ADM',
-                    ]]
-                ])
+                git branch: 'main', 
+                    url: 'https://github.com/voutuk/OLX_Dyplom_ADM'
             }
         }
 
