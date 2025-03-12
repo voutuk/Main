@@ -2,6 +2,10 @@ pipeline {
     agent {
         label 'az-plug' 
     }
+    
+    environment {
+        DISCORD_WEBHOOK = credentials('discord-webhook') // Підставляємо секрет
+    }
 
     options {
         ansiColor('xterm')
@@ -13,20 +17,21 @@ pipeline {
     stages {
         stage('🔧 Setup Environment') {
             steps {
-                sh '''
-                    which az || {
-                        echo "Installing Azure CLI..."
-                        curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
-                        echo "Azure CLI installed successfully"
-                    }
-                '''
+                node('az-plug') {
+                    sh '''
+                        which az || {
+                            echo "Installing Azure CLI..."
+                            curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+                            echo "Azure CLI installed successfully"
+                        }
+                    '''
+                }
             }
         }
         stage('🔍 USE ') {
             steps {
                 node('az-plug') {
-                    git url: 'https://github.com/voutuk/OLX_Dyplom_ADM', branch: 'main'
-                    sh 'ls -la'  // List directory contents to verify what's available
+                    sh 'ls -la'
                     withCredentials([azureServicePrincipal('az-service-principal')]) {
                         sh 'az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID'
                         sh 'az acr build --registry gosellsquarevervet --resource-group gosell-storage --image olx-client:latest --file ./OLX.Frontend/Dockerfile ./OLX.Frontend/'
@@ -34,10 +39,40 @@ pipeline {
                     }
                 }
             }
-        }
+        }             
     }
 
     post {
+        success {
+            discordSend(
+                description: "✅ Build #${env.BUILD_NUMBER} успішно завершено!",
+                footer: "Jen / BublikDEV",
+                link: env.BUILD_URL,
+                result: "🟢 SUCCESS",
+                title: env.JOB_NAME,
+                webhookURL: DISCORD_WEBHOOK
+            )
+        }
+        failure {
+            discordSend(
+                description: "❌ Build #${env.BUILD_NUMBER} провалився!",
+                footer: "Jen / BublikDEV",
+                link: env.BUILD_URL,
+                result: "🔴 FAILURE",
+                title: env.JOB_NAME,
+                webhookURL: DISCORD_WEBHOOK
+            )
+        }
+        unstable {
+            discordSend(
+                description: "⚠️ Build #${env.BUILD_NUMBER} нестабільний!",
+                footer: "Jen / BublikDEV",
+                link: env.BUILD_URL,
+                result: "🟡 UNSTABLE",
+                title: env.JOB_NAME,
+                webhookURL: DISCORD_WEBHOOK
+            )
+        }
         always {
             cleanWs()
         }

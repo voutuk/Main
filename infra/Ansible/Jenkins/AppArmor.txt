@@ -1,2 +1,0 @@
-nano /etc/apparmor.d/jenkins-profile
-sudo apparmor_parser -r /etc/apparmor.d/jenkins-profile

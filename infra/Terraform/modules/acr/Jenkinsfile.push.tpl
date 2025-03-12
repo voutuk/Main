@@ -2,6 +2,10 @@ pipeline {
     agent {
         label 'az-plug' 
     }
+    
+    environment {
+        DISCORD_WEBHOOK = credentials('discord-webhook') // Підставляємо секрет
+    }
 
     options {
         ansiColor('xterm')
@@ -13,53 +17,64 @@ pipeline {
     stages {
         stage('🔧 Setup Environment') {
             steps {
-                sh '''
-                    which az || {
-                        echo "Installing Azure CLI..."
-                        curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
-                        echo "Azure CLI installed successfully"
+                node('az-plug') {
+                    sh '''
+                        which az || {
+                            echo "Installing Azure CLI..."
+                            curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+                            echo "Azure CLI installed successfully"
+                        }
+                    '''
+                }
+            }
+        }
+
+        stage('🔍 USE ') {
+            steps {
+                node('az-plug') {
+                    sh 'ls -la'
+                    withCredentials([azureServicePrincipal('az-service-principal')]) {
+                        sh 'az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID'
+                        sh 'az acr build --registry ${ACR_NAME} --resource-group ${RESOURCE_GROUP_NAME} --image olx-client:latest --file ./OLX.Frontend/Dockerfile ./OLX.Frontend/'
+                        sh 'az acr build --registry ${ACR_NAME} --resource-group ${RESOURCE_GROUP_NAME} --image olx-api:latest --file ./OLX.API/Dockerfile ./OLX.API/'
                     }
-                '''
+                }
             }
-        }
-        
-        stage('🔍 Checkout') {
-            steps {
-                git branch: 'main', 
-                    url: 'https://github.com/voutuk/OLX_Dyplom_ADM'
-            }
-        }
-
-        stage('🔍 Azure Login') {
-            steps {
-                azureCLI principalCredentialId: 'az-service-principal', commands: [
-                    [script: "echo 'Successfully logged in to Azure'"]
-                ]
-            }
-        }
-
-        stage('🚀 Build Frontend prod version') {
-            steps {
-                azureCLI principalCredentialId: 'az-service-principal', commands: [
-                    [script: "az acr build --registry ${ACR_NAME} --resource-group ${RESOURCE_GROUP_NAME} --image olx-client:latest --file ./OLX.Frontend/Dockerfile ./OLX.Frontend/"]
-                ]
-            }
-        }
-
-        stage('🚀 Build Backend prod version') {
-            steps {
-                azureCLI principalCredentialId: 'az-service-principal', commands: [
-                    [script: "az acr build --registry ${ACR_NAME} --resource-group ${RESOURCE_GROUP_NAME} --image olx-api:latest --file ./OLX.API/Dockerfile ./OLX.API/"]
-                ]
-            }
-        }
+        }  
     }
 
     post {
+        success {
+            discordSend(
+                description: "✅ Build #$env.BUILD_NUMBER успішно завершено!",
+                footer: "Jen / BublikDEV",
+                link: env.BUILD_URL,
+                result: "🟢 SUCCESS",
+                title: env.JOB_NAME,
+                webhookURL: DISCORD_WEBHOOK
+            )
+        }
+        failure {
+            discordSend(
+                description: "❌ Build #$env.BUILD_NUMBER провалився!",
+                footer: "Jen / BublikDEV",
+                link: env.BUILD_URL,
+                result: "🔴 FAILURE",
+                title: env.JOB_NAME,
+                webhookURL: DISCORD_WEBHOOK
+            )
+        }
+        unstable {
+            discordSend(
+                description: "⚠️ Build #$env.BUILD_NUMBER нестабільний!",
+                footer: "Jen / BublikDEV",
+                link: env.BUILD_URL,
+                result: "🟡 UNSTABLE",
+                title: env.JOB_NAME,
+                webhookURL: DISCORD_WEBHOOK
+            )
+        }
         always {
-            azureCLI principalCredentialId: 'az-service-principal', commands: [
-                [script: "echo 'Logging out from Azure'"]
-            ]
             cleanWs()
         }
     }
