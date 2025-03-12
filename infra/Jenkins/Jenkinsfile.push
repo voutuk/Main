@@ -22,17 +22,11 @@ pipeline {
                 '''
             }
         }
-        
-        stage('🔍 Checkout') {
-            steps {
-                git branch: 'main', 
-                    url: 'https://github.com/voutuk/OLX_Dyplom_ADM'
-            }
-        }
-
-        stage('🔍 Azure Login') {
+        stage('🔍 USE ') {
             steps {
                 node('az-plug') {
+                    git url: 'https://github.com/voutuk/OLX_Dyplom_ADM', branch: 'main'
+                    sh 'ls -la'  // List directory contents to verify what's available
                     withCredentials([azureServicePrincipal('az-service-principal')]) {
                         sh 'az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID'
                         sh 'az acr build --registry gosellsquarevervet --resource-group gosell-storage --image olx-client:latest --file ./OLX.Frontend/Dockerfile ./OLX.Frontend/'
