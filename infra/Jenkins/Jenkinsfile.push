@@ -16,7 +16,7 @@ pipeline {
                 sh '''
                     which az || {
                         echo "Installing Azure CLI..."
-                        curl -sL https://aka.ms/InstallAzureCLIDeb | bash
+                        curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
                         echo "Azure CLI installed successfully"
                     }
                 '''
