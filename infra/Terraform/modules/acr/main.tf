@@ -48,3 +48,10 @@ locals {
   cleaned_name          = join("", regexall("[a-z0-9]", lower(random_pet.as_storage_name.id)))
   sanitized_storage_name = substr(local.cleaned_name, 0, 24)
 }
+
+resource "doppler_secret" "azure_container_registry" {
+  project = "az"
+  config  = "dev"
+  name    = "AZURE_CONTAINER_REGISTRY"
+  value   = azurerm_container_registry.acr.name
+}

@@ -13,4 +13,4 @@ doppler run -- bash -c '
   echo "Successfully logged in and retrieved AKS credentials."
 '
 
-az aks update -n gosell-aks -g gosell-aks-cluster --attach-acr gosellsquarevervet
+doppler run -- az aks update -n gosell-aks -g gosell-aks-cluster --attach-acr gosellbackupreadypika

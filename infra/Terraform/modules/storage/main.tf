@@ -41,3 +41,24 @@ resource "azurerm_storage_container" "backup_container" {
   # }
 }
 
+
+resource "doppler_secret" "azure_container_resource_group" {
+  project = "az"
+  config  = "dev"
+  name    = "AZURE_CONTAINER_RESOURCE_GROUP"
+  value   = azurerm_storage_account.sa.resource_group_name
+}
+
+resource "doppler_secret" "azure_container_name" {
+  project = "az"
+  config  = "dev"
+  name    = "AZURE_CONTAINER_NAME"
+  value   = azurerm_storage_container.backup_container.name
+}
+
+resource "doppler_secret" "azure_storage_account" {
+  project = "az"
+  config  = "dev"
+  name    = "AZURE_STORAGE_ACCOUNT"
+  value   = azurerm_storage_account.sa.name
+}

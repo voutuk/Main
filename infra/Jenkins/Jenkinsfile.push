@@ -2,9 +2,9 @@ pipeline {
     agent {
         label 'az-plug' 
     }
-
+    
     environment {
-        DISCORD_WEBHOOK = credentials('discord-webhook') // Підставляємо секрет
+        DISCORD_WEBHOOK = credentials('discord-webhook')
     }
 
     options {
@@ -15,13 +15,8 @@ pipeline {
     }
 
     stages {
-        stage('🔍 USE ') {
+        stage('🔧 Setup Environment') {
             steps {
-                step([$class: 'GitHubCommitStatusSetter',
-                     statusResultSource: [$class: 'ConditionalStatusResultSource',
-                     results: [[$class: 'AnyBuildResult', 
-                               message: 'Pipeline Proceeded', 
-                               state: 'PENDING']]]])
                 node('az-plug') {
                     sh '''
                         which az || {
@@ -30,22 +25,41 @@ pipeline {
                             echo "Azure CLI installed successfully"
                         }
                     '''
-                    git url: 'https://github.com/voutuk/OLX_Dyplom_ADM', branch: 'main'
+                }
+            }
+        }
+
+        stage('🔍 USE ') {
+            steps {
+                node('az-plug') {
+                    step([$class: 'GitHubCommitStatusSetter',
+                     statusResultSource: [$class: 'ConditionalStatusResultSource',
+                     results: [[$class: 'AnyBuildResult', 
+                               message: 'Pipeline Proceeded', 
+                               state: 'PENDING']]]])
+                    sh '''
+                        which az || {
+                            echo "Installing Azure CLI..."
+                            curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+                            echo "Azure CLI installed successfully"
+                        }
+                    '''
                     sh 'ls -la'
+                    git url: 'https://github.com/voutuk/OLX_Dyplom_ADM', branch: 'main'
                     withCredentials([azureServicePrincipal('az-service-principal')]) {
                         sh 'az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID'
-                        sh 'az acr build --registry gosellsquarevervet --resource-group gosell-storage --image olx-client:latest --file ./OLX.Frontend/Dockerfile ./OLX.Frontend/'
-                        sh 'az acr build --registry gosellsquarevervet --resource-group gosell-storage --image olx-api:latest --file ./OLX.API/Dockerfile ./OLX.API/'
+                        sh 'az acr build --registry gosellshiningswan --resource-group gosell-storage --image olx-client:latest --file ./OLX.Frontend/Dockerfile ./OLX.Frontend/'
+                        sh 'az acr build --registry gosellshiningswan --resource-group gosell-storage --image olx-api:latest --file ./OLX.API/Dockerfile ./OLX.API/'
                     }
                 }
             }
-        }             
+        }  
     }
 
     post {
         success {
             discordSend(
-                description: "✅ Build #${env.BUILD_NUMBER} успішно завершено!",
+                description: "✅ Build успішно завершено!",
                 footer: "Jen / BublikDEV",
                 link: env.BUILD_URL,
                 result: "🟢 SUCCESS",
@@ -60,7 +74,7 @@ pipeline {
         }
         failure {
             discordSend(
-                description: "❌ Build #${env.BUILD_NUMBER} провалився!",
+                description: "❌ Build провалився!",
                 footer: "Jen / BublikDEV",
                 link: env.BUILD_URL,
                 result: "🔴 FAILURE",
@@ -75,7 +89,7 @@ pipeline {
         }
         unstable {
             discordSend(
-                description: "⚠️ Build #${env.BUILD_NUMBER} нестабільний!",
+                description: "⚠️ Build нестабільний!",
                 footer: "Jen / BublikDEV",
                 link: env.BUILD_URL,
                 result: "🟡 UNSTABLE",

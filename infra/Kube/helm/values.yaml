@@ -1,76 +1,111 @@
-# Default values for olx-website
-namespace: gosell
+# Global settings
+namespace: olx-app
 
+# Cloudflare Origin Certificate
+cloudflare:
+  enabled: true
+  domain: pluton.pp.ua
+  # Base64 encoded certificate and key
+  # You need to add these values manually or via helm install --set-file
+  certificate: "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tDQpNSUlFcERDQ0E0eWdBd0lCQWdJVVJBbmsyQmwyZUdPSk52V2Y0dzB6SXVoRzhBTXdEUVlKS29aSWh2Y05BUUVMDQpCUUF3Z1lzeEN6QUpCZ05WQkFZVEFsVlRNUmt3RndZRFZRUUtFeEJEYkc5MVpFWnNZWEpsTENCSmJtTXVNVFF3DQpNZ1lEVlFRTEV5dERiRzkxWkVac1lYSmxJRTl5YVdkcGJpQlRVMHdnUTJWeWRHbG1hV05oZEdVZ1FYVjBhRzl5DQphWFI1TVJZd0ZBWURWUVFIRXcxVFlXNGdSbkpoYm1OcGMyTnZNUk13RVFZRFZRUUlFd3BEWVd4cFptOXlibWxoDQpNQjRYRFRJMU1ETXhOREF5TVRJd01Gb1hEVFF3TURNeE1EQXlNVEl3TUZvd1lqRVpNQmNHQTFVRUNoTVFRMnh2DQpkV1JHYkdGeVpTd2dTVzVqTGpFZE1Cc0dBMVVFQ3hNVVEyeHZkV1JHYkdGeVpTQlBjbWxuYVc0Z1EwRXhKakFrDQpCZ05WQkFNVEhVTnNiM1ZrUm14aGNtVWdUM0pwWjJsdUlFTmxjblJwWm1sallYUmxNSUlCSWpBTkJna3Foa2lHDQo5dzBCQVFFRkFBT0NBUThBTUlJQkNnS0NBUUVBMWljb3BDRGg2b3R4RzAzbHEzeEpUbXBEdDQ4VjhSM1hZVzlODQp6bWRlMGdXOVJIeWZJVG9BdWp1WjJWZ2lCRGRwaFQ3TXU5bjc4TTFGbXF4bkh5REVXYmtJdDdMSHVSb0YzSnM0DQpOekNLVC81TTJnUXlNcUhTUkp3bmxjLzVYbXhiZUpLVGN1VmxzOU1xY1oxYy9JYnNQU3RsaXFWVmVLdzcrazRmDQpCRXB4YjcyOUkwZFp2MHhlWnhybUZuSVNhTjBEUW90anJ1cHR1cWhRSzVOTXZCRGJiVUdlYXUzSXREN1p5amU1DQpxdkVIRVNNN0lNZVgvMDhHblNmbE1SaStlZ283cUxSWFphSnZUSERTcDVrYlZ2cEhaK0VOd2dQY0E1ZEtZMUEvDQovWXg2c29NODl5TElmV2ZvQzZWTlI0cXRLOVYrSmpEaXpNVGJRa0NscmpENVhUT290d0lEQVFBQm80SUJKakNDDQpBU0l3RGdZRFZSMFBBUUgvQkFRREFnV2dNQjBHQTFVZEpRUVdNQlFHQ0NzR0FRVUZCd01DQmdnckJnRUZCUWNEDQpBVEFNQmdOVkhSTUJBZjhFQWpBQU1CMEdBMVVkRGdRV0JCUnhhV2FSS3kwTUI3dG1naDFud2NhcW1mOFRtVEFmDQpCZ05WSFNNRUdEQVdnQlFrNkZOWFhYdzBRSWVwNjVUYnV1RVdlUHdwcERCQUJnZ3JCZ0VGQlFjQkFRUTBNREl3DQpNQVlJS3dZQkJRVUhNQUdHSkdoMGRIQTZMeTl2WTNOd0xtTnNiM1ZrWm14aGNtVXVZMjl0TDI5eWFXZHBibDlqDQpZVEFuQmdOVkhSRUVJREFlZ2c0cUxuQnNkWFJ2Ymk1d2NDNTFZWUlNY0d4MWRHOXVMbkJ3TG5WaE1EZ0dBMVVkDQpId1F4TUM4d0xhQXJvQ21HSjJoMGRIQTZMeTlqY213dVkyeHZkV1JtYkdGeVpTNWpiMjB2YjNKcFoybHVYMk5oDQpMbU55YkRBTkJna3Foa2lHOXcwQkFRc0ZBQU9DQVFFQUNKMkJWTUo3S1BqdXBjenFZU0ZGc3B3NEJXaVBZZGxRDQpVTFo0dVBKZWVRS3NrZ1B4bWQ2dTlUcW9rclF0SVRldjRjUVgyTVBoZFR3VG9ySyt1cmViQVhFcXRvTTdoSTN5DQp4TmhjSlBKalhNLzNaaGpDK2p2YktNRUs2Y3ZxRnlDOTl5MTFxa1dtakR5K0FOU3RZbFNQcjlwN3psS1ROSER4DQpxRGs2dWNjU1VoS1lRTDhvcGtqYlI2NThNZzN1dW0xZjBTYVhkUURyMG5kOGlwRlExT3A3RnpOVCs0ZS9NSFNwDQoySm9tUFBtMjlCdjdMR1NmcW9ER2tSU0d3OW1vOEJYN3FFeGxMVzBwQmZGTTlrY3ZoQTUrbm5Qa1BHeVJtY0czDQpvZkhqNE1uOUNhc3pjWWx6d0R2MUYxTzZCb05VTHhxNnlyYVhiRkRTTjBqa1pxWkkrR0xjcHc9PQ0KLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQ0K"
+  privateKey: "LS0tLS1CRUdJTiBQUklWQVRFIEtFWS0tLS0tDQpNSUlFdlFJQkFEQU5CZ2txaGtpRzl3MEJBUUVGQUFTQ0JLY3dnZ1NqQWdFQUFvSUJBUURXSnlpa0lPSHFpM0ViDQpUZVdyZkVsT2FrTzNqeFh4SGRkaGIwM09aMTdTQmIxRWZKOGhPZ0M2TzVuWldDSUVOMm1GUHN5NzJmdnd6VVdhDQpyR2NmSU1SWnVRaTNzc2U1R2dYY216ZzNNSXBQL2t6YUJESXlvZEpFbkNlVnovbGViRnQ0a3BOeTVXV3oweXB4DQpuVno4aHV3OUsyV0twVlY0ckR2NlRoOEVTbkZ2dmIwalIxbS9URjVuR3VZV2NoSm8zUU5DaTJPdTZtMjZxRkFyDQprMHk4RU50dFFaNXE3Y2kwUHRuS043bXE4UWNSSXpzZ3g1Zi9Ud2FkSitVeEdMNTZDanVvdEZkbG9tOU1jTktuDQptUnRXK2tkbjRRM0NBOXdEbDBwalVELzlqSHF5Z3p6M0lzaDlaK2dMcFUxSGlxMHIxWDRtTU9MTXhOdENRS1d1DQpNUGxkTTZpM0FnTUJBQUVDZ2dFQWFyWk9vU0tsa0t0MWJDYXY2SGpoU29yWFBaTzJXbFVGYTA3OFZYcmJIQXF5DQpHbnVEREJxTUhFRHcxQVgveFZ3Ylg4TkFYK2NxalA2c3pYdFZVNFNQY3lvcDl1ZkdjQzFRZUhKOFc3djdZQXNYDQpIcGh5cnhwRjNkeDJPVWZPT2tnQ2VKMkpqZnBUYUgwMExETS9EN0xuNno5QnRRbllBbTdJNEZ5blJnc1daWmdiDQpncnFJTlFVYTFiV2RiZ1ZDejBDZHpVVlBnc1BkaWxxblFpeW5RQnUzdys5ZWFVVVhjNmYzSEU4YU4zZ1ZrVUxyDQpLSWN3a2UrTGp6Z1d1YnNRMnZEemljQTUyR0dDRm54emRsTUQreVhFYzhWMkRoaHJaZHlDeHlmRG55bHlxOHdUDQpKNlpUbmRpbUc3Z1NFODNZeTRnTjJRTHhOc0VQZjVyN2h0eGdjOHdQaVFLQmdRRCs3TmNRaDdvTjd3MTAvVDVXDQpHM1FtWnRnZGdyWi9GMEs3b3gvOU5Ba3J5b2huRjRUQ2JPUHYxVk9GWXh1TVE1RzMzamRPQW4zN044WUxDLzVXDQpSdnlnMlQ1eGtyQVAyaG1yakc1OTNPMnFJVittUWNZOUZsRHowc2tCK2FFQjgvVzJzWDRHbmRhWVZDWHdjUC90DQpXTU1Gd21FbUJhbTBnUEdNakhCNWdVUGRHd0tCZ1FEWERrOW0xQ1Y0WHdiWEdHR2tjN00zT2tzVVFNTUNHZFhtDQp0ZzhKdWZrUE5Fc3ZOeGwzMkZmUHU1b1k5d0RJU0JERXhuditNTlhzb3k0bGFyMDJOYkJHNjA2RWUxR3RKNzFoDQozSkZmK21ScU55WkN6MDg5Ti90T04vVlo4a29MRnZpMVVQMmlhZkRHbDltUGRySEllZEZmTGRGVnRsWVBWYXJLDQpZY1kyTDdOb2xRS0JnRHB5cnZTWlNlMDc3QWZ3c0VRcDB6Mml3dFl4VEFwam1PZFFoVnNXZlN2UEtlc0pGMlZFDQpkaFpkQU9OS1Q5eWUrV0FBMFFsUHhQYStXT2ZiZmhybDk3SWhYUkhKSWhqZ1ZwWmdna3pWUktDSE9sanlKN09GDQoxRld5OUdkQmhzcmQxbTVtejVCUXpBenM3aTNzbXFFZWdzaGxRc1RtODN2eFBIQ1BHcEtoTXFBVkFvR0FWeFU2DQpYZDlHRlFvVjBQL1VlaTFId3ZOZDk2T0owODMyYWVnTEN0czkyVVJKdGFMUU0xRnRyWGJBSFovWHQwSkhXQWN2DQpxbXpJRTN5NGNQcGFDQnVSZUFaTTB5VEVuQ05kY3NWSU1OOUp6aURxNDE3akxWei83RnFJaFpXeEdmQ0JZWnFjDQpPaXBBRDRycDFFZ3lFWVlTbkVJSFpIZmpQVzVwTEc2UFB0M3Qva2tDZ1lFQTMxbEV0L281UGdsbEsrSktodUpGDQorZjljS2h6bVhuNFNjbmFwT1lsVGw1QW1wNndMQzBobEFzTVVqcHIrd050UFAzOVJuMHIza3ZtTTRTOTcwekZyDQp6NmZwcFRjK0hlUFJ1c1dOUWZ3OEppMXRzanFjdTZ4Nkw2WWxoNEVydGtmeE1uc1dUQkdHSU9lK1B2SGF0aUxMDQo5UWxCRkp6eG5BdWp1NTFmS2l4aFlkWT0NCi0tLS0tRU5EIFBSSVZBVEUgS0VZLS0tLS0NCg=="
+
+# Backend service configuration
 backend:
-  name: backend
-  image: voutuk/olx-api
-  tag: latest
+  name: olx-api
+  image:
+    repository: gosellsquarevervet.azurecr.io/olx-api
+    tag: latest
+    pullPolicy: Always
+  replicas: 1
   port: 8080
-  service:
-    port: 80
-    targetPort: 8080
-  env:
-    ASPNETCORE_ENVIRONMENT: Production
-  replicas: 1
   resources:
-    limits:
-      cpu: 1
-      memory: 2G
     requests:
-      cpu: 1
-      memory: 2G
+      cpu: "1"
+      memory: "1Gi"
+    limits:
+      cpu: "2"
+      memory: "2Gi"
+  livenessProbe:
+    httpGet:
+      path: /healthz
+      port: 8080
+    initialDelaySeconds: 180
+    periodSeconds: 20
+    failureThreshold: 5
+  readinessProbe:
+    httpGet:
+      path: /healthz
+      port: 8080
+    initialDelaySeconds: 190
+    periodSeconds: 10
+    failureThreshold: 3
 
+# Frontend service configuration
 frontend:
-  name: frontend
-  image: voutuk/olx-client
-  tag: latest
-  port: 80
-  service:
-    port: 80
-    targetPort: 80
+  name: olx-client
+  image:
+    repository: gosellsquarevervet.azurecr.io/olx-client
+    tag: latest
+    pullPolicy: Always
   replicas: 1
+  port: 80
   resources:
     requests:
-      memory: "64Mi"
-      cpu: "50m"
-    limits:
-      memory: "128Mi"
       cpu: "100m"
-  
-database:
+      memory: "128Mi"
+    limits:
+      cpu: "300m"
+      memory: "256Mi"
+
+# PostgreSQL configuration
+postgres:
   name: postgres-service
-  image: postgres
-  tag: latest
+  image:
+    repository: postgres
+    tag: latest
+    pullPolicy: IfNotPresent
   port: 5432
-  service:
-    port: 5432
-    targetPort: 5432
+  persistence:
+    size: 10Gi
+    storageClass: "managed-premium"
+  resources:
+    requests:
+      cpu: "500m"
+      memory: "512Mi"
+    limits:
+      cpu: "1"
+      memory: "1Gi"
   env:
     POSTGRES_DB: olxDb
     POSTGRES_USER: olxapi
     POSTGRES_HOST: postgres
     POSTGRES_PORT: "5432"
     PGDATA: /var/lib/postgresql/data/pgdata
-  secret:
-    POSTGRES_PASSWORD: KmRtVW50ZE9pZGQzZF8jV1RpNEI5Wm9acCVyU0RqNEltZHMwN2RqYyo= # Base64 encoded password
-  persistence:
-    enabled: true
-    storageClass: ""
-    size: 5Gi
-  resources:
-    requests:
-      memory: "256Mi"
-      cpu: "100m"
-    limits:
-      memory: "512Mi"
-      cpu: "300m"
-  replicas: 1
+    # This will be stored in a secret
+    POSTGRES_PASSWORD: "KmRtVW50ZE9pZGQzZF8jV1RpNEI5Wm9acCVyU0RqNEltZHMwN2RqYyo="
 
-azureFrontDoor:
+# Ingress configuration
+ingress:
   enabled: true
-  hostname: pluton.pp.ua
   annotations:
-    # Azure Front Door specific annotations
-    azure-frontdoor.io/frontend-endpoints: "fe-endpoint"
-    azure-frontdoor.io/routing-rules: "rr-rule"
-    azure-frontdoor.io/backend-pool: "bp-pool"
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-buffer-size: "16k"
+  paths:
+    - path: /
+      pathType: Prefix
+      service: frontend
+      port: 80
+    - path: /api
+      pathType: Prefix
+      service: backend
+      port: 8080
+    - path: /hub
+      pathType: Prefix
+      service: backend
+      port: 8080
+    - path: /images
+      pathType: Prefix
+      service: backend
+      port: 8080

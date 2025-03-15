@@ -4,7 +4,7 @@ pipeline {
     }
     
     environment {
-        DISCORD_WEBHOOK = credentials('discord-webhook') // Підставляємо секрет
+        DISCORD_WEBHOOK = credentials('discord-webhook')
     }
 
     options {
@@ -32,6 +32,18 @@ pipeline {
         stage('🔍 USE ') {
             steps {
                 node('az-plug') {
+                    step([$class: 'GitHubCommitStatusSetter',
+                     statusResultSource: [$class: 'ConditionalStatusResultSource',
+                     results: [[$class: 'AnyBuildResult', 
+                               message: 'Pipeline Proceeded', 
+                               state: 'PENDING']]]])
+                    sh '''
+                        which az || {
+                            echo "Installing Azure CLI..."
+                            curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+                            echo "Azure CLI installed successfully"
+                        }
+                    '''
                     sh 'ls -la'
                     git url: 'https://github.com/voutuk/OLX_Dyplom_ADM', branch: 'main'
                     withCredentials([azureServicePrincipal('az-service-principal')]) {
@@ -47,33 +59,48 @@ pipeline {
     post {
         success {
             discordSend(
-                description: "✅ Build #$env.BUILD_NUMBER успішно завершено!",
+                description: "✅ Build успішно завершено!",
                 footer: "Jen / BublikDEV",
                 link: env.BUILD_URL,
                 result: "🟢 SUCCESS",
                 title: env.JOB_NAME,
                 webhookURL: DISCORD_WEBHOOK
             )
+            step([$class: 'GitHubCommitStatusSetter',
+                         statusResultSource: [$class: 'ConditionalStatusResultSource',
+                         results: [[$class: 'AnyBuildResult', 
+                                   message: 'Deployed', 
+                                   state: 'SUCCESS']]]])
         }
         failure {
             discordSend(
-                description: "❌ Build #$env.BUILD_NUMBER провалився!",
+                description: "❌ Build провалився!",
                 footer: "Jen / BublikDEV",
                 link: env.BUILD_URL,
                 result: "🔴 FAILURE",
                 title: env.JOB_NAME,
                 webhookURL: DISCORD_WEBHOOK
             )
+            step([$class: 'GitHubCommitStatusSetter',
+                         statusResultSource: [$class: 'ConditionalStatusResultSource',
+                         results: [[$class: 'AnyBuildResult', 
+                                   message: 'Failed', 
+                                   state: 'FAILURE']]]])
         }
         unstable {
             discordSend(
-                description: "⚠️ Build #$env.BUILD_NUMBER нестабільний!",
+                description: "⚠️ Build нестабільний!",
                 footer: "Jen / BublikDEV",
                 link: env.BUILD_URL,
                 result: "🟡 UNSTABLE",
                 title: env.JOB_NAME,
                 webhookURL: DISCORD_WEBHOOK
             )
+            step([$class: 'GitHubCommitStatusSetter',
+                         statusResultSource: [$class: 'ConditionalStatusResultSource',
+                         results: [[$class: 'AnyBuildResult', 
+                                   message: 'Unstable',
+                                   state: 'FAILURE']]]]) 
         }
         always {
             cleanWs()

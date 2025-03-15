@@ -1,0 +1,10 @@
+controller:
+  replicaCount: 1
+  nodeSelector:
+    kubernetes.io/os: linux
+  service:
+    annotations:
+      service.beta.kubernetes.io/azure-load-balancer-health-probe-request-path: /
+defaultBackend:
+  nodeSelector:
+    kubernetes.io/os: linux

@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.backend.name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "olx-app.labels" . | nindent 4 }}
+    app: olx-api
+spec:
+  replicas: {{ .Values.backend.replicas }}
+  selector:
+    matchLabels:
+      app: olx-api
+  template:
+    metadata:
+      labels:
+        app: olx-api
+        {{- include "olx-app.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+      - name: olx-api
+        image: "{{ .Values.backend.image.repository }}:{{ .Values.backend.image.tag }}"
+        imagePullPolicy: {{ .Values.backend.image.pullPolicy }}
+        ports:
+        - containerPort: {{ .Values.backend.port }}
+        resources:
+          {{- toYaml .Values.backend.resources | nindent 10 }}
+        livenessProbe:
+          {{- toYaml .Values.backend.livenessProbe | nindent 10 }}
+        readinessProbe:
+          {{- toYaml .Values.backend.readinessProbe | nindent 10 }}
+        env:
+        - name: POSTGRES_DB
+          value: {{ .Values.postgres.env.POSTGRES_DB }}
+        - name: POSTGRES_USER
+          value: {{ .Values.postgres.env.POSTGRES_USER }}
+        - name: POSTGRES_HOST
+          value: {{ .Values.postgres.env.POSTGRES_HOST }}
+        - name: POSTGRES_PORT
+          value: {{ .Values.postgres.env.POSTGRES_PORT | quote }}
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgres-secret
+              key: postgres-password

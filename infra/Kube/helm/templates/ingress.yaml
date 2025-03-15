@@ -1,31 +1,33 @@
-{{- if .Values.azureFrontDoor.enabled }}
+{{- if .Values.ingress.enabled }}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: olx-website-ingress
+  name: olx-ingress
   namespace: {{ .Values.namespace }}
   annotations:
-    kubernetes.io/ingress.class: "azure/application-gateway"
-    {{- range $key, $value := .Values.azureFrontDoor.annotations }}
+    {{- range $key, $value := .Values.ingress.annotations }}
     {{ $key }}: {{ $value | quote }}
     {{- end }}
 spec:
+  {{- if and .Values.cloudflare.enabled .Values.cloudflare.domain }}
+  tls:
+  - hosts:
+    - {{ .Values.cloudflare.domain }}
+    secretName: cloudflare-origin-cert
+  {{- end }}
   rules:
-  - host: {{ .Values.azureFrontDoor.hostname }}
+  - {{- if .Values.cloudflare.domain }}
+    host: {{ .Values.cloudflare.domain }}
+    {{- end }}
     http:
       paths:
-      - path: /api
-        pathType: Prefix
+      {{- range .Values.ingress.paths }}
+      - path: {{ .path }}
+        pathType: {{ .pathType }}
         backend:
           service:
-            name: {{ .Values.backend.name }}
+            name: {{ .service }}
             port:
-              number: {{ .Values.backend.service.port }}
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: {{ .Values.frontend.name }}
-            port:
-              number: {{ .Values.frontend.service.port }}
+              number: {{ .port }}
+      {{- end }}
 {{- end }}

@@ -14,7 +14,7 @@
     "pre": "terraform init && doppler run -- terraform apply -target=module.sa -auto-approve ",
     "init": "doppler run -- terragrunt init",
     "plan": "doppler run -- terragrunt plan",
-    "apply": "doppler run -- terragrunt apply -auto-approve",
+    "apply": "doppler run -- terragrunt apply -auto-approve -target=module.ci -target=module.aks -target=module.acr",
     "destroy": "doppler run -- terragrunt destroy -auto-approve",
     "state": "doppler run -- terragrunt state list",
     "refresh": "doppler run -- terragrunt refresh",

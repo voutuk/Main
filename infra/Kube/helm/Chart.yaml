@@ -1,6 +1,6 @@
 apiVersion: v2
-name: gosell
-description: A Helm chart for deploying GoSell website with backend, frontend and PostgreSQL database
+name: olx-app
+description: Helm chart for OLX clone application
 type: application
-version: 0.1.1
+version: 0.1.0
 appVersion: "1.0.0"
