@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: olx-client
-        image: gosellshiningswan.azurecr.io/olx-client:latest
+        image: ${AZURE_CONTAINER_REGISTRY}.azurecr.io/olx-client:latest
         imagePullPolicy: Always
         ports:
         - containerPort: 80

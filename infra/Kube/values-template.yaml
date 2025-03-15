@@ -14,7 +14,7 @@ cloudflare:
 backend:
   name: olx-api
   image:
-    repository: gosellshiningswan.azurecr.io/olx-api
+    repository: ${AZURE_CONTAINER_REGISTRY}.azurecr.io/olx-api
     tag: latest
     pullPolicy: Always
   replicas: 1
@@ -45,7 +45,7 @@ backend:
 frontend:
   name: olx-client
   image:
-    repository: gosellshiningswan.azurecr.io/olx-client
+    repository: ${AZURE_CONTAINER_REGISTRY}.azurecr.io/olx-client
     tag: latest
     pullPolicy: Always
   replicas: 1

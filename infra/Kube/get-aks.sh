@@ -13,4 +13,4 @@ doppler run -- bash -c '
   echo "Successfully logged in and retrieved AKS credentials."
 '
 
-doppler run -- az aks update -n gosell-aks -g gosell-aks-cluster --attach-acr gosellbackupreadypika
+doppler run -- bash -c 'az aks update -n gosell-aks -g gosell-aks-cluster --attach-acr "$AZURE_CONTAINER_REGISTRY"'

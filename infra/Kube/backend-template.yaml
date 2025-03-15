@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: olx-api
-        image: gosellshiningswan.azurecr.io/olx-api:latest
+        image: ${AZURE_CONTAINER_REGISTRY}.azurecr.io/olx-api:latest
         imagePullPolicy: Always
         ports:
         - containerPort: 8080
