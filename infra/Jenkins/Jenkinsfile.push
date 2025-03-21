@@ -15,41 +15,34 @@ pipeline {
     }
 
     stages {
-        stage('🔧 Setup Environment') {
-            steps {
-                node('az-plug') {
-                    sh '''
-                        which az || {
-                            echo "Installing Azure CLI..."
-                            curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
-                            echo "Azure CLI installed successfully"
-                        }
-                    '''
-                }
-            }
-        }
+        // stage('🔧 Setup Environment') {
+        //     steps {
+        //         node('az-plug') {
+        //             sh '''
+        //                 which az || {
+        //                     echo "Installing Azure CLI..."
+        //                     curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+        //                     echo "Azure CLI installed successfully"
+        //                 }
+        //             '''
+        //         }
+        //     }
+        // }
 
         stage('🔍 USE ') {
             steps {
-                node('az-plug') {
-                    step([$class: 'GitHubCommitStatusSetter',
+                step([$class: 'GitHubCommitStatusSetter',
                      statusResultSource: [$class: 'ConditionalStatusResultSource',
                      results: [[$class: 'AnyBuildResult', 
                                message: 'Pipeline Proceeded', 
                                state: 'PENDING']]]])
-                    sh '''
-                        which az || {
-                            echo "Installing Azure CLI..."
-                            curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
-                            echo "Azure CLI installed successfully"
-                        }
-                    '''
-                    sh 'ls -la'
+                node('az-plug') {
                     git url: 'https://github.com/voutuk/OLX_Dyplom_ADM', branch: 'main'
+                    sh 'ls -la'
                     withCredentials([azureServicePrincipal('az-service-principal')]) {
                         sh 'az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID'
-                        sh 'az acr build --registry gosellnobleflamingo --resource-group gosell-storage --image olx-client:latest --file ./OLX.Frontend/Dockerfile ./OLX.Frontend/'
-                        sh 'az acr build --registry gosellnobleflamingo --resource-group gosell-storage --image olx-api:latest --file ./OLX.API/Dockerfile ./OLX.API/'
+                        sh 'az acr build --registry gosellevidentmagpie --resource-group gosell-storage --image olx-client:latest --file ./OLX.Frontend/Dockerfile ./OLX.Frontend/'
+                        sh 'az acr build --registry gosellevidentmagpie --resource-group gosell-storage --image olx-api:latest --file ./OLX.API/Dockerfile ./OLX.API/'
                     }
                 }
             }

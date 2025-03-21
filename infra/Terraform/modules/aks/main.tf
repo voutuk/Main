@@ -64,3 +64,10 @@ resource "azurerm_kubernetes_cluster_node_pool" "system" {
   min_count             = var.system_min_node_count
   max_count             = var.system_max_node_count
 }
+
+resource "doppler_secret" "principal_id_aks" {
+  project = "az"
+  config  = "dev"
+  name    = "PRINCIPAL_ID"
+  value   = azurerm_kubernetes_cluster.cluster.identity[0].principal_id
+}

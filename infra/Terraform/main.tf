@@ -55,9 +55,9 @@ module "ci" {
   doppler_auth            = data.doppler_secrets.az-creds.map.TF_VAR_DOPPLER_AUTH_TOKEN
   cloudflare_tunnel_token = data.doppler_secrets.az-creds.map.CLOUDFLARE_TUNNEL_TOKEN
   subnet_id               = module.network.ci_subnet_id
-  jenkins_cpu             = 1
-  jenkins_memory          = 2
-  storage_quota           = 20
+  jenkins_cpu             = 2
+  jenkins_memory          = 4
+  storage_quota           = 30
   tags                    = var.tags
 }
 
