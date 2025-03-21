@@ -8,6 +8,10 @@ pipeline {
     }
 
     options {
+        skipDefaultCheckout(true)
+    }
+
+    options {
         ansiColor('xterm')
         timestamps()
         timeout(time: 30, unit: 'MINUTES')
