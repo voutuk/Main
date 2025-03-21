@@ -32,11 +32,6 @@ pipeline {
 
         stage('🔍 USE ') {
             steps {
-                step([$class: 'GitHubCommitStatusSetter',
-                     statusResultSource: [$class: 'ConditionalStatusResultSource',
-                     results: [[$class: 'AnyBuildResult', 
-                               message: 'Pipeline Proceeded', 
-                               state: 'PENDING']]]])
                 node('az-plug') {
                     git url: 'https://github.com/voutuk/OLX_Dyplom_ADM', branch: 'main'
                     sh 'ls -la'
@@ -56,45 +51,30 @@ pipeline {
                 description: "✅ Build успішно завершено!",
                 footer: "Jen / BublikDEV",
                 link: env.BUILD_URL,
-                result: "🟢 SUCCESS",
+                result: "SUCCESS",
                 title: env.JOB_NAME,
                 webhookURL: DISCORD_WEBHOOK
             )
-            step([$class: 'GitHubCommitStatusSetter',
-                         statusResultSource: [$class: 'ConditionalStatusResultSource',
-                         results: [[$class: 'AnyBuildResult', 
-                                   message: 'Deployed', 
-                                   state: 'SUCCESS']]]])
         }
         failure {
             discordSend(
                 description: "❌ Build провалився!",
                 footer: "Jen / BublikDEV",
                 link: env.BUILD_URL,
-                result: "🔴 FAILURE",
+                result: "FAILURE",
                 title: env.JOB_NAME,
                 webhookURL: DISCORD_WEBHOOK
             )
-            step([$class: 'GitHubCommitStatusSetter',
-                         statusResultSource: [$class: 'ConditionalStatusResultSource',
-                         results: [[$class: 'AnyBuildResult', 
-                                   message: 'Failed', 
-                                   state: 'FAILURE']]]])
         }
         unstable {
             discordSend(
                 description: "⚠️ Build нестабільний!",
                 footer: "Jen / BublikDEV",
                 link: env.BUILD_URL,
-                result: "🟡 UNSTABLE",
+                result: "UNSTABLE",
                 title: env.JOB_NAME,
                 webhookURL: DISCORD_WEBHOOK
             )
-            step([$class: 'GitHubCommitStatusSetter',
-                         statusResultSource: [$class: 'ConditionalStatusResultSource',
-                         results: [[$class: 'AnyBuildResult', 
-                                   message: 'Unstable',
-                                   state: 'FAILURE']]]]) 
         }
         always {
             cleanWs()
