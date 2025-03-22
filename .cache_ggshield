@@ -1,1 +1,1 @@
-{"last_found_secrets": [{"name": "Generic Password - c:\\Users\\Yurii\\Main\\infra\\Kube\\helm\\values.yaml", "match": "e0455614a8978ba95320df5da82b307cd4dabaeb1660ca2a6ec884265a9710b2"}, {"name": "Base64 Generic Private Key - c:\\Users\\Yurii\\Main\\infra\\Kube\\helm\\values.yaml", "match": "72f60639e4f1427b49b911a04934f2f2081691d3433531fd867a11070212391a"}]}
+{"last_found_secrets": [{"name": "Azure Logic App Shared Access Signature - c:\\Users\\Yurii\\Main\\infra\\AZDT\\README.MD", "match": "027420f9f5480c0be4f60e6ffb412efe4cab2de83a138ed4ffcec1821178dbf9"}]}
