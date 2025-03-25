@@ -1,4 +1,8 @@
+{{- if .Values.namespace }}
 apiVersion: v1
 kind: Namespace
 metadata:
   name: {{ .Values.namespace }}
+  labels:
+    {{- include "olx-app.labels" . | nindent 4 }}
+{{- end }}

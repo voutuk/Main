@@ -1,6 +1,6 @@
 pipeline {
     agent {
-        label 'docker-agent' 
+        label 'az-plug' 
     }
     
     options {
@@ -60,6 +60,15 @@ pipeline {
                         echo "\nRunning Containers:"
                         docker ps -a
                     '''
+                }
+            }
+        }
+        stage('⏸️ Manual Approval') {
+            steps {
+                script {
+                    timeout(time: 1, unit: 'DAYS') { 
+                        input message: 'Proceed with deployment?', ok: 'Proceed'
+                    }
                 }
             }
         }

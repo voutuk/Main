@@ -1,0 +1,16 @@
+{
+    "name": "azure-copy",
+    "version": "1.0.0",
+    "description": "Copy files from Azure SMB folder",
+    "license": "AFL-3.0",
+    "private": true,
+    "author": "Yurii Voutuk <voutuk@icloud.com>",
+    "repository": {
+      "type": "git",
+      "url": "git+https://github.com/voutuk/Main/infra/AZDT"
+    },
+    "scripts": {
+      "build": "docker build -t jenkins-azure .",
+      "copy": "doppler run -- docker run -it --rm -v ./jenkins-home:/jenkins-home -e ARM_CLIENT_ID -e ARM_CLIENT_SECRET -e ARM_TENANT_ID -e AZURE_STORAGE_ACCOUNT jenkins-azure"
+    }
+  }

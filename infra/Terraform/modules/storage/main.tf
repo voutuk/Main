@@ -4,7 +4,7 @@
 # Generate a random name for the storage account using a prefix
 resource "random_pet" "as_storage_name" {
   prefix    = var.storage_prefix
-  separator = "-"
+  separator = ""
 }
 
 locals {
@@ -25,9 +25,9 @@ resource "azurerm_storage_account" "sa" {
   public_network_access_enabled = true
   tags                          = var.tags
   # INFO: Вернути назад
-  lifecycle {
-    prevent_destroy = true
-  }
+  # lifecycle {
+  #   prevent_destroy = true
+  # }
 }
 
 # Create the container for backups
@@ -36,8 +36,29 @@ resource "azurerm_storage_container" "backup_container" {
   storage_account_name  = azurerm_storage_account.sa.name
   container_access_type = "private"
   # INFO: Вернути назад
-  lifecycle {
-    prevent_destroy = true
-  }
+  # lifecycle {
+  #   prevent_destroy = true
+  # }
 }
 
+
+resource "doppler_secret" "azure_container_resource_group" {
+  project = "az"
+  config  = "dev"
+  name    = "AZURE_CONTAINER_RESOURCE_GROUP"
+  value   = azurerm_storage_account.sa.resource_group_name
+}
+
+resource "doppler_secret" "azure_container_name" {
+  project = "az"
+  config  = "dev"
+  name    = "AZURE_CONTAINER_NAME"
+  value   = azurerm_storage_container.backup_container.name
+}
+
+resource "doppler_secret" "azure_storage_account" {
+  project = "az"
+  config  = "dev"
+  name    = "AZURE_STORAGE_ACCOUNT"
+  value   = azurerm_storage_account.sa.name
+}

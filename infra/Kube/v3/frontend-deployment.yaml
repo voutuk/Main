@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: olx-client
+  namespace: olx-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: olx-client
+  template:
+    metadata:
+      labels:
+        app: olx-client
+    spec:
+      containers:
+      - name: olx-client
+        image: gosellshiningswan.azurecr.io/olx-client:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "300m"
+            memory: "256Mi"

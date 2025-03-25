@@ -1,61 +1,67 @@
 pipeline {
-    agent any
-
+    agent {
+        label 'az-plug' 
+    }
+    
     environment {
-        DOCKERHUB_CREDENTIALS = credentials('dockerhub-credentials')
-        DOCKERHUB_REPO_API = 'voutuk/olx-api'
-        DOCKERHUB_REPO_CLIENT = 'voutuk/olx-client'
+        DISCORD_WEBHOOK = credentials('discord-webhook')
+    }
+
+    options {
+        skipDefaultCheckout(true)
+        ansiColor('xterm')
+        timestamps()
+        timeout(time: 30, unit: 'MINUTES')
+        buildDiscarder(logRotator(numToKeepStr: '5'))
     }
 
     stages {
-        stage('🔒 Docker Hub Login') {
+        stage('🔍 USE ') {
             steps {
-                script {
-                    sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+                git url: 'https://github.com/voutuk/OLX_Dyplom_ADM', branch: 'main'
+                sh 'ls -la'
+                withCredentials([azureServicePrincipal('az-service-principal')]) {
+                    sh 'az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID'
+                    sh 'az acr build --registry gosellevidentmagpie --resource-group gosell-storage --image olx-client:latest --file ./OLX.Frontend/Dockerfile ./OLX.Frontend/'
+                    sh 'az acr build --registry gosellevidentmagpie --resource-group gosell-storage --image olx-api:latest --file ./OLX.API/Dockerfile ./OLX.API/'
                 }
             }
-        }
-
-        stage('🚀 Docker Build Prod') {
-            steps {
-                script {
-                    sh 'docker compose --profile prod build'
-                }
-            }
-        }
-
-        stage('📤 Push API Image') {
-            steps {
-                script {
-                    // Tag and push with latest tag
-                    sh """
-                        docker push ${DOCKERHUB_REPO_API}:latest
-                    """
-                }
-            }
-        }
-
-        stage('📤 Push Client Image') {
-            steps {
-                script {
-                    // Tag and push with latest tag
-                    sh """
-                        docker push ${DOCKERHUB_REPO_CLIENT}:latest
-                    """
-                }
-            }
-        }
+        }  
     }
 
     post {
         success {
-            echo '🎉 Push completed successfully!'
+            discordSend(
+                description: "✅ Build успішно завершено!",
+                footer: "Jen / BublikDEV",
+                link: env.BUILD_URL,
+                result: "SUCCESS",
+                title: env.JOB_NAME,
+                webhookURL: DISCORD_WEBHOOK
+            )
         }
         failure {
-            echo '💥 Push failed!'
+            discordSend(
+                description: "❌ Build провалився!",
+                footer: "Jen / BublikDEV",
+                link: env.BUILD_URL,
+                result: "FAILURE",
+                title: env.JOB_NAME,
+                webhookURL: DISCORD_WEBHOOK
+            )
+        }
+        unstable {
+            discordSend(
+                description: "⚠️ Build нестабільний!",
+                footer: "Jen / BublikDEV",
+                link: env.BUILD_URL,
+                result: "UNSTABLE",
+                title: env.JOB_NAME,
+                webhookURL: DISCORD_WEBHOOK
+            )
         }
         always {
-            sh 'docker logout'
+            cleanWs()
         }
     }
 }

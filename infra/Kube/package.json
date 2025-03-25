@@ -8,7 +8,9 @@
   "scripts": {
     "pre": "bash get-aks.sh",
     "helm": "helm package helm/",
-    "helm:deploy": "helm install olx-website ./GoSell-0.1.0.tgz --namespace gosell --create-namespace",
-    "helm:upd": "helm upgrade --install olx-website ./GoSell-0.1.0.tgz --namespace gosell"
+    "helm:deploy": "bash apply.sh && helm install olx-app ./helm --namespace olx-app --create-namespace",
+    "helm:upd": "bash apply.sh && helm upgrade --install olx-app ./helm --namespace olx-app",
+    "deploy": "bash ./v3/apply.sh",
+    "cert": "bash ./cert.sh"
   }
 }

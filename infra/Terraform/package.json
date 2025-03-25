@@ -10,24 +10,22 @@
     "url": "git+https://github.com/voutuk/Main/infra/Terraform"
   },
   "scripts": {
-    "// Base commands ": "Basic terragrunt commands with env support",
-    "pre": "terraform apply -target=module.sa -auto-approve",
-    "init": "doppler run -- terragrunt init",
+    "// Base commands ": "Basic terragrunt commands with env support (command use github actions please check file .github/workflows/terraform.yml)",
+    "pre": "terraform init && doppler run -- terraform apply -target=module.sa -auto-approve", 
+    "init": "doppler run -- terragrunt init --terragrunt-non-interactive",
     "plan": "doppler run -- terragrunt plan",
-    "apply": "doppler run -- terragrunt apply -auto-approve",
-    "destroy": "doppler run -- terragrunt destroy -auto-approve",
+    "apply": "doppler run -- terragrunt apply -auto-approve -target=module.ci -target=module.aks -target=module.network -target=module.acr",
+    "destroy": "doppler run -- terragrunt destroy -auto-approve -target=module.ci -target=module.aks -target=module.network -target=module.acr",
     "state": "doppler run -- terragrunt state list",
     "refresh": "doppler run -- terragrunt refresh",
     "output": "doppler run -- terragrunt output",
     "validate": "doppler run -- terragrunt validate",
     
-    "// Instances ": "VM instance management",
-    "apply:compute:ci": "doppler run -- terragrunt apply -target=module.ci -auto-approve",
-    "apply:compute:vvms": "doppler run -- terragrunt apply -target=module.vvms -auto-approve",
-    "apply:compute": "doppler run -- terragrunt apply -target=module.ci -target=module.vvms -auto-approve",
-    "destroy:compute:ci": "doppler run -- terragrunt destroy -target=module.ci -auto-approve",
-    "destroy:compute:vvms": "doppler run -- terragrunt destroy -target=module.vvms -auto-approve",
-    "destroy:compute": "doppler run -- terragrunt destroy -target=module.ci -target=module.vvms -auto-approve",
+    "// Container instance ": "Continers management",
+    "apply:ci": "doppler run -- terragrunt apply -target=module.ci -auto-approve",
+    "destroy:ci": "doppler run -- terragrunt destroy -target=module.ci -auto-approve",
+    "apply:net": "doppler run -- terragrunt apply -target=module.network -auto-approve",
+    "destroy:net": "doppler run -- terragrunt destroy -target=module.network -auto-approve",
 
     "// AKS ": "AKS cluster and related infrastructure",
     "apply:aks": "doppler run -- terragrunt apply -target=module.aks -auto-approve",
@@ -36,6 +34,8 @@
     "// Storage & Inventory ": "Storage and inventory management",
     "apply:storage": "doppler run -- terragrunt apply -target=module.sa -auto-approve",
     "destroy:storage": "doppler run -- terragrunt destroy -target=module.sa -auto-approve",
+    "apply:acr": "doppler run -- terragrunt apply -target=module.acr -auto-approve",
+    "destroy:acr": "doppler run -- terragrunt destroy -target=module.acr -auto-approve",
 
     "// Utils ": "Utility scripts",
     "rover": "bash rover.sh"
