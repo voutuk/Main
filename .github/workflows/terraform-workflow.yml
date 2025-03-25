@@ -1,6 +1,12 @@
 name: Terraform Deployment
 on:
   workflow_dispatch:
+
+env:
+  tf_version: '1.11.2'
+  tg_version: '0.73.11'
+  working_dir: 'infra/Terraform'
+
 jobs:
   terraform-deploy:
     runs-on: ubuntu-latest
@@ -11,18 +17,15 @@ jobs:
       - name: Install Terraform
         uses: hashicorp/setup-terraform@v2
         with:
-          terraform_version: '1.9.8'
+          terraform_version: ${{ env.tf_version }}
 
-      - name: Verify Terraform installation
-        run: terraform --version
-
-      - name: Install Terragrunt
-        run: |
-          TERRAGRUNT_VERSION=0.73.11
-          wget https://github.com/gruntwork-io/terragrunt/releases/download/v${TERRAGRUNT_VERSION}/terragrunt_linux_amd64
-          chmod +x terragrunt_linux_amd64
-          sudo mv terragrunt_linux_amd64 /usr/local/bin/terragrunt
-          which terragrunt && terragrunt --version
+      - name: Plan
+        uses: gruntwork-io/terragrunt-action@v2
+        with:
+          tf_version: ${{ env.tf_version }}
+          tg_version: ${{ env.tg_version }}
+          tg_dir:     ${{ env.working_dir }}
+          tg_command: 'plan'
 
       - name: Set up Doppler CLI
         uses: dopplerhq/cli-action@v2
@@ -36,6 +39,11 @@ jobs:
       - name: Pre-deployment setup
         continue-on-error: true
         run: cd infra/Terraform && doppler run -- terraform apply -target=module.sa -auto-approve
+
+      - name: Create terraform-bin symlink
+        run: |
+          sudo ln -sf $(which terraform) /usr/local/bin/terraform-bin
+          ls -la /usr/local/bin/terraform-bin
 
       - name: Initialize Terragrunt
         run: cd infra/Terraform && doppler run -- terragrunt init --non-interactive
