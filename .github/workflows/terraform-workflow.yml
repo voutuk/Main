@@ -17,8 +17,7 @@ env:
   ARM_CLIENT_SECRET:              ${{ secrets.ARM_CLIENT_SECRET }}
   ARM_TENANT_ID:                  ${{ secrets.ARM_TENANT_ID }}
   ARM_SUBSCRIPTION_ID:            ${{ secrets.ARM_SUBSCRIPTION_ID }}
-  DOPPLER_AUTH_TOKEN:             ${{ secrets.DOPPLER_AUTH_TOKEN }}
-        
+  TF_VAR_DOPPLER_AUTH_TOKEN:      ${{ secrets.TF_VAR_DOPPLER_AUTH_TOKEN }}
 
 jobs:
   terraform-deploy:
@@ -34,6 +33,12 @@ jobs:
 
       - name: Initialize Terraform
         run: cd infra/Terraform && terraform init
+      
+      - name: Set up Doppler CLI
+        uses: dopplerhq/cli-action@v2
+
+      - name: Connect to Doppler project
+        run: doppler setup --no-interactive --token ${{ secrets.TF_VAR_DOPPLER_AUTH_TOKEN }} --project "az" --config dev
 
       - name: Pre-deployment setup
         continue-on-error: true
