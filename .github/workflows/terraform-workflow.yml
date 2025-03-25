@@ -7,6 +7,18 @@ env:
   tg_version: '0.73.11'
   working_dir: 'infra/Terraform'
 
+  # Azure Backend Configuration
+  AZURE_CONTAINER_RESOURCE_GROUP: ${{ secrets.AZURE_CONTAINER_RESOURCE_GROUP }}
+  AZURE_STORAGE_ACCOUNT:          ${{ secrets.AZURE_STORAGE_ACCOUNT }}
+  AZURE_CONTAINER_NAME:           ${{ secrets.AZURE_CONTAINER_NAME }}
+        
+  # Azure Authentication
+  ARM_CLIENT_ID:                  ${{ secrets.ARM_CLIENT_ID }}
+  ARM_CLIENT_SECRET:              ${{ secrets.ARM_CLIENT_SECRET }}
+  ARM_TENANT_ID:                  ${{ secrets.ARM_TENANT_ID }}
+  ARM_SUBSCRIPTION_ID:            ${{ secrets.ARM_SUBSCRIPTION_ID }}
+        
+
 jobs:
   terraform-deploy:
     runs-on: ubuntu-latest
