@@ -1,0 +1,76 @@
+pipeline {
+    agent {
+        label 'az-plug' 
+    }
+    
+    environment {
+        DISCORD_WEBHOOK = credentials('discord-webhook')
+    }
+
+    options {
+        skipDefaultCheckout(true)
+        ansiColor('xterm')
+        timestamps()
+        timeout(time: 30, unit: 'MINUTES')
+        buildDiscarder(logRotator(numToKeepStr: '5'))
+    }
+
+    stages {
+        stage('🔍 Build API') {
+            steps {
+                git url: 'https://github.com/xCrucified/Amazon-Back-end', branch: 'WithList'
+                sh 'ls -la'
+                withCredentials([azureServicePrincipal('az-service-principal')]) {
+                    sh 'az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID'
+                    sh 'az acr build --registry goselldelicatechigger --resource-group gosell-storage --image onix-api:latest .'
+                }
+            }
+        }  
+        stage('🔍 Build Front') {
+            steps {
+                git url: 'https://github.com/xCrucified/Amazon-Front-End', branch: 'staging'
+                sh 'ls -la'
+                withCredentials([azureServicePrincipal('az-service-principal')]) {
+                    sh 'az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID'
+                    sh 'az acr build --registry goselldelicatechigger --resource-group gosell-storage --image onix-client:latest --file ./amazon/Dockerfile ./amazon/'
+                }
+            }
+        }  
+    }
+
+    post {
+        success {
+            discordSend(
+                description: "✅ Build успішно завершено!",
+                footer: "Jen / BublikDEV",
+                link: env.BUILD_URL,
+                result: "SUCCESS",
+                title: env.JOB_NAME,
+                webhookURL: DISCORD_WEBHOOK
+            )
+        }
+        failure {
+            discordSend(
+                description: "❌ Build провалився!",
+                footer: "Jen / BublikDEV",
+                link: env.BUILD_URL,
+                result: "FAILURE",
+                title: env.JOB_NAME,
+                webhookURL: DISCORD_WEBHOOK
+            )
+        }
+        unstable {
+            discordSend(
+                description: "⚠️ Build нестабільний!",
+                footer: "Jen / BublikDEV",
+                link: env.BUILD_URL,
+                result: "UNSTABLE",
+                title: env.JOB_NAME,
+                webhookURL: DISCORD_WEBHOOK
+            )
+        }
+        always {
+            cleanWs()
+        }
+    }
+}
