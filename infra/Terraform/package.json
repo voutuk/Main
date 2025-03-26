@@ -20,6 +20,7 @@
     "refresh": "doppler run -- terragrunt refresh",
     "output": "doppler run -- terragrunt output",
     "validate": "doppler run -- terragrunt validate",
+    "terragrunt": "doppler run -- terragrunt",
     
     "// Container instance ": "Continers management",
     "apply:ci": "doppler run -- terragrunt apply -target=module.ci -auto-approve",
