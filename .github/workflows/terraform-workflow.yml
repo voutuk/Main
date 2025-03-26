@@ -38,6 +38,14 @@ jobs:
           tg_version: ${{ env.tg_version }}
           tg_dir:     ${{ env.working_dir }}
           tg_command: 'init --non-interactive'
+          
+      - name: Refresh Terraform State
+        uses: gruntwork-io/terragrunt-action@v2
+        with:
+          tf_version: ${{ env.tf_version }}
+          tg_version: ${{ env.tg_version }}
+          tg_dir:     ${{ env.working_dir }}
+          tg_command: 'refresh'
 
       - name: Apply Terraform changes
         uses: gruntwork-io/terragrunt-action@v2
