@@ -1,0 +1,56 @@
+name: Terraform Deployment
+on:
+  workflow_dispatch:
+
+env:
+  tf_version: '1.11.2'
+  tg_version: '0.73.11'
+  working_dir: 'infra/Terraform'
+
+  # Azure Backend Configuration
+  AZURE_CONTAINER_RESOURCE_GROUP: ${{ secrets.AZURE_CONTAINER_RESOURCE_GROUP }}
+  AZURE_STORAGE_ACCOUNT:          ${{ secrets.AZURE_STORAGE_ACCOUNT }}
+  AZURE_CONTAINER_NAME:           ${{ secrets.AZURE_CONTAINER_NAME }}
+        
+  # Azure Authentication
+  ARM_CLIENT_ID:                  ${{ secrets.ARM_CLIENT_ID }}
+  ARM_CLIENT_SECRET:              ${{ secrets.ARM_CLIENT_SECRET }}
+  ARM_TENANT_ID:                  ${{ secrets.ARM_TENANT_ID }}
+  ARM_SUBSCRIPTION_ID:            ${{ secrets.ARM_SUBSCRIPTION_ID }}
+  TF_VAR_DOPPLER_AUTH_TOKEN:      ${{ secrets.TF_VAR_DOPPLER_AUTH_TOKEN }}
+
+jobs:
+  terraform-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: ${{ env.tf_version }}
+
+      - name: Initialize Terragrunt
+        uses: gruntwork-io/terragrunt-action@v2
+        with:
+          tf_version: ${{ env.tf_version }}
+          tg_version: ${{ env.tg_version }}
+          tg_dir:     ${{ env.working_dir }}
+          tg_command: 'init --non-interactive'
+          
+      - name: Refresh Terraform State
+        uses: gruntwork-io/terragrunt-action@v2
+        with:
+          tf_version: ${{ env.tf_version }}
+          tg_version: ${{ env.tg_version }}
+          tg_dir:     ${{ env.working_dir }}
+          tg_command: 'refresh'
+
+      - name: Apply Terraform changes
+        uses: gruntwork-io/terragrunt-action@v2
+        with:
+          tf_version: ${{ env.tf_version }}
+          tg_version: ${{ env.tg_version }}
+          tg_dir:     ${{ env.working_dir }}
+          tg_command: 'apply -auto-approve  -target=module.ci -target=module.aks -target=module.network -target=module.acr --non-interactive'

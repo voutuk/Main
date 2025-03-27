@@ -37,3 +37,4 @@ temp.txt
 .env
 .env.*
 backend.tf
+.secrets

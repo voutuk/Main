@@ -1,0 +1,53 @@
+name: Terraform Deployment
+on:
+  workflow_dispatch:
+
+env:
+  tf_version: '1.11.2'
+  tg_version: '0.73.11'
+  working_dir: 'infra/Terraform'
+
+  # Azure Backend Configuration
+  AZURE_CONTAINER_RESOURCE_GROUP: ${{ secrets.AZURE_CONTAINER_RESOURCE_GROUP }}
+  AZURE_STORAGE_ACCOUNT:          ${{ secrets.AZURE_STORAGE_ACCOUNT }}
+  AZURE_CONTAINER_NAME:           ${{ secrets.AZURE_CONTAINER_NAME }}
+        
+  # Azure Authentication
+  ARM_CLIENT_ID:                  ${{ secrets.ARM_CLIENT_ID }}
+  ARM_CLIENT_SECRET:              ${{ secrets.ARM_CLIENT_SECRET }}
+  ARM_TENANT_ID:                  ${{ secrets.ARM_TENANT_ID }}
+  ARM_SUBSCRIPTION_ID:            ${{ secrets.ARM_SUBSCRIPTION_ID }}
+  TF_VAR_DOPPLER_AUTH_TOKEN:      ${{ secrets.TF_VAR_DOPPLER_AUTH_TOKEN }}
+
+jobs:
+  terraform-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: ${{ env.tf_version }}
+
+      - name: Initialize Terraform
+        run: cd infra/Terraform && terraform init
+
+      - name: Set up Doppler CLI
+        uses: dopplerhq/cli-action@v2
+
+      - name: Connect to Doppler project
+        run: doppler setup --no-interactive --token ${{ secrets.TF_VAR_DOPPLER_AUTH_TOKEN }} --project "az" --config dev
+
+      - name: Pre-deployment setup
+        continue-on-error: true
+        run: cd infra/Terraform && doppler run -- terraform apply -target=module.sa -auto-approve
+
+      - name: Initialize Terragrunt
+        uses: gruntwork-io/terragrunt-action@v2
+        with:
+          tf_version: ${{ env.tf_version }}
+          tg_version: ${{ env.tg_version }}
+          tg_dir:     ${{ env.working_dir }}
+          tg_command: 'init --non-interactive -migrate-state -force-copy'
