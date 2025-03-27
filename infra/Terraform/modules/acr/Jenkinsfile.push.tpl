@@ -107,3 +107,106 @@ pipeline {
         }
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+pipeline {
+    agent {
+        label 'az-plug' 
+    }
+    
+    environment {
+        DISCORD_WEBHOOK = credentials('discord-webhook')
+    }
+
+    options {
+        ansiColor('xterm')
+        timestamps()
+        timeout(time: 30, unit: 'MINUTES')
+        buildDiscarder(logRotator(numToKeepStr: '5'))
+    }
+
+    stages {
+        stage('🔍 USE ') {
+            steps {
+                sh '''
+                    which az || {
+                        echo "Installing Azure CLI..."
+                        curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+                        echo "Azure CLI installed successfully"
+                    }
+                '''
+                git url: 'https://github.com/voutuk/OLX_Dyplom_ADM', branch: 'main'
+                sh 'ls -la'
+                withCredentials([azureServicePrincipal('az-service-principal')]) {
+                    sh '''
+                    az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID
+                    az acr build --registry ${ACR_NAME} --resource-group ${RESOURCE_GROUP_NAME} --image olx-client:latest --file ./OLX.Frontend/Dockerfile ./OLX.Frontend/
+                    az acr build --registry ${ACR_NAME} --resource-group ${RESOURCE_GROUP_NAME} --image olx-api:latest --file ./OLX.API/Dockerfile ./OLX.API/
+
+                    az aks get-credentials --resource-group gosell-aks-cluster --name gosell-aks
+                    
+                    az aks command invoke \
+                        --resource-group gosell-aks-cluster \
+                        --name gosell-aks \
+                        --command "kubectl rollout restart deployment/olx-client -n olx-app"
+                    
+                    az aks command invoke \
+                        --resource-group gosell-aks-cluster \
+                        --name gosell-aks \
+                        --command "kubectl rollout restart deployment/olx-api -n olx-app"
+                    '''
+                }
+            }
+        }  
+    }
+
+    post {
+        success {
+            discordSend(
+                description: "✅ Build успішно завершено!",
+                footer: "Jen / BublikDEV",
+                link: env.BUILD_URL,
+                result: "🟢 SUCCESS",
+                title: env.JOB_NAME,
+                webhookURL: DISCORD_WEBHOOK
+            )
+        }
+        failure {
+            discordSend(
+                description: "❌ Build провалився!",
+                footer: "Jen / BublikDEV",
+                link: env.BUILD_URL,
+                result: "🔴 FAILURE",
+                title: env.JOB_NAME,
+                webhookURL: DISCORD_WEBHOOK
+            )
+        }
+        unstable {
+            discordSend(
+                description: "⚠️ Build нестабільний!",
+                footer: "Jen / BublikDEV",
+                link: env.BUILD_URL,
+                result: "🟡 UNSTABLE",
+                title: env.JOB_NAME,
+                webhookURL: DISCORD_WEBHOOK
+            )
+        }
+        always {
+            cleanWs()
+        }
+    }
+}

@@ -31,6 +31,8 @@
     "// AKS ": "AKS cluster and related infrastructure",
     "apply:aks": "doppler run -- terragrunt apply -target=module.aks -target=module.aks-onix  -auto-approve",
     "destroy:aks": "doppler run -- terragrunt destroy -target=module.aks -target=module.aks-onix -auto-approve",
+    "apply:ingress:olx": "doppler run -- terragrunt apply -target=module.ingress-olx -auto-approve",
+    "apply:ingress:onix": "doppler run -- terragrunt apply -target=module.ingress-onix -auto-approve",
 
     "// Storage & Inventory ": "Storage and inventory management",
     "apply:storage": "doppler run -- terragrunt apply -target=module.sa -auto-approve",

@@ -36,13 +36,34 @@ pipeline {
                 }
             }
         }  
+        stage('🔍 Upd image'){
+            steps {
+                withCredentials([azureServicePrincipal('az-service-principal')]) {
+                    sh '''
+                    az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID
+
+                    az aks get-credentials --resource-group gosell-aks-cluster --name onix-aks
+                    
+                    az aks command invoke \
+                        --resource-group gosell-aks-cluster \
+                        --name onix-aks \
+                        --command "kubectl rollout restart deployment/onix-client -n onix-app"
+                    
+                    az aks command invoke \
+                        --resource-group gosell-aks-cluster \
+                        --name onix-aks \
+                        --command "kubectl rollout restart deployment/onix-api -n onix-app"
+                    '''
+                }
+            }
+        }
     }
 
     post {
         success {
             discordSend(
                 description: "✅ Build успішно завершено!",
-                footer: "Jen / BublikDEV",
+                footer: "Jen / BublikDEV / ONIX",
                 link: env.BUILD_URL,
                 result: "SUCCESS",
                 title: env.JOB_NAME,
@@ -52,7 +73,7 @@ pipeline {
         failure {
             discordSend(
                 description: "❌ Build провалився!",
-                footer: "Jen / BublikDEV",
+                footer: "Jen / BublikDEV / ONIX",
                 link: env.BUILD_URL,
                 result: "FAILURE",
                 title: env.JOB_NAME,
@@ -62,7 +83,7 @@ pipeline {
         unstable {
             discordSend(
                 description: "⚠️ Build нестабільний!",
-                footer: "Jen / BublikDEV",
+                footer: "Jen / BublikDEV / ONIX",
                 link: env.BUILD_URL,
                 result: "UNSTABLE",
                 title: env.JOB_NAME,

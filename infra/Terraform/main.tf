@@ -116,3 +116,33 @@ module "acr" {
   pull_principal_ids   = [module.aks.principal_id, module.aks-onix.principal_id]
   tags                 = var.tags
 }
+
+module "ingress-olx" {
+  source = "./modules/ingress"
+  
+  domain_name = "pluton.pp.ua"
+  record_name = "app"
+  
+  # Customize these based on your Ingress controller setup
+  ingress_controller_service_name = "nginx-ingress-ingress-nginx-controller"
+  ingress_controller_namespace    = "olx-app"
+  ttl     = 1       # Automatic TTL
+  proxied = true    # Use Cloudflare proxy
+  kubernetes_config_path = "~/.kube/config"
+  kubernetes_context     = "gosell-aks"
+}
+
+module "ingress-onix" {
+  source = "./modules/ingress"
+  
+  domain_name = "pluton.pp.ua"
+  record_name = "onix"
+  
+  # Customize these based on your Ingress controller setup
+  ingress_controller_service_name = "nginx-ingress-ingress-nginx-controller"
+  ingress_controller_namespace    = "onix-app"
+  ttl     = 1       # Automatic TTL
+  proxied = true    # Use Cloudflare proxy
+  kubernetes_config_path = "~/.kube/config"
+  kubernetes_context     = "onix-aks"
+}
