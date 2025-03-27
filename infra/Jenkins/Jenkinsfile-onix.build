@@ -19,11 +19,22 @@ pipeline {
                 }
             }
         }
+        stage('🛑 Stop All Containers') {
+            steps {
+            script {
+                sh '''
+                echo "Stopping all running containers..."
+                docker ps -q | xargs -r docker stop
+                echo "Containers stopped."
+                '''
+            }
+            }
+        }
         
         stage('🔍 Checkout') {
             steps {
-                git branch: 'main', 
-                    url: 'https://github.com/voutuk/OLX_Dyplom_ADM'
+                git branch: 'WithList', 
+                    url: 'https://github.com/xCrucified/Amazon-Back-end/'
             }
         }
         
@@ -31,7 +42,7 @@ pipeline {
             steps {
                 script {
                     sh """
-                        docker compose --progress=plain --profile full build --no-cache
+                        docker build -t yevgeniy911/amazon_asp_api:latest .
                     """
                 }
             }
@@ -40,7 +51,7 @@ pipeline {
         stage('🚀 Docker UP') {
             steps {
                 script {
-                    sh 'docker compose --profile full up -d'
+                    sh 'docker compose up -d'
                     sh 'docker ps'
                 }
             }
@@ -63,28 +74,11 @@ pipeline {
                 }
             }
         }
-        stage('⏸️ Manual Approval') {
-            steps {
-                script {
-                    timeout(time: 1, unit: 'DAYS') { 
-                        input message: 'Proceed with deployment?', ok: 'Proceed'
-                    }
-                }
-            }
-        }
     }
     
     post {
         success {
             echo '🎉 Pipeline completed successfully!'
         }
-        // failure {
-        //     echo '💥 Pipeline failed'
-        //     sh 'docker compose -f docker-compose.yml down || true'
-        //     sh '''
-        //         docker system prune -f
-        //         docker volume prune -f
-        //     '''
-        // }
     }
 }
