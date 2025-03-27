@@ -8,14 +8,6 @@ resource "azurerm_container_registry" "acr" {
   tags                = var.tags
 }
 
-# Assign AcrPush role to the service principal if provided
-resource "azurerm_role_assignment" "acr_push" {
-  count                = var.service_principal_id != "" ? 1 : 0
-  scope                = azurerm_container_registry.acr.id
-  role_definition_name = "AcrPush"
-  principal_id         = var.service_principal_id
-}
-
 # Optional: Assign AcrPull role to additional identities if provided
 resource "azurerm_role_assignment" "acr_pull" {
   count                = length(var.pull_principal_ids)

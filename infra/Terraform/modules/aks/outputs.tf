@@ -55,3 +55,8 @@ output "kubernetes_version" {
   description = "The version of Kubernetes"
   value       = azurerm_kubernetes_cluster.cluster.kubernetes_version
 }
+
+output "principal_id" {
+  description = "The principal ID of the AKS cluster"
+  value       = azurerm_kubernetes_cluster.cluster.identity[0].principal_id
+}

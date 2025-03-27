@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.frontend.name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "onix-app.labels" . | nindent 4 }}
+    app: onix-client
+spec:
+  replicas: {{ .Values.frontend.replicas }}
+  selector:
+    matchLabels:
+      app: onix-client
+  template:
+    metadata:
+      labels:
+        app: onix-client
+        {{- include "onix-app.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+      - name: onix-client
+        image: "{{ .Values.frontend.image.repository }}:{{ .Values.frontend.image.tag }}"
+        imagePullPolicy: {{ .Values.frontend.image.pullPolicy }}
+        ports:
+        - containerPort: {{ .Values.frontend.port }}
+        resources:
+          {{- toYaml .Values.frontend.resources | nindent 10 }}

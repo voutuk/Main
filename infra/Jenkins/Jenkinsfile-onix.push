@@ -22,17 +22,17 @@ pipeline {
                 sh 'ls -la'
                 withCredentials([azureServicePrincipal('az-service-principal')]) {
                     sh 'az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID'
-                    sh 'az acr build --registry goselldelicatechigger --resource-group gosell-storage --image onix-api:latest .'
+                    sh 'az acr build --registry gosellbackupstirringeel --resource-group gosell-storage --image onix-api:latest .'
                 }
             }
         }  
         stage('🔍 Build Front') {
             steps {
-                git url: 'https://github.com/xCrucified/Amazon-Front-End', branch: 'staging'
+                git url: 'https://github.com/xCrucified/Amazon-Front-End', branch: 'main'
                 sh 'ls -la'
                 withCredentials([azureServicePrincipal('az-service-principal')]) {
                     sh 'az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID'
-                    sh 'az acr build --registry goselldelicatechigger --resource-group gosell-storage --image onix-client:latest --file ./amazon/Dockerfile ./amazon/'
+                    sh 'az acr build --registry gosellbackupstirringeel --resource-group gosell-storage --image onix-client:latest --file ./amazon/Dockerfile ./amazon/'
                 }
             }
         }  

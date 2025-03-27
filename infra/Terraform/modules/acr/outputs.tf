@@ -24,3 +24,4 @@ output "acr_admin_password" {
   value       = var.admin_enabled ? azurerm_container_registry.acr.admin_password : null
   sensitive   = true
 }
+

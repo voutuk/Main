@@ -31,12 +31,6 @@ variable "tags" {
   default     = {}
 }
 
-variable "service_principal_id" {
-  description = "The ID of the service principal to assign AcrPush role"
-  type        = string
-  default     = ""
-}
-
 variable "pull_principal_ids" {
   description = "List of principal IDs to assign AcrPull role"
   type        = list(string)

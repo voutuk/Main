@@ -1,0 +1,1 @@
+doppler run -- envsubst < ./values-template.yaml > ./helm/values.yaml

@@ -80,6 +80,24 @@ module "aks" {
   system_max_node_count   = 2
 }
 
+module "aks-onix" {
+  source                  = "./modules/aks"
+  resource_group_name     = module.aks_rg.name
+  location                = module.aks_rg.location
+  cluster_name            = "onix-aks"
+  dns_prefix              = "onix"
+  kubernetes_version      = "1.30.9"
+  vnet_name               = "onix-vnet"
+  subnet_name             = "onix-aks-subnet"
+  tags                    = var.tags
+  vnet_address_space      = ["10.4.0.0/20"]
+  subnet_address_prefix   = ["10.4.1.0/24"] 
+  # Add system node pool configuration
+  system_node_count       = 1
+  system_min_node_count   = 1
+  system_max_node_count   = 2
+}
+
 # Storage Account 
 module "sa" {
   source                = "./modules/storage"
@@ -95,6 +113,6 @@ module "acr" {
   acr_name             = "${var.rg_prefix}"
   resource_group_name  = module.storage_rg.name
   location             = module.storage_rg.location
-  service_principal_id = data.doppler_secrets.az-creds.map.PRINCIPAL_ID
+  pull_principal_ids   = [module.aks.principal_id, module.aks-onix.principal_id]
   tags                 = var.tags
 }

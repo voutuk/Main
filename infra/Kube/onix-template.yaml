@@ -1,5 +1,5 @@
 # Global settings
-namespace: olx-app
+namespace: onix-app
 createNamespace: false
 
 # Cloudflare Origin Certificate
@@ -13,9 +13,9 @@ cloudflare:
 
 # Backend service configuration
 backend:
-  name: olx-api
+  name: onix-api
   image:
-    repository: ${AZURE_CONTAINER_REGISTRY}.azurecr.io/olx-api
+    repository: ${AZURE_CONTAINER_REGISTRY}.azurecr.io/onix-api
     tag: latest
     pullPolicy: Always
   replicas: 1
@@ -44,9 +44,9 @@ backend:
 
 # Frontend service configuration
 frontend:
-  name: olx-client
+  name: onix-client
   image:
-    repository: ${AZURE_CONTAINER_REGISTRY}.azurecr.io/olx-client
+    repository: ${AZURE_CONTAINER_REGISTRY}.azurecr.io/onix-client
     tag: latest
     pullPolicy: Always
   replicas: 1
@@ -58,33 +58,6 @@ frontend:
     limits:
       cpu: "300m"
       memory: "256Mi"
-
-# PostgreSQL configuration
-postgres:
-  name: postgres-service
-  image:
-    repository: postgres
-    tag: latest
-    pullPolicy: IfNotPresent
-  port: 5432
-  persistence:
-    size: 10Gi
-    storageClass: "managed-premium"
-  resources:
-    requests:
-      cpu: "500m"
-      memory: "512Mi"
-    limits:
-      cpu: "1"
-      memory: "1Gi"
-  env:
-    POSTGRES_DB: olxDb
-    POSTGRES_USER: olxapi
-    POSTGRES_HOST: postgres
-    POSTGRES_PORT: "5432"
-    PGDATA: /var/lib/postgresql/data/pgdata
-    # This will be stored in a secret
-    POSTGRES_PASSWORD: "KmRtVW50ZE9pZGQzZF8jV1RpNEI5Wm9acCVyU0RqNEltZHMwN2RqYyo="
 
 # Ingress configuration
 ingress:
@@ -99,14 +72,6 @@ ingress:
       service: frontend
       port: 80
     - path: /api
-      pathType: Prefix
-      service: backend
-      port: 8080
-    - path: /hub
-      pathType: Prefix
-      service: backend
-      port: 8080
-    - path: /images
       pathType: Prefix
       service: backend
       port: 8080

@@ -1,0 +1,1 @@
+doppler run -- envsubst < ./onix-template.yaml > ./onix/values.yaml
