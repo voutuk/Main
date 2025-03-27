@@ -59,6 +59,7 @@ module "ci" {
   jenkins_memory          = 4
   storage_quota           = 30
   tags                    = var.tags
+  grafana_admin_password = "123"
 }
 
 # AKS cluster module
