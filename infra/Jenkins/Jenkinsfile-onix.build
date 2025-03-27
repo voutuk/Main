@@ -19,18 +19,7 @@ pipeline {
                 }
             }
         }
-        stage('🛑 Stop All Containers') {
-            steps {
-            script {
-                sh '''
-                echo "Stopping all running containers..."
-                docker ps -q | xargs -r docker stop
-                echo "Containers stopped."
-                '''
-            }
-            }
-        }
-        
+
         stage('🔍 Checkout') {
             steps {
                 git branch: 'WithList', 
@@ -45,6 +34,18 @@ pipeline {
                         docker build -t yevgeniy911/amazon_asp_api:latest .
                     """
                 }
+            }
+        }
+        
+        stage('🛑 Stop All Containers') {
+            steps {
+            script {
+                sh '''
+                echo "Stopping all running containers..."
+                docker ps -q | xargs -r docker stop
+                echo "Containers stopped."
+                '''
+            }
             }
         }
         
