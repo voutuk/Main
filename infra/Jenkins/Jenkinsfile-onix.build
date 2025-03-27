@@ -36,16 +36,18 @@ pipeline {
                 }
             }
         }
-        
+
         stage('🛑 Stop All Containers') {
             steps {
-            script {
-                sh '''
-                echo "Stopping all running containers..."
-                docker ps -q | xargs -r docker stop
-                echo "Containers stopped."
-                '''
-            }
+                script {
+                    sh '''
+                    echo "Stopping all running containers..."
+                    docker ps -q | xargs -r docker stop
+                    echo "Removing containers..."
+                    docker ps -a -q | xargs -r docker rm
+                    echo "Containers stopped and removed."
+                    '''
+                }
             }
         }
         
