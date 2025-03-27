@@ -32,12 +32,6 @@ pipeline {
         stage('🔍 USE ') {
             steps {
                 node('az-plug') {
-                    step([$class: 'GitHubCommitStatusSetter',
-                     reposSource: [$class: 'ManuallySpecifiedRepositorySource', url: 'https://github.com/voutuk/OLX_Dyplom_ADM'],
-                     statusResultSource: [$class: 'ConditionalStatusResultSource',
-                     results: [[$class: 'AnyBuildResult', 
-                               message: 'Pipeline Proceeded', 
-                               state: 'PENDING']]]])
                     sh '''
                         which az || {
                             echo "Installing Azure CLI..."
@@ -81,12 +75,6 @@ pipeline {
                 title: env.JOB_NAME,
                 webhookURL: DISCORD_WEBHOOK
             )
-            step([$class: 'GitHubCommitStatusSetter',
-                         reposSource: [$class: 'ManuallySpecifiedRepositorySource', url: 'https://github.com/voutuk/OLX_Dyplom_ADM'],
-                         statusResultSource: [$class: 'ConditionalStatusResultSource',
-                         results: [[$class: 'AnyBuildResult', 
-                                   message: 'Deployed', 
-                                   state: 'SUCCESS']]]])
         }
         failure {
             discordSend(
@@ -97,12 +85,6 @@ pipeline {
                 title: env.JOB_NAME,
                 webhookURL: DISCORD_WEBHOOK
             )
-            step([$class: 'GitHubCommitStatusSetter',
-                         reposSource: [$class: 'ManuallySpecifiedRepositorySource', url: 'https://github.com/voutuk/OLX_Dyplom_ADM'],
-                         statusResultSource: [$class: 'ConditionalStatusResultSource',
-                         results: [[$class: 'AnyBuildResult', 
-                                   message: 'Failed', 
-                                   state: 'FAILURE']]]])
         }
         unstable {
             discordSend(
@@ -113,12 +95,6 @@ pipeline {
                 title: env.JOB_NAME,
                 webhookURL: DISCORD_WEBHOOK
             )
-            step([$class: 'GitHubCommitStatusSetter',
-                         reposSource: [$class: 'ManuallySpecifiedRepositorySource', url: 'https://github.com/voutuk/OLX_Dyplom_ADM'],
-                         statusResultSource: [$class: 'ConditionalStatusResultSource',
-                         results: [[$class: 'AnyBuildResult', 
-                                   message: 'Unstable',
-                                   state: 'FAILURE']]]]) 
         }
         always {
             cleanWs()
