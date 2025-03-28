@@ -137,7 +137,7 @@ module "ingress-onix" {
   source = "./modules/ingress"
   
   domain_name = "pluton.pp.ua"
-  record_name = "onix"
+  record_name = "onyx"
   
   # Customize these based on your Ingress controller setup
   ingress_controller_service_name = "nginx-ingress-ingress-nginx-controller"

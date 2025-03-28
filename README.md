@@ -6,3 +6,9 @@
 
 ### Tags
 TODO, FIXME, INFO
+
+
+az storage container set-permission \
+    --name gosellbackupstirringeel \
+    --public-access blob \
+    --account-name phs

@@ -75,3 +75,7 @@ ingress:
       pathType: Prefix
       service: backend
       port: 8080
+    - path: /swagger
+      pathType: Prefix
+      service: backend
+      port: 8080

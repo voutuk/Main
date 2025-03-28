@@ -12,7 +12,7 @@
   "scripts": {
     "// Base commands ": "Basic terragrunt commands with env support (command use github actions please check file .github/workflows/terraform.yml)",
     "pre": "terraform init && doppler run -- terraform apply -target=module.sa -auto-approve", 
-    "init": "doppler run -- terragrunt init --non-interactive",
+    "init": "doppler run -- terragrunt init -migrate-state -force-copy",
     "plan": "doppler run -- terragrunt plan",
     "apply": "doppler run -- terragrunt apply -auto-approve -target=module.ci -target=module.aks -target=module.aks-onix -target=module.network -target=module.acr",
     "destroy": "doppler run -- terragrunt destroy -auto-approve -target=module.ci -target=module.aks  -target=module.aks-onix  -target=module.network -target=module.acr",

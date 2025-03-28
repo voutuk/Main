@@ -29,8 +29,8 @@ pipeline {
                 withCredentials([azureServicePrincipal('az-service-principal')]) {
                     sh '''
                     az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID
-                    az acr build --registry goselldelicatechigger --resource-group gosell-storage --image olx-client:latest --file ./OLX.Frontend/Dockerfile ./OLX.Frontend/
-                    az acr build --registry goselldelicatechigger --resource-group gosell-storage --image olx-api:latest --file ./OLX.API/Dockerfile ./OLX.API/
+                    az acr build --registry gosellsmarthumpback --resource-group gosell-storage --image olx-client:latest --file ./OLX.Frontend/Dockerfile ./OLX.Frontend/
+                    az acr build --registry gosellsmarthumpback --resource-group gosell-storage --image olx-api:latest --file ./OLX.API/Dockerfile ./OLX.API/
 
                     az aks get-credentials --resource-group gosell-aks-cluster --name gosell-aks
                     
