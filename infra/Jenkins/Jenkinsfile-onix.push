@@ -18,7 +18,7 @@ pipeline {
     stages {
         stage('🔍 Build API') {
             steps {
-                git url: 'https://github.com/xCrucified/Amazon-Back-end', branch: 'catalog'
+                git url: 'https://github.com/xCrucified/Amazon-Back-end', branch: 'WithList'
                 sh 'ls -la'
                 withCredentials([azureServicePrincipal('az-service-principal')]) {
                     sh 'az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID'
@@ -28,7 +28,7 @@ pipeline {
         }  
         stage('🔍 Build Front') {
             steps {
-                git url: 'https://github.com/xCrucified/Amazon-Front-End', branch: 'main'
+                git url: 'https://github.com/xCrucified/Amazon-Front-End', branch: 'catalog'
                 sh 'ls -la'
                 withCredentials([azureServicePrincipal('az-service-principal')]) {
                     sh 'az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID'
