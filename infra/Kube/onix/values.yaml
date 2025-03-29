@@ -15,7 +15,7 @@ cloudflare:
 backend:
   name: onix-api
   image:
-    repository: gosellsmarthumpback.azurecr.io/onix-api
+    repository: gosellequippedmarlin.azurecr.io/onix-api
     tag: latest
     pullPolicy: Always
   replicas: 1
@@ -46,7 +46,7 @@ backend:
 frontend:
   name: onix-client
   image:
-    repository: gosellsmarthumpback.azurecr.io/onix-client
+    repository: gosellequippedmarlin.azurecr.io/onix-client
     tag: latest
     pullPolicy: Always
   replicas: 1
