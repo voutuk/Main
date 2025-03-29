@@ -22,10 +22,10 @@ backend:
   port: 8080
   resources:
     requests:
-      cpu: "1"
+      cpu: "0.5"
       memory: "1Gi"
     limits:
-      cpu: "2"
+      cpu: "1"
       memory: "2Gi"
   livenessProbe:
     httpGet:
@@ -72,6 +72,10 @@ ingress:
       service: frontend
       port: 80
     - path: /api
+      pathType: Prefix
+      service: backend
+      port: 8080
+    - path: /swagger
       pathType: Prefix
       service: backend
       port: 8080

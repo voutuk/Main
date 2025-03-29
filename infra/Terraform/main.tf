@@ -33,6 +33,13 @@ module "instance_rg" {
   tags                = var.tags
 }
 
+module "monitor_rg" {
+  source              = "./modules/resource_group"
+  resource_group_name = "${var.rg_prefix}-monitor"
+  location            = var.dev_locate
+  tags                = var.tags
+}
+
 module "network" {
   source                      = "./modules/net"
   base_name                   = "minimal"
@@ -75,10 +82,6 @@ module "aks" {
   tags                    = var.tags
   vnet_address_space      = var.ask_address_space
   subnet_address_prefix   = var.ask_subnet_address_prefix
-  # Add system node pool configuration
-  system_node_count       = 1
-  system_min_node_count   = 1
-  system_max_node_count   = 2
 }
 
 module "aks-onix" {
@@ -93,10 +96,6 @@ module "aks-onix" {
   tags                    = var.tags
   vnet_address_space      = ["10.4.0.0/20"]
   subnet_address_prefix   = ["10.4.1.0/24"] 
-  # Add system node pool configuration
-  system_node_count       = 1
-  system_min_node_count   = 1
-  system_max_node_count   = 2
 }
 
 # Storage Account 

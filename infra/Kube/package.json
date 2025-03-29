@@ -8,7 +8,7 @@
   "scripts": {
     "pre": "bash get-aks.sh",
     "helm": "helm package helm/",
-    "helm:deploy": "kubectl config use-context gosell-aks && bash apply.sh && helm install olx-app ./helm --namespace olx-app",
+    "helm:deploy": "kubectl config use-context gosell-aks && bash apply.sh && helm install olx-app . /helm--namespace olx-app",
     "helm:upd": "kubectl config use-context gosell-aks && bash upd.sh && helm upgrade --install olx-app ./helm --namespace olx-app",
     "onix:deploy": "kubectl config use-context onix-aks && bash apply-onix.sh && helm install onix-app ./onix --namespace onix-app",
     "onix:upd": "kubectl config use-context onix-aks && bash upd-onix.sh && helm upgrade --install onix-app ./onix --namespace onix-app",

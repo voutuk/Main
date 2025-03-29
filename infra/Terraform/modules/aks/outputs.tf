@@ -60,3 +60,13 @@ output "principal_id" {
   description = "The principal ID of the AKS cluster"
   value       = azurerm_kubernetes_cluster.cluster.identity[0].principal_id
 }
+
+output "vnet_id" {
+  description = "The ID of the VNet"
+  value       = azurerm_virtual_network.vnet.id
+}
+
+output "cluster_id" {
+  description = "The ID of the AKS cluster"
+  value       = azurerm_kubernetes_cluster.cluster.id
+}

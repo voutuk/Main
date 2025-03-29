@@ -78,7 +78,7 @@ variable "min_node_count" {
 variable "max_node_count" {
   description = "Maximum number of nodes for default node pool auto-scaling"
   type        = number
-  default     = 3
+  default     = 2
 }
 
 # Added system node pool variables
@@ -97,5 +97,5 @@ variable "system_min_node_count" {
 variable "system_max_node_count" {
   description = "Maximum number of nodes for system node pool auto-scaling"
   type        = number
-  default     = 3
+  default     = 1
 }
